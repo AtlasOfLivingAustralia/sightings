@@ -1,0 +1,126 @@
+.hint {
+    font-size: 1.1em;
+    padding-bottom: 0;
+}
+
+.left {
+    display: inline;
+    float: left;
+}
+
+.right {
+    display: inline;
+    float: right;
+}
+
+button[type='button'] {
+    margin-left: 20px;
+    height: 24px;
+    font-weight: normal;
+}
+
+.preview img {
+    max-height: 80px;
+    max-width: 80px;
+}
+
+.summary {
+    margin-bottom: 10px;
+}
+
+.scientificName {
+    font-style: italic;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.commonName {
+    font-size: 1.2em;
+    padding-left: 25px;
+}
+
+div.heading {
+    float: left;
+    vertical-align: middle;
+    background-color: white;
+    /*background-color: #f5f5f5;*/
+    border-top: 2px solid #ccc;
+    border-left: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    margin-top: 30px;
+    clear: both;
+}
+
+div.heading h2 {
+    display: none;
+}
+
+div.heading img {
+    vertical-align: middle;
+}
+
+section.sightings-block p {
+    padding-bottom: 5px;
+}
+
+section.sightings-block {
+    float: left;
+    vertical-align: middle;
+    width: 90%;
+    min-height: 80px;
+    border: 3px solid #ccc;
+    padding: 5px 5px 5px 15px;
+    background-color: white;
+    float: left;
+    margin: 20px 0 0 0;
+    position: relative;
+}
+
+div.summary {
+    margin-top: 10px;
+}
+
+img.taxon-image {
+    float: right;
+}
+
+label {
+    padding-right: 10px;
+}
+
+.help {
+    cursor: pointer;
+}
+
+/* Corner radius */
+.ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl { -moz-border-radius-topleft: 8px; -webkit-border-top-left-radius: 8px; -khtml-border-top-left-radius: 8px; border-top-left-radius: 8px; }
+.ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr { -moz-border-radius-topright: 8px; -webkit-border-top-right-radius: 8px; -khtml-border-top-right-radius: 8px; border-top-right-radius: 8px; }
+.ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl { -moz-border-radius-bottomleft: 8px; -webkit-border-bottom-left-radius: 8px; -khtml-border-bottom-left-radius: 8px; border-bottom-left-radius: 8px; }
+.ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br { -moz-border-radius-bottomright: 8px; -webkit-border-bottom-right-radius: 8px; -khtml-border-bottom-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+/* TimeEntry styles */
+.timeEntry_control {
+    vertical-align: middle;
+    margin-left: 2px;
+}
+* html .timeEntry_control { /* IE only */
+    margin-top: -4px;
+}
+#time {
+    padding: 1px;
+    margin: 2px;
+}
+
+/* where */
+#small-map-container {
+}
+
+#coordinate-container {
+    margin-left:25px;
+}
+
+/* small map */
+#small-map {
+    width: 150px;
+    height: 150px;
+}
