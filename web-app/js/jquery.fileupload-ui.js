@@ -65,7 +65,7 @@
             // By default, preview images are displayed as canvas elements
             // if supported by the browser. Set the following option to false
             // to always display preview images as img elements:
-            previewAsCanvas: true,
+            previewAsCanvas: false, // MEW mod was true,
             // The ID of the upload template:
             uploadTemplateId: 'template-upload',
             // The ID of the download template:
