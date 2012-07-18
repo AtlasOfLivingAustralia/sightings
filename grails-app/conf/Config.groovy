@@ -42,11 +42,17 @@ if (!bie.searchPath) {
 if (!biocache.baseURL) {
     biocache.baseURL = "http://biocache.ala.org.au/"
 }
+if (!fielddata.baseURL) {
+    fielddata.baseURL = "http://audax.ala.org.au:8080/fielddata"
+}
 if (!spatial.baseURL) {
     spatial.baseURL = "http://spatial.ala.org.au/"
 }
 if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au/"
+}
+if (!ala.locationBookmarkServerURL) {
+    ala.locationBookmarkServerURL = "http://audax.ala.org.au:8080/fielddata"
 }
 if (!headerAndFooter.baseURL) {
     headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
@@ -108,7 +114,7 @@ grails.hibernate.cache.queries = true
 environments {
     development {
         grails.logging.jul.usebridge = true
-        grails.serverURL = "http://localhost:8080/sightings"
+        grails.serverURL = "http://localhost:8085/sightings"
     }
     production {
         grails.logging.jul.usebridge = false

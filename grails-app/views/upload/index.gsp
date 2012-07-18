@@ -17,10 +17,17 @@
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
     <!-- App specific styles -->
+    <r:script disposition="head">
+        var serverUrl = "${ConfigurationHolder.config.grails.serverURL}",
+            bieUrl = "${ConfigurationHolder.config.bie.baseURL}",
+            userId = "mark.woolston@csiro.au",
+            bookmarkServerUrl = "${ConfigurationHolder.config.ala.locationBookmarkServerURL}";
+    </r:script>
     <r:require module="application"/>
     <r:require module="jQueryImageUpload"/>
-    <r:require module="jQueryUI19"/>
+    <r:require module="jQueryUI"/>
     <r:require module="jQueryTimeEntry"/>
+    <r:require module="exif"/>
     <r:layoutResources/>
 </head>
 <body>
@@ -30,6 +37,7 @@
         <p class="hint">Hint: If you are submitting images, upload them first and we will try to pre-load the date
         and location fields from the image metadata.</p>
     </div>
+    <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
     <section class="sightings-block ui-corner-all">
         <a href="http://bie.ala.org.au/species/Notomys fuscus">
@@ -51,6 +59,7 @@
             <button class="ui-state-disabled" type="button" id="undoTaxon" disabled="disabled">Undo</button>
         </div>
     </section>
+    <!-- WHEN -->
     <div class="heading ui-corner-left"><h2>When</h2><r:img uri="/images/when.png"/></div>
     <section class="sightings-block ui-corner-all">
         <div class="left" style="margin-top: 10px;width:40%;">
@@ -64,29 +73,35 @@
             Left/right arrows change the field. Up/down arrows change the values.</p>
         </div>
     </section>
+    <!-- WHERE -->
     <div class="heading ui-corner-left"><h2>Where</h2><r:img uri="/images/where.png"/></div>
     <section class="sightings-block ui-corner-all">
         <div class="left" id="location-container">
             <label for="location" style="vertical-align:top;">Type in a description of the location.</label><br/>
             <g:textArea name="location" rows="5" cols="40"/><br/>
-            <label for="locationBookmarks">Choose from a bookmarked location.</label><br/>
-            <g:select name="locationBookmarks" from="['2 Ashburner St HIGGINS ACT', 'Blg 401A Black Mountain', 'Desert']"
-             keys="['home','work','desert']" noSelection="['':'bookmarks']"/>
+            <label for="locationBookmarks" class="minor">Choose from a bookmarked location.</label><br/>
+            <g:select name="locationBookmarks" from="['Loading bookmarks..']"
+             keys="['loading']" noSelection="[null:'bookmarked locations']"/>
+            <button type="button" id="saveBookmarkButton">Bookmark current location</button>
+            <button type="button" id="manageBookmarksButton">Manage bookmarks</button>
         </div>
         <div class="left" id="coordinate-container">
             <span>Enter coordinates (decimal degrees) if you already have them.</span><br/>
             <label for="latitude">Latitude</label><g:textField name="latitude" size="17"/>
             <label for="longitude">Longitude</label><g:textField name="longitude" size="17"/><br/>
+            <g:hiddenField name="verbatimLatitude"/>
+            <g:hiddenField name="verbatimLongitude"/>
+            <g:hiddenField name="usingReverseGeocodedLocality" value="false"/>
             <label for="coordinateSource">What is the source of these coordinates?</label>
-            <g:select name="coordinateSource" from="['Google maps','Google earth','GPS device','phone','physical map','other']"/><br/>
+            <g:select name="coordinateSource" from="['Google maps','Google earth','GPS device','camera/phone','physical map','other']"/><br/>
             <div id="precisionFields">
-                <span id="datum" class="ui-helper-hidden"><label for="datum">Enter the geodetic datum for your device</label>
-                    <g:select name="datum" from="[' WGS84','GDA94','AGD 1966','AGD 1984','other','unknown']"/>
+                <span id="geodeticDatumField" class="ui-helper-hidden"><label for="datum">Enter the geodetic datum for your device</label>
+                    <g:select name="datum" from="['WGS84','GDA94','AGD 1966','AGD 1984','other','unknown']"/>
                     <r:img id="datumOpener" class="help" uri="/images/question_mark.jpg"/>
                 </span>
-                <span id="physicalMap" class="ui-helper-hidden"><label for="physicalMap">Enter the scale of the map</label>
-                <g:select name="physicalMap" from="['1:1,000,000','1:500,000','1:250,000','1:100,000','1:50,000','other','unknown']"/></span>
-                <span id="otherSource" class="ui-helper-hidden"><label for="otherSource">Enter the source</label>
+                <span id="physicalMapScaleField" class="ui-helper-hidden"><label for="physicalMapScale">Enter the scale of the map</label>
+                <g:select name="physicalMapScale" from="${physicalMapScales}"/></span>
+                <span id="otherSourceField" class="ui-helper-hidden"><label for="otherSource">Enter the source</label>
                 <g:textField name="otherSource"/>
 
             </div>
@@ -96,11 +111,12 @@
             <div id="small-map"></div>
         </div>
     </section>
+    <!-- MEDIA -->
     <div class="heading ui-corner-left"><h2>Media</h2><r:img uri="/images/media.png"/></div>
     <section class="sightings-block ui-corner-all">
 
     <!-- The file upload form used as target for the file upload widget -->
-    <form id="fileupload" action="http://localhost:8080/sightings/image/upload" method="POST" enctype="multipart/form-data">
+    <g:form name="fileupload" controller="image" action="upload" method="POST" enctype="multipart/form-data">
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
         <div class="row fileupload-buttonbar">
             <div class="span7">
@@ -108,7 +124,7 @@
                 <span class="btn btn-success fileinput-button">
                     <i class="icon-plus icon-white"></i>
                     <span>Add images...</span>
-                    <input type="file" name="files" multiple>
+                    <input type="file" name="files" id="files" multiple>
                 </span>
                 %{--<button type="submit" class="btn btn-primary start">
                     <i class="icon-upload icon-white"></i>
@@ -139,8 +155,9 @@
         <br>
         <!-- The table listing the files available for upload/download -->
         <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
-    </form>
+    </g:form>
     </section>
+    <!-- NOTES -->
     <div class="heading ui-corner-left"><h2>Notes</h2><r:img uri="/images/notes.png"/></div>
     <section class="sightings-block ui-corner-all">
         <label for="notes">Notes</label><g:textArea name="notes" rows="8" cols="80"/>
@@ -178,7 +195,30 @@
     under which they were collected. Many GPS devices (as well as Google maps) use WGS84. The Australian standard GDA94 is
     virtually identical. Coordinates collected under other standards must be transformed to achieve the best accuracy.</p>
 </div>
-
+<div id="locationUpdateDialog" class="dialog">
+    <p>The image you just selected contains embedded location information that is different to the values already entered.</p>
+    <p>The location embedded in the image is:<br/> lat = <span id="imageLat"></span>, lng = <span id="imageLng"></span></p>
+    <p>A Google lookup places this at:<br/> <span id="lookupLocality"></span></p>
+    <p>Do you want to use the location from this image?</p>
+</div>
+<div id="dateUpdateDialog" class="dialog">
+    <p>The image you just selected contains an embedded timestamp that is different to the date and time already entered.</p>
+    <table>
+        <tr><th></th><th>Current value</th><th>This image</th></tr>
+        <tr><td>Date and time</td><td id="currentDateTime"></td><td id="imageDateTime"></td></tr>
+    </table>
+    <p>Do you want to use the image date and time?</p>
+</div>
+<div id="manageBookmarksDialog" class="dialog" title="Manage your location bookmarks">
+    <div><ul id="bookmarksList"></ul></div>
+    <div><button type="button" class="small" id="deleteAllBookmarksButton">Delete all bookmarks</button></div>
+</div>
+<div id="confirmationDialog" class="dialog">
+    <p></p>
+</div>
+<div id="messageDialog" class="dialog">
+    <p></p>
+</div>
 <!-- The template to display files available for upload -->
 <script id="template-upload" type="text/x-tmpl">
     {% for (var i=0, file; file=o.files[i]; i++) { %}
@@ -240,8 +280,6 @@
     {% } %}
 </script>
 <r:script>
-    var serverUrl = "${ConfigurationHolder.config.grails.serverURL}";
-    var bieUrl = "${ConfigurationHolder.config.bie.baseURL}";
     $(function() {
         var countSpinner = $("#count").spinner({min: 1});
         $("#date").datepicker({

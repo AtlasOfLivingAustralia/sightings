@@ -68,9 +68,9 @@ $(function() {
         $('#precisionFields span').css('display','none');
         // show one
         switch ($(this).val()) {
-            case 'GPS device': $('#datum').css('display','inline'); break;
-            case 'physical map': $('#physicalMap').css('display','inline'); break;
-            case 'other': $('#otherSource').css('display','inline'); break;
+            case 'GPS device': $('#geodeticDatumField').css('display','inline'); break;
+            case 'physical map': $('#physicalMapScaleField').css('display','inline'); break;
+            case 'other': $('#otherSourceField').css('display','inline'); break;
         }
     });
 
@@ -95,6 +95,11 @@ $(function() {
     });
     $('#longitude').change(function () {
         smallMap.setLng($(this).val());
+    });
+
+    // if the locality is edited it is no longer a lookup
+    $('#location').change(function () {
+        $('#usingReverseGeocodedLocality').val(false);
     });
 
     // location bookmarks
@@ -218,4 +223,6 @@ var smallMap = {
             new google.maps.LatLng(-60, lng)
         ]);
     }
-}
+};
+
+

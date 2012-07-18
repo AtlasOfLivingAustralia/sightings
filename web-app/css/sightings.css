@@ -1,3 +1,7 @@
+td {
+    text-align: left;
+}
+
 .hint {
     font-size: 1.1em;
     padding-bottom: 0;
@@ -13,8 +17,11 @@
     float: right;
 }
 
-button[type='button'] {
-    margin-left: 20px;
+#undoTaxon {
+    margin-left: 5px;
+}
+
+section.sightings-block button {
     height: 24px;
     font-weight: normal;
 }
@@ -86,6 +93,11 @@ img.taxon-image {
 
 label {
     padding-right: 10px;
+    font-weight: bold;
+}
+
+label.minor {
+    font-weight: normal;
 }
 
 .help {
@@ -124,3 +136,64 @@ label {
     width: 150px;
     height: 150px;
 }
+
+/* dialogs */
+.noTitle .ui-dialog-titlebar { display: none; }
+
+.ui-dialog-titlebar {
+    background-color: transparent;
+    background-image: none;
+}
+
+.ui-dialog-title {
+    color: #b0361a;
+    font-family:"Arial Narrow", Arial, Helvetica,sans-serif;
+    font-weight: normal;
+    font-size: 1.6em;
+}
+
+/* bookmarks */
+#locationBookmarks {
+    max-width: 295px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+div {
+    text-align: left;
+    /*background-color: #f0f0e8;*/
+}
+
+#bookmarksList {
+    list-style: none;
+    text-align: left;
+    margin-left: 0;
+}
+
+#bookmarksList li img {
+    padding-right: 10px;
+    vertical-align: -1px;
+}
+
+.dialog > h3 {
+    color: #b0361a;
+}
+
+.dialog button {
+    font-size: .9em;
+}
+
+.ui-dialog-buttonset button {
+    font-size: 0.9em;
+    padding: 4px 8px 3px 7px;
+}
+
+button.small {
+    padding: 4px 8px 3px 7px;
+    font-weight: normal;
+}
+
+.mild { color: #606060; }
+
+.ui-effects-transfer { border: 2px dotted gray; }
+​
