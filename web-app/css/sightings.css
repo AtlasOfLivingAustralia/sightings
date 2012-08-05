@@ -8,7 +8,6 @@ td {
 }
 
 .left {
-    display: inline;
     float: left;
 }
 
@@ -124,17 +123,56 @@ label.minor {
 }
 
 /* where */
+#symbol {
+    padding-top: 30px;
+}
+
+span.symbol {
+    font-size: 2em;
+    vertical-align: top;
+    padding-left: 8px;
+    cursor: pointer;
+}
+
 #small-map-container {
 }
 
+#main-map-container {
+    margin-top: 10px;
+    float: left;
+}
+
+#map-sidebar {
+    float: left;
+    padding: 10px 0 0 10px;
+}
+
+#map-sidebar button {
+    padding: 4px 8px 3px 7px;
+    margin: 2px;
+    display: block;
+}
+
 #coordinate-container {
-    margin-left:25px;
+    margin-left:12px;
 }
 
 /* small map */
 #small-map {
     width: 150px;
     height: 150px;
+}
+
+/* main map */
+#main-map {
+    width: 600px;
+    height: 500px;
+    margin: 0 0 10px 34px;
+}
+
+.off-screen {
+    /*position: relative;*/
+    /*left: -10000px;*/
 }
 
 /* dialogs */
