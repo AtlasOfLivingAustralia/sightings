@@ -10,6 +10,10 @@ class ImageController {
 
     def test() {}
 
+    def exif() {}
+
+    def sample() {}
+
     def demo() {}
 
     def upload = {

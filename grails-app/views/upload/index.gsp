@@ -77,13 +77,21 @@
     <div class="heading ui-corner-left"><h2>Where</h2><r:img uri="/images/where.png"/></div>
     <section class="sightings-block ui-corner-all">
         <div class="left" id="location-container">
-            <label for="location" style="vertical-align:top;">Type in a description of the location.</label><br/>
-            <g:textArea name="location" rows="5" cols="40"/><br/>
-            <label for="locationBookmarks" class="minor">Choose from a bookmarked location.</label><br/>
-            <g:select name="locationBookmarks" from="['Loading bookmarks..']"
-             keys="['loading']" noSelection="[null:'bookmarked locations']"/>
-            <button type="button" id="saveBookmarkButton">Bookmark current location</button>
-            <button type="button" id="manageBookmarksButton">Manage bookmarks</button>
+            <div class="left">
+                <label for="location" style="vertical-align:top;">Type in a description of the location.</label><br/>
+                <g:textArea class="left" name="location" rows="5" cols="40"/>
+            </div>
+            <div class="left" id="symbol">
+                <span id="reverseLookup" class="symbol" title="Lookup coordinates from description">&raquo;</span><br/>
+                <span id="lookup" class="symbol" title="Lookup description from coordinates">&laquo;</span><br/>
+            </div>
+            <div style="clear:both;">
+                <label for="locationBookmarks" class="minor">Choose from a bookmarked location.</label><br/>
+                <g:select name="locationBookmarks" from="['Loading bookmarks..']"
+                 keys="['loading']" noSelection="[null:'bookmarked locations']"/>
+                <button type="button" id="saveBookmarkButton">Bookmark current location</button>
+                <button type="button" id="manageBookmarksButton">Manage bookmarks</button>
+            </div>
         </div>
         <div class="left" id="coordinate-container">
             <span>Enter coordinates (decimal degrees) if you already have them.</span><br/>
@@ -110,6 +118,23 @@
             <span>Or click the map to locate.</span>
             <div id="small-map"></div>
         </div>
+        <section style="clear: both;">
+            <div id="main-map-container">
+                <div id="main-map" style="float: left;"></div>
+                <div id="map-sidebar">
+                    <button type="button" id="centerOnPin">Centre map on current pin</button>
+                    <button type="button" id="pinToCenter">Move pin to centre of map</button>
+                    <button type="button" id="showOz">Show whole of Australia</button>
+                    <button type="button" id="showWorld">Show world</button>
+                    <button type="button" id="discardPin">Discard pin</button>
+                    <div id="markers" style="position:absolute; top:370px; left:680px; width:200px; height:100px;">
+                        <div id="m1" class="drag" style="position:absolute; left:0; width:32px; height:32px;">
+                            <img src="http://maps.gstatic.com/mapfiles/ms/icons/red-dot.png" width="32" height="32" alt="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </section>
     <!-- MEDIA -->
     <div class="heading ui-corner-left"><h2>Media</h2><r:img uri="/images/media.png"/></div>
@@ -190,18 +215,18 @@
     </div>
 </div>
 <!-- Dialogs -->
-<div id="datumDialog" title="Geodetic datum">
+<div id="datumDialog" title="Geodetic datum" class="ui-helper-hidden">
     <p>For coordinates to be correctly interpreted we must also know the spatial reference system
     under which they were collected. Many GPS devices (as well as Google maps) use WGS84. The Australian standard GDA94 is
     virtually identical. Coordinates collected under other standards must be transformed to achieve the best accuracy.</p>
 </div>
-<div id="locationUpdateDialog" class="dialog">
+<div id="locationUpdateDialog" class="dialog ui-helper-hidden">
     <p>The image you just selected contains embedded location information that is different to the values already entered.</p>
     <p>The location embedded in the image is:<br/> lat = <span id="imageLat"></span>, lng = <span id="imageLng"></span></p>
     <p>A Google lookup places this at:<br/> <span id="lookupLocality"></span></p>
     <p>Do you want to use the location from this image?</p>
 </div>
-<div id="dateUpdateDialog" class="dialog">
+<div id="dateUpdateDialog" class="dialog ui-helper-hidden">
     <p>The image you just selected contains an embedded timestamp that is different to the date and time already entered.</p>
     <table>
         <tr><th></th><th>Current value</th><th>This image</th></tr>
@@ -209,14 +234,14 @@
     </table>
     <p>Do you want to use the image date and time?</p>
 </div>
-<div id="manageBookmarksDialog" class="dialog" title="Manage your location bookmarks">
+<div id="manageBookmarksDialog" class="dialog ui-helper-hidden" title="Manage your location bookmarks">
     <div><ul id="bookmarksList"></ul></div>
     <div><button type="button" class="small" id="deleteAllBookmarksButton">Delete all bookmarks</button></div>
 </div>
-<div id="confirmationDialog" class="dialog">
+<div id="confirmationDialog" class="dialog ui-helper-hidden">
     <p></p>
 </div>
-<div id="messageDialog" class="dialog">
+<div id="messageDialog" class="dialog ui-helper-hidden">
     <p></p>
 </div>
 <!-- The template to display files available for upload -->
