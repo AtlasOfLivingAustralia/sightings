@@ -62,6 +62,36 @@ $(function() {
         taxonStack.pop();
     });
 
+    // wire location lookups
+    $('#reverseLookup').click(function () {
+        var locText = $('#location').val();
+        if (locText === "") { return; }
+        new google.maps.Geocoder().geocode({
+            address: locText,
+            bounds: mainMap.map.getBounds()},
+            function (results, status) {
+                var latLng;
+                if (status == google.maps.GeocoderStatus.OK) {
+                    latLng = results[0].geometry.location;
+                    $('#latitude').val(latLng.lat());
+                    $('#longitude').val(latLng.lng()).change();
+                    mainMap.show();
+                }
+            });
+    });
+    $('#lookup').click(function () {
+        var lat = $('#latitude').val(),
+            lng = $('#longitude').val();
+        if (lat === "" || lng === "") { return; }
+        new google.maps.Geocoder().geocode({
+            location: new google.maps.LatLng(lat, lng)},
+            function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    $('#location').val(results[1].formatted_address);
+                }
+            });
+    });
+
     // wire coordinate source
     $('#coordinateSource').change(function () {
         // hide all
@@ -89,13 +119,40 @@ $(function() {
     // create small map
     smallMap.init('small-map');
 
+    // create main map
+    mainMap.init('main-map');
+
     // catch changes in lat and lon
-    $('#latitude').change(function () {
-        smallMap.setLat($(this).val());
+    $('#latitude,#longitude').change(function () {
+        smallMap.setLatAndLng($('#latitude').val(), $('#longitude').val());
+        mainMap.setMarker($('#latitude').val(), $('#longitude').val());
     });
-    $('#longitude').change(function () {
-        smallMap.setLng($(this).val());
+
+    // catch changes in main map pin
+    mainMap.addListener({handler: function(mouseEvent, event) {
+        $('#latitude').val(mouseEvent.latLng.lat());
+        $('#longitude').val(mouseEvent.latLng.lng());
+    }});
+
+    // map buttons
+    $('#centerOnPin').click(function () {
+        mainMap.setCenterToMarker();
     });
+    $('#pinToCenter').click(function () {
+        mainMap.setMarker(mainMap.map.getCenter(), undefined, {zoom: 'same'});
+    });
+    $('#showOz').click(function () {
+        mainMap.resetMap();
+    });
+    $('#showWorld').click(function () {
+        mainMap.resetMapToWorld();
+    });
+    $('#discardPin').click(function () {
+        mainMap.removeMarker();
+    });
+
+    drag_area = document.getElementById('markers');
+    drag_area.onmousedown = initDrag;
 
     // if the locality is edited it is no longer a lookup
     $('#location').change(function () {
@@ -195,19 +252,39 @@ var smallMap = {
             panControl: false,
             zoomControl: false,
             disableDoubleClickZoom: true,
-            draggableCursor: 'pointer',
+            draggable: false,
             mapTypeId: google.maps.MapTypeId.TERRAIN,
             zoom: 2,
             center: this.centre
-        };
+            },
+            that = this;
 
         this.map = new google.maps.Map(document.getElementById(containerId), options);
         this.latLine.setMap(this.map);
         this.lngLine.setMap(this.map);
 
         google.maps.event.addListener(this.map, 'click', function () {
-            alert("Show big map");
+            var current = new Location().loadFromScreen();
+            mainMap.toggle();
+            if (current.isValid()) {
+                mainMap.setMarker(current.decimalLatitude, current.decimalLongitude);
+            }
         });
+
+        mainMap.addListener({handler: function(mouseEvent, event) {
+            //console.log(event);
+            //if (event === 'dragend') {
+                that.setLatLng(mouseEvent.latLng);
+            //}
+        }});
+    },
+    setLatLng: function (latLng) {
+        this.setLat(latLng.lat());
+        this.setLng(latLng.lng());
+    },
+    setLatAndLng: function (lat, lng) {
+        this.setLat(lat);
+        this.setLng(lng);
     },
     setLat: function (lat) {
         //console.log( lat );
@@ -225,4 +302,235 @@ var smallMap = {
     }
 };
 
+var mainMap = {
+    // the google map object
+    map: null,
+    firstShow: true,
+    // the default bounds for the map
+    initialBounds: new google.maps.LatLngBounds(
+            new google.maps.LatLng(-41.5, 114),
+            new google.maps.LatLng(-13.5, 154)),
+    centre: new google.maps.LatLng(-28, 134),
+    marker: null,
+    activeMarker: false,
+    listeners: [],
+    // create the map
+    init: function (containerId) {
+        var options = {
+            scrollwheel: false,
+            streetViewControl: false,
+            mapTypeControl: false,
+            //scaleControl: false,
+            panControl: false,
+            //zoomControl: false,
+            //disableDoubleClickZoom: true,
+            draggableCursor: 'pointer',
+            mapTypeId: google.maps.MapTypeId.TERRAIN,
+            zoom: 4,
+            center: this.centre
+            },
+            that = this;
 
+        this.map = new google.maps.Map(document.getElementById(containerId), options);
+        this.marker = new google.maps.Marker({
+            map:this.map,
+            title: 'observation',
+            draggable:true
+        });
+
+        google.maps.event.addListener(this.map, 'idle', function () {
+            if (that.firstShow) {
+                that.toggle();
+                that.firstShow = false;
+            }
+        });
+
+        google.maps.event.addListener(this.marker, 'drag', function (event) {
+            $.each(that.listeners, function (i, lis) {
+                lis.handler.apply(this, [event, 'drag']);
+            });
+        });
+
+        google.maps.event.addListener(this.marker, 'dragend', function (event) {
+            $.each(that.listeners, function (i, lis) {
+                lis.handler.apply(this, [event, 'dragend']);
+            });
+        });
+
+        /*google.maps.event.addListener(this.map, 'click', function (event) {
+            if (!that.activeMarker) {
+                that.setMarker(event.latLng);
+            }
+        });*/
+
+        // Add a dummy overlay for later use.
+        // Needed for API v3 to convert pixels to latlng.
+        dummy = new DummyOView();
+
+    },
+    setMarker: function (lat, lng, options) {
+        var latLng, zoom = 12;
+        if (options && options.zoom !== undefined) {
+            zoom = options.zoom;
+        }
+        if (lng === undefined) {
+            // assume 1st arg is a google latLng
+            latLng = lat;
+        } else {
+            latLng = new google.maps.LatLng(lat, lng);
+        }
+        this.marker.setPosition(latLng);
+        if (!options || !options.center === 'same') {
+            this.map.setCenter(latLng);
+        }
+        if (zoom !== 'same') {
+            if (!this.inAustralia(latLng)) {
+                this.map.setZoom(2);
+            } else {
+                this.map.setZoom(zoom);
+            }
+        }
+        this.marker.setVisible(true);
+        this.activeMarker = true;
+    },
+    removeMarker: function () {
+        this.marker.setVisible(false);
+    },
+    resetMap: function() {
+        this.map.fitBounds(this.initialBounds);
+        this.map.setZoom(4);
+    },
+    resetMapToWorld: function() {
+        this.map.fitBounds(this.initialBounds);
+        this.map.setZoom(1);
+    },
+    setCenterToMarker: function() {
+        this.map.setCenter(this.marker.getPosition());
+    },
+    redraw: function () {
+        google.maps.event.trigger(this.map, "resize");
+        this.map.fitBounds(this.initialBounds);
+    },
+    toggle: function () {
+        var $container = $('#main-map-container');
+        $container.slideToggle('slow');
+    },
+    show: function () {
+        var $container = $('#main-map-container');
+        $container.slideDown('slow');
+    },
+    hide: function () {
+        var $container = $('#main-map-container');
+        $container.slideUp('slow');
+    },
+    addListener: function(listener) {
+        this.listeners.push(listener);
+    },
+    removeListener: function(listener) {
+        this.listeners.remove(listener);
+    },
+    inAustralia: function(latLng) {
+        return this.initialBounds.contains(latLng);
+    }
+};
+
+var obj, xpos, ypos, drag_area, dummy;
+var z_index = 0;
+
+function DummyOView() {
+    // Bind this to the map to access MapCanvasProjection
+    this.setMap(mainMap.map);
+    // MapCanvasProjection is only available after draw has been called.
+    this.draw = function() {};
+}
+
+DummyOView.prototype = new google.maps.OverlayView();
+
+
+document.onmouseup = function(e) {
+    // Unregister mousemove handler
+    document.onmousemove = null;
+    if (obj) { obj = null; }
+};
+
+function initDrag(e) {
+
+    if(!e) var e = window.event;
+
+    // Drag image's parent div element
+    obj = e.target ? e.target.parentNode : e.srcElement.parentElement;
+    if(obj.className != "drag") {
+        if(e.cancelable) e.preventDefault();
+        obj = null;
+        return;
+    }
+
+    if (obj) {
+        // The currently dragged object always gets the highest z-index
+        z_index++;
+        obj.style.zIndex = z_index.toString();
+
+        xpos = e.clientX - obj.offsetLeft;
+        ypos = e.clientY - obj.offsetTop;
+
+        document.onmousemove = moveObj;
+
+    }
+    return false;
+}
+
+function moveObj(e) {
+
+    if(obj && obj.className == "drag") {
+
+        if(!e) var e = window.event;
+        obj.style.left = e.clientX - xpos + "px";
+        obj.style.top = e.clientY - ypos + "px";
+
+        obj.onmouseup = function() {
+
+            var gd = mainMap.map.getDiv();
+            var mLeft = gd.offsetLeft;
+            var mTop = gd.offsetTop;
+
+            var mWidth = gd.offsetWidth;
+            var mHeight = gd.offsetHeight;
+
+            var areaLeft = drag_area.offsetLeft;
+            var areaTop = drag_area.offsetTop;
+
+            var oWidth = obj.offsetWidth;
+            var oHeight = obj.offsetHeight;
+
+            // The object's pixel position relative to the document
+            var x = obj.offsetLeft + areaLeft + oWidth/2;
+            var y = obj.offsetTop + areaTop + oHeight/2;
+
+            // Check if the cursor is inside the map div
+            if (x > mLeft && x < (mLeft + mWidth) && y > mTop && y < (mTop + mHeight)) {
+
+                // Difference between the x property of iconAnchor
+                // and the middle of the icon width
+                var anchorDiff = 1;
+
+                // Find the object's pixel position in the map container
+                var g = google.maps;
+                var pixelpoint = new g.Point(x - mLeft -anchorDiff, y - mTop + (oHeight/2));
+
+                // Corresponding geo point on the map
+                var proj = dummy.getProjection();
+                var latlng = proj.fromContainerPixelToLatLng(pixelpoint);
+
+                // Create a corresponding marker on the map
+                mainMap.setMarker(latlng, undefined, {zoom: 'same', center: 'same'});
+                //var src = obj.firstChild.getAttribute("src");
+                //createDraggedMarker(latlng, src);
+
+                // Create dragged marker anew
+                //fillMarker();
+                $(obj).hide();
+            }
+        };
+    }
+    return false;
+}

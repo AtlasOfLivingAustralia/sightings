@@ -63,6 +63,7 @@ $(function() {
                 }
                 if (loc.isValid()) {
                     loc.putToScreen();
+                    Bookmarks.selectNoBookmark();
                 }
             }
         },
@@ -78,6 +79,7 @@ $(function() {
             $("#locationUpdateDialog").dialog('option', 'buttons', {
                 "Use image location": function () {
                     loc.putToScreen();
+                    Bookmarks.selectNoBookmark();
                     $( this ).dialog( "close" );
                     // chain to the date dialog if dateTime has been passed
                     if (dateTime !== undefined) {
