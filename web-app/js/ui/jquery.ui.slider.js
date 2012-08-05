@@ -1,7 +1,8 @@
 /*!
  * jQuery UI Slider @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Copyright 2012 jQuery Foundation and other contributors
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  *
@@ -90,11 +91,12 @@ $.widget( "ui.slider", $.ui.mouse, {
 			.click(function( event ) {
 				event.preventDefault();
 			})
-			.hover(function() {
+			.mouseenter(function() {
 				if ( !o.disabled ) {
 					$( this ).addClass( "ui-state-hover" );
 				}
-			}, function() {
+			})
+			.mouseleave(function() {
 				$( this ).removeClass( "ui-state-hover" );
 			})
 			.focus(function() {
@@ -113,7 +115,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 			$( this ).data( "ui-slider-handle-index", i );
 		});
 
-		this._bind( this.handles, {
+		this._on( this.handles, {
 			keydown: function( event ) {
 				var allowed, curVal, newVal, step,
 					index = $( event.target ).data( "ui-slider-handle-index" );

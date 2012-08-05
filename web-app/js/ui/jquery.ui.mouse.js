@@ -1,7 +1,8 @@
 /*!
  * jQuery UI Mouse @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Copyright 2012 jQuery Foundation and other contributors
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  *
@@ -20,7 +21,7 @@ $( document ).mouseup( function( e ) {
 $.widget("ui.mouse", {
 	version: "@VERSION",
 	options: {
-		cancel: ':input,option',
+		cancel: 'input,textarea,button,select,option',
 		distance: 1,
 		delay: 0
 	},

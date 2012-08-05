@@ -1,7 +1,8 @@
 /*!
  * jQuery UI Accordion @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Copyright 2012 jQuery Foundation and other contributors
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  *
@@ -63,7 +64,8 @@ $.widget( "ui.accordion", {
 		this._focusable( this.headers );
 
 		this.headers.next()
-			.addClass( "ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom" );
+			.addClass( "ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom" )
+			.hide();
 
 		// don't allow collapsible: false and active: false
 		if ( !options.collapsible && options.active === false ) {
@@ -76,7 +78,9 @@ $.widget( "ui.accordion", {
 		this.active = this._findActive( options.active )
 			.addClass( "ui-accordion-header-active ui-state-active" )
 			.toggleClass( "ui-corner-all ui-corner-top" );
-		this.active.next().addClass( "ui-accordion-content-active" );
+		this.active.next()
+			.addClass( "ui-accordion-content-active" )
+			.show();
 
 		this._createIcons();
 		this.originalHeight = this.element[0].style.height;
@@ -134,8 +138,8 @@ $.widget( "ui.accordion", {
 				});
 		}
 
-		this._bind( this.headers, { keydown: "_keydown" });
-		this._bind( this.headers.next(), { keydown: "_panelKeyDown" });
+		this._on( this.headers, { keydown: "_keydown" });
+		this._on( this.headers.next(), { keydown: "_panelKeyDown" });
 		this._setupEvents( options.event );
 	},
 
@@ -216,8 +220,7 @@ $.widget( "ui.accordion", {
 
 		if ( key === "event" ) {
 			if ( this.options.event ) {
-				this.headers.unbind(
-					this.options.event.split( " " ).join( ".accordion " ) + ".accordion" );
+				this._off( this.headers, this.options.event );
 			}
 			this._setupEvents( value );
 		}
@@ -290,10 +293,9 @@ $.widget( "ui.accordion", {
 	},
 
 	refresh: function() {
-		var heightStyle = this.options.heightStyle,
-			parent = this.element.parent(),
-			maxHeight,
-			overflow;
+		var maxHeight, overflow,
+			heightStyle = this.options.heightStyle,
+			parent = this.element.parent();
 
 		this.element.css( "height", this.originalHeight );
 
@@ -374,7 +376,7 @@ $.widget( "ui.accordion", {
 		$.each( event.split(" "), function( index, eventName ) {
 			events[ eventName ] = "_eventHandler";
 		});
-		this._bind( this.headers, events );
+		this._on( this.headers, events );
 	},
 
 	_eventHandler: function( event ) {
@@ -387,9 +389,9 @@ $.widget( "ui.accordion", {
 			toHide = active.next(),
 			eventData = {
 				oldHeader: active,
-				oldContent: toHide,
+				oldPanel: toHide,
 				newHeader: collapsing ? $() : clicked,
-				newContent: toShow
+				newPanel: toShow
 			};
 
 		event.preventDefault();
@@ -435,8 +437,8 @@ $.widget( "ui.accordion", {
 	},
 
 	_toggle: function( data ) {
-		var toShow = data.newContent,
-			toHide = this.prevShow.length ? this.prevShow : data.oldContent;
+		var toShow = data.newPanel,
+			toHide = this.prevShow.length ? this.prevShow : data.oldPanel;
 
 		// handle activating a panel during the animation for another activation
 		this.prevShow.add( this.prevHide ).stop( true, true );
@@ -451,16 +453,23 @@ $.widget( "ui.accordion", {
 			this._toggleComplete( data );
 		}
 
-		toHide
-			.attr({
-				"aria-expanded": "false",
-				"aria-hidden": "true"
+		toHide.attr({
+			"aria-expanded": "false",
+			"aria-hidden": "true"
+		});
+		toHide.prev().attr( "aria-selected", "false" );
+		// if we're switching panels, remove the old header from the tab order
+		// if we're opening from collapsed state, remove the previous header from the tab order
+		// if we're collapsing, then keep the collapsing header in the tab order
+		if ( toShow.length && toHide.length ) {
+			toHide.prev().attr( "tabIndex", -1 );
+		} else if ( toShow.length ) {
+			this.headers.filter(function() {
+				return $( this ).attr( "tabIndex" ) === 0;
 			})
-			.prev()
-				.attr({
-					"aria-selected": "false",
-					tabIndex: -1
-				});
+			.attr( "tabIndex", -1 );
+		}
+
 		toShow
 			.attr({
 				"aria-expanded": "true",
@@ -515,7 +524,7 @@ $.widget( "ui.accordion", {
 	},
 
 	_toggleComplete: function( data ) {
-		var toHide = data.oldContent;
+		var toHide = data.oldPanel;
 
 		toHide
 			.removeClass( "ui-accordion-content-active" )
@@ -667,9 +676,19 @@ if ( $.uiBackCompat !== false ) {
 			}
 
 			if ( type === "beforeActivate" ) {
-				ret = _trigger.call( this, "changestart", event, data );
+				ret = _trigger.call( this, "changestart", event, {
+					oldHeader: data.oldHeader,
+					oldContent: data.oldPanel,
+					newHeader: data.newHeader,
+					newContent: data.newPanel
+				});
 			} else if ( type === "activate" ) {
-				ret = _trigger.call( this, "change", event, data );
+				ret = _trigger.call( this, "change", event, {
+					oldHeader: data.oldHeader,
+					oldContent: data.oldPanel,
+					newHeader: data.newHeader,
+					newContent: data.newPanel
+				});
 			}
 			return ret;
 		};

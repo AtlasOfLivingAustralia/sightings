@@ -1,7 +1,8 @@
 /*!
  * jQuery UI Spinner @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Copyright 2012 jQuery Foundation and other contributors
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  *
@@ -54,13 +55,13 @@ $.widget( "ui.spinner", {
 		this._value( this.element.val(), true );
 
 		this._draw();
-		this._bind( this._events );
+		this._on( this._events );
 		this._refresh();
 
 		// turning off autocomplete prevents the browser from remembering the
 		// value when navigating through history, so we re-enable autocomplete
 		// if the page is unloaded before the widget is destroyed. #7790
-		this._bind( this.window, {
+		this._on( this.window, {
 			beforeunload: function() {
 				this.element.removeAttr( "autocomplete" );
 			}
@@ -427,7 +428,7 @@ $.widget( "ui.spinner", {
 		this._refresh();
 	},
 
-	destroy: function() {
+	_destroy: function() {
 		this.element
 			.removeClass( "ui-spinner-input" )
 			.prop( "disabled", false )
@@ -436,7 +437,6 @@ $.widget( "ui.spinner", {
 			.removeAttr( "aria-valuemin" )
 			.removeAttr( "aria-valuemax" )
 			.removeAttr( "aria-valuenow" );
-		this._super();
 		this.uiSpinner.replaceWith( this.element );
 	},
 
