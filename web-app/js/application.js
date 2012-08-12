@@ -122,16 +122,11 @@ $(function() {
     // create main map
     mainMap.init('main-map');
 
-    // catch changes in lat and lon
-    $('#latitude,#longitude').change(function () {
-        smallMap.setLatAndLng($('#latitude').val(), $('#longitude').val());
-        mainMap.setMarker($('#latitude').val(), $('#longitude').val());
-    });
-
     // catch changes in main map pin
     mainMap.addListener({handler: function(mouseEvent, event) {
-        $('#latitude').val(mouseEvent.latLng.lat());
-        $('#longitude').val(mouseEvent.latLng.lng());
+        screenLocation.setLat(mouseEvent.latLng.lat(),true);
+        screenLocation.setLng(mouseEvent.latLng.lng(),true);
+        screenLocation.setSource("Google maps");
     }});
 
     // map buttons
@@ -276,6 +271,10 @@ var smallMap = {
             //if (event === 'dragend') {
                 that.setLatLng(mouseEvent.latLng);
             //}
+        }});
+
+        screenLocation.addListener({handler: function(event, latLng) { // lat/lng input fields
+            that.setLatLng(latLng);
         }});
     },
     setLatLng: function (latLng) {
