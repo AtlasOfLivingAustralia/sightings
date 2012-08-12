@@ -1,3 +1,12 @@
+/* override stupid setting in ala buttons.css */
+button[type=button] {
+    padding: 3px 8px 3px 7px !important;
+}
+
+button[disabled=disabled] {
+    opacity: 0.5;
+}
+
 td {
     text-align: left;
 }
@@ -21,7 +30,6 @@ td {
 }
 
 section.sightings-block button {
-    height: 24px;
     font-weight: normal;
 }
 
@@ -123,6 +131,14 @@ label.minor {
 }
 
 /* where */
+#location-container {
+    width: 300px;
+}
+
+#location {
+    width: 250px;
+}
+
 #symbol {
     padding-top: 30px;
 }
@@ -148,7 +164,6 @@ span.symbol {
 }
 
 #map-sidebar button {
-    padding: 4px 8px 3px 7px;
     margin: 2px;
     display: block;
 }
@@ -173,6 +188,35 @@ span.symbol {
 .off-screen {
     /*position: relative;*/
     /*left: -10000px;*/
+}
+
+/* media */
+#filesTable {
+    margin-bottom: 0;
+    clear: both;
+}
+
+#filesTable td.name {
+    text-align: center;
+}
+
+#filesTable td.imageDate {
+    margin-left: 20px;
+    text-align: center;
+    min-width: 220px;
+}
+
+#filesTable td.imageLocation {
+    margin-left: 20px;
+    text-align: center;
+    min-width: 220px;
+}
+
+#addImageButtonLarge {
+    margin-top: 12px;
+}
+#addImageButtonSmall {
+    /*margin-left: -20px;*/
 }
 
 /* dialogs */
