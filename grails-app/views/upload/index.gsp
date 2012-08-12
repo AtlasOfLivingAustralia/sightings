@@ -34,7 +34,7 @@
 <div class="inner">
     <div class="page-header">
         <h1>Report a sighting</h1>
-        <p class="hint">Hint: If you are submitting images, upload them first and we will try to pre-load the date
+        <p class="hint">Hint: If you are submitting images, select them first and we will try to pre-load the date
         and location fields from the image metadata.</p>
     </div>
     <!-- WHAT -->
@@ -79,7 +79,7 @@
         <div class="left" id="location-container">
             <div class="left">
                 <label for="location" style="vertical-align:top;">Type in a description of the location.</label><br/>
-                <g:textArea class="left" name="location" rows="5" cols="40"/>
+                <g:textArea class="left" name="location" rows="5" cols="30"/>
             </div>
             <div class="left" id="symbol">
                 <span id="reverseLookup" class="symbol" title="Lookup coordinates from description">&raquo;</span><br/>
@@ -143,12 +143,18 @@
     <!-- The file upload form used as target for the file upload widget -->
     <g:form name="fileupload" controller="image" action="upload" method="POST" enctype="multipart/form-data">
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-        <div class="row fileupload-buttonbar">
+        <div class="fileupload-buttonbar">
             <div class="span7">
                 <!-- The fileinput-button span is used to style the file input field as button -->
                 <span class="btn btn-success fileinput-button">
                     <i class="icon-plus icon-white"></i>
-                    <span>Add images...</span>
+                    <button type="button" id="addImageButtonLarge">
+                        <img src="${resource(dir:'images/ala',file:'add-image-4.png')}"/><br/>
+                        <span>Add images</span>
+                    </button>
+                    <button type="button" id="addImageButtonSmall" style="display: none;">
+                        <span>Add more images</span>
+                    </button>
                     <input type="file" name="files" id="files" multiple>
                 </span>
                 %{--<button type="submit" class="btn btn-primary start">
@@ -176,10 +182,10 @@
             </div>
         </div>
         <!-- The loading indicator is shown during file processing -->
-        <div class="fileupload-loading"></div>
-        <br>
+        %{--<div class="fileupload-loading"></div>
+        <br>--}%
         <!-- The table listing the files available for upload/download -->
-        <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+        <table id="filesTable" class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
     </g:form>
     </section>
     <!-- NOTES -->
@@ -249,28 +255,37 @@
     {% for (var i=0, file; file=o.files[i]; i++) { %}
     <tr class="template-upload fade">
         <td class="preview"><span class="fade"></span></td>
-        <td class="name"><span>{%=file.name%}</span></td>
-        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        <td class="name"><b><span class="name">{%=file.name%}</span></b><br/><span>{%=o.formatFileSize(file.size)%}</span></td>
         {% if (file.error) { %}
         <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
         {% } else if (o.files.valid && !i) { %}
-        <td>
+        %{--<td>
             <div class="progress progress-success progress-striped active"><div class="bar" style="width:0%;"></div></div>
+        </td>--}%
+        <td class="imageDate">
+            Date image was captured:<br/>
+            <span class="imageDateTime">Not available</span><br/>
+            <button type="button" class="useImageDate" disabled="disabled">Use this date</button>
+        </td>
+        <td class="imageLocation">
+            Location image was captured:<br/>
+            <span class="imageLatLng">Not available</span><br/>
+            <button type="button" class="useImageLocation" disabled="disabled">Use this location</button>
         </td>
         <td class="start">{% if (!o.options.autoUpload) { %}
-            <button class="btn btn-primary">
+            %{--<button class="btn btn-primary">
                 <i class="icon-upload icon-white"></i>
                 <span>{%=locale.fileupload.start%}</span>
-            </button>
+            </button>--}%
             {% } %}</td>
         {% } else { %}
         <td colspan="2"></td>
         {% } %}
         <td class="cancel">{% if (!i) { %}
-            <button class="btn btn-warning">
+            %{--<button class="btn btn-warning">
                 <i class="icon-ban-circle icon-white"></i>
                 <span>{%=locale.fileupload.cancel%}</span>
-            </button>
+            </button>--}%
             {% } %}</td>
     </tr>
     {% } %}
@@ -327,8 +342,8 @@
 <!-- The Canvas to Blob plugin is included for image resizing functionality -->
 <script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js"></script>
 <!-- Bootstrap JS and Bootstrap Image Gallery are not required, but included for the demo -->
-<script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
-<script src="http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js"></script>
+%{--<script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
+<script src="http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js"></script>--}%
 <!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
 <r:layoutResources/>
 </body>
