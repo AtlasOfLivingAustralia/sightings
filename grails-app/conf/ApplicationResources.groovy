@@ -17,7 +17,7 @@ modules = {
         resource url: 'js/jquery.iframe-transport.js'
         resource url: 'js/jquery.fileupload.js'
         resource url: 'js/jquery.fileupload-fp.js'
-        resource url: 'js/jquery.fileupload-ui.js'
+        resource url: 'js/jquery.fileupload-ui-custom.js'
         resource url: 'js/main.js'
         resource url: 'js/locale.js'
         //resource url: 'css/bootstrap.min.css', disposition: 'head'
@@ -26,7 +26,7 @@ modules = {
                 wrapper: { s -> "<!--[if gte IE 8]>$s<![endif]-->" }
     }
 
-    jQueryUI19 {
+    /*jQueryUI19 {
         defaultBundle false
 
         resource url: 'js/ui/jquery.ui.widget.js', disposition: 'head'
@@ -49,7 +49,7 @@ modules = {
         resource url: 'css/base/jquery.ui.base.css'
         resource url: 'css/base/jquery.ui.theme.css'
         resource url: 'css/base/jquery.ui.spinner.css'
-    }
+    }*/
 
     jQueryUI {
         defaultBundle false
