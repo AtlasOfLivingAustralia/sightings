@@ -15,15 +15,63 @@
 
 /**
  *
- * Javascript to manage location and date definitions.
+ * Javascript to manage location and date definitions and their representation on the page.
  *
  * User: markew
  * Date: 16/07/12
  */
 /* Manages locations --------------------------------------------------------------- */
 $(function() {
-    var currentLocation = new Location();
+//    var currentLocation = new Location();
+    screenLocation.init();
+    screenDate.init();
 });
+
+var screenLocation = {
+    latitudeField: null,
+    longitudeField: null,
+    listeners: [],
+    init: function () {
+        var that = this, lat, lng;
+        this.latitudeField = $('#latitude');
+        this.longitudeField = $('#longitude');
+
+        // catch changes in lat and lon
+        $('#latitude,#longitude').change(function () {
+            lat = $('#latitude').val();
+            lng = $('#longitude').val();
+
+            // don't use a configured listener for this so we avoid infinite loops
+            mainMap.setMarker(lat, lng);
+
+            // notify other listeners
+            $.each(that.listeners, function (i, lis) {
+                lis.handler.apply(that, ['latLngChange', new google.maps.LatLng(lat, lng)]);
+            });
+        });
+    },
+    setLat: function (num, noNotify) {
+        this.latitudeField.val(num);//limit(num));
+        if (noNotify !== true) {
+            this.latitudeField.change();
+        }
+    },
+    setLng: function (num, noNotify) {
+        this.longitudeField.val(num);//limit(num));
+        if (noNotify !== true) {
+            this.longitudeField.change();
+        }
+    },
+    setSource: function (source) {
+        $('#coordinateSource').val(source).change();
+    },
+    addListener: function(listener) {
+        this.listeners.push(listener);
+    },
+    removeListener: function(listener) {
+        this.listeners.remove(listener);
+    }
+};
 
 function Location () {
     this.decimalLatitude = null;
@@ -40,14 +88,6 @@ function Location () {
 
 Location.prototype.isValid = function () {
     return hasValue(this.decimalLatitude) && hasValue(this.decimalLongitude);
-};
-
-Location.prototype.numDecimalPlaces = function (x, dec_sep) {
-    var tmp = x.toString();
-    if (tmp.indexOf(dec_sep)>-1)
-        return tmp.length-tmp.indexOf(dec_sep)-1;
-    else
-        return 0;
 };
 
 Location.prototype.isDecimalDegrees = function (x) {
@@ -68,12 +108,13 @@ Location.prototype.toDecimalDegrees = function (num, ref) {
     if (num.length !== 3) { return 0 }
     //console.log(num[0] + " " + num[1] + " " + num[2]);
     var degrees = num[0],
-            minutes = num[1],
-            seconds = num[2],
-            // determine the num decimal places of minutes and seconds (so we don't artificially add 'accuracy')
-            minutesPlaces = this.numDecimalPlaces(minutes,'.'),
-            secondsPlaces = this.numDecimalPlaces(seconds,'.'),
-            apparentAccuracy;
+        minutes = num[1],
+        seconds = num[2],
+        // determine the num decimal places of minutes and seconds (so we don't artificially add 'accuracy')
+        minutesPlaces = numDecimalPlaces(minutes,'.'),
+        secondsPlaces = numDecimalPlaces(seconds,'.'),
+        apparentAccuracy;
+
     /* roughly calculate the apparent accuracy based on:
         1 second ~= .0003 degree so take 4 places as a min
         add a decimal place for each decimal place in the seconds value
@@ -171,17 +212,21 @@ Location.prototype.makeBookmark = function () {
 };
 
 Location.prototype.putToScreen = function () {
-    $('#latitude').val(this.decimalLatitude).change();
-    $('#longitude').val(this.decimalLongitude).change();
+    screenLocation.setLat(this.decimalLatitude);
+    screenLocation.setLng(this.decimalLongitude);
+    screenLocation.setSource(this.coordinateSource);
     $('#verbatimLatitude').val(this.verbatimLatitude).change();
     $('#verbatimLongitude').val(this.verbatimLongitude).change();
     $('#location').val(this.locality).change();
     $('#usingReverseGeocodedLocality').val(this.usingReverseGeocodedLocality).change();
-    $('#coordinateSource').val(this.coordinateSource).change();
     $('#datum').val(this.geodeticDatum).change();
     $('#physicalMap').val(this.physicalMapScale).change();
     $('#otherSource').val(this.otherSource).change();
     return this;
+};
+
+Location.prototype.displayLatLng = function () {
+    return "Lat:" + this.decimalLatitude + ", Lng:" + this.decimalLongitude;
 };
 
 Location.prototype.compare = function (loc) {
@@ -196,11 +241,66 @@ Location.prototype.compare = function (loc) {
     return conflicts;
 };
 
+Location.prototype.isSame = function (loc) {
+    var that = this,
+        same = true;
+    if (loc === undefined || !loc.isValid() || !this.isValid()) {
+        return false;
+    }
+    $.each(['decimalLatitude','decimalLongitude','locality'], function (i, prop) {
+        // allow type coercion in the value comparison
+        if (loc[prop] != that[prop]) {
+            same = false;
+        }
+    });
+    return same;
+};
+
 function hasValue(x) {
     return (x !== undefined) && (x !== null) && (x !== "") && (x !== [])
 }
 
 /* Manages the current date and time --------------------------------------------------------------- */
+var screenDate = {
+    dateField: null,
+    timeField: null,
+    listeners: [],
+    init: function () {
+        var that = this, date, time;
+        this.dateField = $('#date');
+        this.timeField = $('#time');
+
+        // catch changes in date and time
+        $('#date,#time').change(function () {
+            date = $('#date').val();
+            time = $('#time').val();
+
+            // notify listeners
+            $.each(that.listeners, function (i, lis) {
+                lis.handler.apply(that, ['dateTimeChange']);
+            });
+        });
+    },
+    setDate: function (date, noNotify) {
+        this.dateField.val(date);
+        if (noNotify !== true) {
+            this.dateField.change();
+        }
+    },
+    setTime: function (time, noNotify) {
+        this.timeField.val(time);
+        if (noNotify !== true) {
+            this.timeField.change();
+        }
+    },
+    addListener: function(listener) {
+        this.listeners.push(listener);
+    },
+    removeListener: function(listener) {
+        this.listeners.remove(listener);
+    }
+};
+
 function DateTime () {
     this.year = null;
     this.month = null;
@@ -214,7 +314,7 @@ DateTime.prototype.isValid = function () {
 };
 
 DateTime.prototype.getDateForScreen = function () {
-    console.log(this.isValid());
+    //console.log(this.isValid());
     if (this.isValid()) {
         return this.day + "-" + this.month + "-" + this.year;
     } else {
@@ -253,10 +353,8 @@ DateTime.prototype.loadFromScreen = function () {
 };
 
 DateTime.prototype.putToScreen = function () {
-    var d = this.getDateForScreen();
-    var t = this.getTimeForScreen();
-    $('#date').val(this.getDateForScreen());
-    $('#time').val(this.getTimeForScreen());
+    screenDate.setDate(this.getDateForScreen());
+    screenDate.setTime(this.getTimeForScreen());
     return this;
 };
 
@@ -270,3 +368,28 @@ DateTime.prototype.compare = function (dat) {
     }
     return conflicts;
 };
+
+DateTime.prototype.isSame = function (dat) {
+    return !(dat === undefined || dat.year != this.year || dat.month != this.month ||
+        dat.day != this.day || dat.time != this.time);
+};
+
+function numDecimalPlaces (x, dec_sep) {
+    var tmp = x.toString(),
+        sep = dec_sep || '.';
+    if (tmp.indexOf(sep)>-1)
+        return tmp.length-tmp.indexOf(sep)-1;
+    else
+        return 0;
+}
+
+function limit (num, places) {
+    var max = places || 7;
+    if (num !== NaN) {
+        if (numDecimalPlaces(num) > max) {
+            return num.toFixed(max);
+        }
+    }
+    return num;
+}
+
