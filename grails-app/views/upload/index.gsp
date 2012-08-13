@@ -26,6 +26,7 @@
     <r:require module="application"/>
     <r:require module="jQueryImageUpload"/>
     <r:require module="jQueryUI"/>
+    <r:require module="jQueryCookie"/>
     <r:require module="jQueryTimeEntry"/>
     <r:require module="exif"/>
     <r:layoutResources/>
@@ -40,7 +41,7 @@
     <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
     <section class="sightings-block ui-corner-all">
-        <a href="http://bie.ala.org.au/species/Notomys fuscus">
+        <a href="http://bie.ala.org.au/species/Notomys fuscus" target="_blank">
             <r:img id="taxonImage" class="taxon-image ui-corner-all" uri="/images/Notomys-fuscus.jpg"/>
         </a>
         <div class="left" style="width:53%;padding-top:15px;">
@@ -144,7 +145,7 @@
     <g:form name="fileupload" controller="image" action="upload" method="POST" enctype="multipart/form-data">
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
         <div class="fileupload-buttonbar">
-            <div class="span7">
+            <div%{-- class="span7"--}%>
                 <!-- The fileinput-button span is used to style the file input field as button -->
                 <span class="btn btn-success fileinput-button">
                     <i class="icon-plus icon-white"></i>
@@ -156,6 +157,10 @@
                         <span>Add more images</span>
                     </button>
                     <input type="file" name="files" id="files" multiple>
+                </span>
+                <span id="autoUseContainer">
+                    <input type="checkbox" id="autoUse">
+                    <label for="autoUse">Always use the information embedded in selected photos.</label>
                 </span>
                 %{--<button type="submit" class="btn btn-primary start">
                     <i class="icon-upload icon-white"></i>
@@ -271,6 +276,10 @@
             Location image was captured:<br/>
             <span class="imageLatLng">Not available</span><br/>
             <button type="button" class="useImageLocation" disabled="disabled">Use this location</button>
+        </td>
+        <td class="imageInfo">
+            Use all info<br/>from this image<br/>
+            <button type="button" class="useImageInfo" disabled="disabled">Use both</button>
         </td>
         <td class="start">{% if (!o.options.autoUpload) { %}
             %{--<button class="btn btn-primary">
