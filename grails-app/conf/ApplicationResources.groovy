@@ -59,6 +59,10 @@ modules = {
         resource url: 'css/base/jquery.ui.spinner.css'
     }
 
+    jQueryCookie {
+        resource url: 'js/jquery.cookie.js'
+    }
+
     jQueryTimeEntry {
         resource url: 'js/jquery.timeentry.min.js'
         resource url: 'js/jquery.mousewheel.js'
