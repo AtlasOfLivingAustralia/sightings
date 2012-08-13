@@ -211,9 +211,9 @@ Location.prototype.makeBookmark = function () {
     return bkm;
 };
 
-Location.prototype.putToScreen = function () {
-    screenLocation.setLat(this.decimalLatitude);
-    screenLocation.setLng(this.decimalLongitude);
+Location.prototype.putToScreen = function (noNotify) {
+    screenLocation.setLat(this.decimalLatitude, noNotify);
+    screenLocation.setLng(this.decimalLongitude, noNotify);
     screenLocation.setSource(this.coordinateSource);
     $('#verbatimLatitude').val(this.verbatimLatitude).change();
     $('#verbatimLongitude').val(this.verbatimLongitude).change();
@@ -352,9 +352,9 @@ DateTime.prototype.loadFromScreen = function () {
     return this;
 };
 
-DateTime.prototype.putToScreen = function () {
-    screenDate.setDate(this.getDateForScreen());
-    screenDate.setTime(this.getTimeForScreen());
+DateTime.prototype.putToScreen = function (noNotify) {
+    screenDate.setDate(this.getDateForScreen(), noNotify);
+    screenDate.setTime(this.getTimeForScreen(), noNotify);
     return this;
 };
 
