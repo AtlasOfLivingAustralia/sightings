@@ -185,12 +185,25 @@ $(function() {
     imageList = {
         init: function () {
             var that = this;
+            // set the state of the auto checkbox based on a cookie
+            if ($.cookie('upload-auto-insert') === 'true') {
+                $('#autoUse').attr('checked',true);
+            }
+            // wire the auto checkbox
+            $('#autoUse').change(function () {
+                if ($(this).is(':checked')) {
+                    $.cookie('upload-auto-insert','true');
+                } else {
+                    $.cookie('upload-auto-insert','false');
+                }
+            });
             // wire the 'Use this ..' buttons
             $('#filesTable').on('click', '.useImageDate', function (e) {
                 var $td = $(this).parents('td'),
                     dt = $td.data('dateTime');
                 if (dt !== undefined) {
-                    dt.putToScreen();
+                    // use 'noNotify=true' so we don't get listener loops
+                    dt.putToScreen(true);
                     that.refreshButtonStates('date');
                 }
             });
@@ -198,9 +211,15 @@ $(function() {
                 var $td = $(this).parents('td');
                 var loc = $td.data('location');
                 if (loc !== undefined) {
+                    // use 'noNotify=true' so we don't get listener loops
                     loc.putToScreen();
                     that.refreshButtonStates('location');
                 }
+            });
+            $('#filesTable').on('click', '.useImageInfo', function (e) {
+                var $tr = $(this).parents('tr');
+                $tr.find('.useImageDate').click();
+                $tr.find('.useImageLocation').click();
             });
             // listen for external changes to the location so we can update the button states
             mainMap.addListener({handler: function(mouseEvent, event) { // map drag
@@ -214,22 +233,29 @@ $(function() {
                 that.refreshButtonStates('date');
             }});
         },
+        isAuto: function () {
+            return $('#autoUse').is(':checked');
+        },
         refreshButtonStates: function (which) {
             var currentDt = new DateTime().loadFromScreen(),
                 currentLoc = new Location().loadFromScreen(),
                 dt, loc,
+                $dtButton, $locButton, $bothButton,
                 refreshDate = (which === undefined || which === "date"),
                 refreshLocation = (which === undefined || which === "location");
             $('#filesTable tr').each(function (i, row) {
+                $dtButton = $(this).find("button.useImageDate");
+                $locButton = $(this).find('button.useImageLocation');
+                $bothButton = $(this).find('button.useImageInfo');
                 if (refreshDate) {
                     dt = $(this).find("td.imageDate").data('dateTime');
                     //console.log("Date: " + (dt === undefined || currentDt.isSame(dt)));
                     if (dt === undefined || currentDt.isSame(dt)) {
                         // then disable this one
-                        $(this).find('button.useImageDate').attr('disabled','disabled');
+                        $dtButton.attr('disabled','disabled');
                     } else {
                         // enable 'Use..' button
-                        $(this).find('button.useImageDate').removeAttr('disabled');
+                        $dtButton.removeAttr('disabled');
                     }
                 }
                 if (refreshLocation) {
@@ -237,11 +263,18 @@ $(function() {
                     //console.log("Loc: " + (loc === undefined || currentLoc.isSame(loc)));
                     if (loc === undefined || currentLoc.isSame(loc)) {
                         // then disable this one
-                        $(this).find('button.useImageLocation').attr('disabled','disabled');
+                        $locButton.attr('disabled','disabled');
                     } else {
                         // enable 'Use..' button
-                        $(this).find('button.useImageLocation').removeAttr('disabled');
+                        $locButton.removeAttr('disabled');
                     }
+                }
+                // use current state of loc and dt to set state of 'Use both' button
+                // if either is enabled, this should be enabled
+                if ($dtButton.attr('disabled') === 'disabled' && $locButton.attr('disabled') === 'disabled') {
+                    $bothButton.attr('disabled','disabled');
+                } else {
+                    $bothButton.removeAttr('disabled');
                 }
             });
         },
@@ -252,6 +285,7 @@ $(function() {
         },
         injectLocationIntoNewlyAddedImage: function (filename, loc) {
             var $rows = $('#filesTable tr'),
+                that = this,
                 name;
 
             if (loc.isValid()) {
@@ -267,12 +301,18 @@ $(function() {
                         $(row).find("td.imageLocation").data('location', loc);
                         // make sure the 'Use..' button is enabled
                         $(row).find("button.useImageLocation").removeAttr('disabled');
+                        $(row).find("button.useImageInfo").removeAttr('disabled');
+                        // insert into record if auto-insert is on
+                        if (that.isAuto()) {
+                            $(row).find("button.useImageLocation").click();
+                        }
                     }
                 });
             }
         },
         injectDateTimeIntoNewlyAddedImage: function (filename, dt) {
             var $rows = $('#filesTable tr'),
+                that = this,
                 name;
 
             if (dt.isValid()) {
@@ -287,6 +327,11 @@ $(function() {
                         $(row).find("td.imageDate").data('dateTime', dt);
                         // make sure the 'Use..' button is enabled
                         $(row).find("button.useImageDate").removeAttr('disabled');
+                        $(row).find("button.useImageInfo").removeAttr('disabled');
+                        // insert into record if auto-insert is on
+                        if (that.isAuto()) {
+                            $(row).find("button.useImageDate").click();
+                        }
                     }
                 });
             }
