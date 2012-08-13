@@ -196,27 +196,36 @@ span.symbol {
     clear: both;
 }
 
-#filesTable td.name {
+#filesTable td {
     text-align: center;
 }
 
 #filesTable td.imageDate {
     margin-left: 20px;
-    text-align: center;
     min-width: 220px;
 }
 
 #filesTable td.imageLocation {
     margin-left: 20px;
-    text-align: center;
     min-width: 220px;
 }
 
 #addImageButtonLarge {
     margin-top: 12px;
 }
+
 #addImageButtonSmall {
     /*margin-left: -20px;*/
+}
+
+#autoUseContainer {
+    float: right;
+    padding-top: 4px;
+    color: #666;
+}
+
+#autoUseContainer label {
+    font-weight: normal;
 }
 
 /* dialogs */
