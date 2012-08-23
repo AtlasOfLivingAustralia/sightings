@@ -65,6 +65,9 @@ var screenLocation = {
     setSource: function (source) {
         $('#coordinateSource').val(source).change();
     },
+    isValid: function () {
+        return new Location().loadFromScreen().isValid();
+    },
     addListener: function(listener) {
         this.listeners.push(listener);
     },
@@ -263,17 +266,21 @@ function hasValue(x) {
 /* Manages the current date and time --------------------------------------------------------------- */
 var screenDate = {
     dateField: null,
+    hoursField: null,
+    minutesField: null,
     timeField: null,
     listeners: [],
     init: function () {
         var that = this, date, time;
         this.dateField = $('#date');
+        this.hoursField = $('#time-hours');
+        this.minutesField = $('#time-minutes');
         this.timeField = $('#time');
 
         // catch changes in date and time
-        $('#date,#time').change(function () {
-            date = $('#date').val();
-            time = $('#time').val();
+        $('#date,#time-hours,#time-minutes').change(function () {
+            date = that.dateField.val();
+            time = that.hoursField.val() + ':' + that.minutesField.val();
 
             // notify listeners
             $.each(that.listeners, function (i, lis) {
@@ -281,17 +288,29 @@ var screenDate = {
             });
         });
     },
+    getDate: function () {
+        return this.dateField.val();
+    },
     setDate: function (date, noNotify) {
         this.dateField.val(date);
         if (noNotify !== true) {
             this.dateField.change();
         }
     },
+    getTime: function () {
+        return this.hoursField.val() + ':' + this.minutesField.val();
+    },
     setTime: function (time, noNotify) {
-        this.timeField.val(time);
-        if (noNotify !== true) {
-            this.timeField.change();
+        if (time.length > 4) {
+            this.hoursField.val(time.substr(0,2));
+            this.minutesField.val(time.substr(3,2));
+            if (noNotify !== true) {
+                this.timeField.change();
+            }
         }
+    },
+    isValid: function () {
+        return new DateTime().loadFromScreen().isValid();
     },
     addListener: function(listener) {
         this.listeners.push(listener);
@@ -327,6 +346,17 @@ DateTime.prototype.getTimeForScreen = function () {
     return this.time;//isValid() ? this.time.slice(0,5) : "";
 };
 
+// @param date - string in the form dd-mm-yyyy
+// @param time - string in the form hh:mm
+DateTime.prototype.set = function (date, time) {
+    if (!date || !time) { return this; }
+    this.year = date.slice(6,10);
+    this.month = date.slice(3,5);
+    this.day = date.slice(0,2);
+    this.time = time;
+    return this;
+};
+
 DateTime.prototype.setFromExifFormat = function (dateStr) {
     // exif format example is "2012:03:21 19:51:53"
     if (!dateStr) { return {}; }
@@ -339,8 +369,21 @@ DateTime.prototype.setFromExifFormat = function (dateStr) {
     return this;
 };
 
+DateTime.prototype.setFromIsoFormat = function (dateStr) {
+    // iso format example is "2005-10-22T03:08:18Z"
+    // TODO: use a date library
+    if (!dateStr) { return {}; }
+    var dt = dateStr.split('T');
+    this.year = dt[0].slice(0,4);
+    this.month = dt[0].slice(5,7);
+    this.day = dt[0].slice(8,10);
+    this.time = dt[1].slice(0,5);
+    this.verbatimDate = dateStr;
+    return this;
+};
+
 DateTime.prototype.loadFromScreen = function () {
-    var date = $('#date').val(),
+    var date = screenDate.getDate(),
         bits;
     if (date !== "") {
         bits = date.split('-');
@@ -348,7 +391,7 @@ DateTime.prototype.loadFromScreen = function () {
         this.month = bits[1];
         this.day = bits[0];
     }
-    this.time = $('#time').val();
+    this.time = screenDate.getTime();
     return this;
 };
 
