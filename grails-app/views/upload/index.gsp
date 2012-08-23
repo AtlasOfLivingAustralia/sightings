@@ -91,6 +91,8 @@
             <div class="left" id="symbol">
                 <span id="reverseLookup" class="symbol" title="Lookup coordinates from description">&raquo;</span><br/>
                 <span id="lookup" class="symbol" title="Lookup description from coordinates">&laquo;</span><br/>
+                <r:img uri="/images/geocode.png" id="isLookedUp" class="lookup lookup-off"
+                       title=""/><br/>
             </div>
             <div style="clear:both;">
                 <label for="locationBookmarks" class="minor">Choose from a bookmarked location.</label><br/>
@@ -106,7 +108,6 @@
             <label for="longitude">Longitude</label><g:textField name="longitude" size="17"/><br/>
             <g:hiddenField name="verbatimLatitude"/>
             <g:hiddenField name="verbatimLongitude"/>
-            <g:hiddenField name="usingReverseGeocodedLocality" value="false"/>
             <label for="coordinateSource">What is the source of these coordinates?</label>
             <g:select name="coordinateSource" from="['Google maps','Google earth','GPS device','camera/phone','physical map','other']"/><br/>
             <div id="precisionFields">
@@ -133,7 +134,7 @@
                     <button type="button" id="pinToCenter">Move pin to centre of map</button>
                     <button type="button" id="showOz">Show whole of Australia</button>
                     <button type="button" id="showWorld">Show world</button>
-                    <button type="button" id="discardPin">Discard pin</button>
+                    %{--<button type="button" id="discardPin">Discard pin</button>--}%
                     <div id="markers" style="position:absolute; top:370px; left:680px; width:200px; height:100px;">
                         <div id="m1" class="drag" style="position:absolute; left:0; width:32px; height:32px;">
                             <img src="http://maps.gstatic.com/mapfiles/ms/icons/red-dot.png" width="32" height="32" alt="" />
