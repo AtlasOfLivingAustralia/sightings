@@ -11,23 +11,35 @@ var Bookmarks = {
     $locationBookmarks: $('#locationBookmarks'),
     $dialogBookmarksList: $('#bookmarksList'),
     $dlg: $('#manageBookmarksDialog'),
+    listenersDisabled: false,
     init: function () {
         var that = this,
             dlg;
+
         // initialise list of bookmarks from web service
         this.load();
+
+        // listen for external changes to location so we can clear the current bookmark
+        mainMap.addListener({handler: function () {
+            if (!that.listenersDisabled) {that.selectNoBookmark(); } }});
+        screenLocation.addListener({handler: function () {
+            if (!that.listenersDisabled) {that.selectNoBookmark(); } }});
+
         // handle selection of a bookmark
         $('#locationBookmarks').change(function() {
             that.applyBookmark(this);
         });
+
         // wire 'save' button
         $('#saveBookmarkButton').click(function () {
             that.saveBookmarkHandler();
         });
+
         // wire 'manage' button
         $('#manageBookmarksButton').click(function () {
             that.manageBookmarksHandler();
         });
+
         // configure manage dialog
         dlg = $('#manageBookmarksDialog').dialog({
             autoOpen: false,
@@ -51,7 +63,8 @@ var Bookmarks = {
                 $(this).parent().find('.ui-dialog-buttonpane button:eq(0)').focus();
             }
         });
-        // wire 'delete all' button
+
+        // wire 'delete all' button in dialog
         $('#deleteAllBookmarksButton').click(function () {
             that.requestDeleteAll();
         });
@@ -83,13 +96,21 @@ var Bookmarks = {
         // build dialog list
         this.createDialogBookmarksList(list);
     },
+
+    // puts a selected bookmark to the screen as the current location
+    // @param element - the bookmark html select element (= this.$locationBookmarks[0])
     applyBookmark: function (element) {
         var opt = element.options[element.selectedIndex],
         data = $(opt).data('location'),
         loc = new Location();
         loc.loadFromBookmark(data);
+        // disable listeners so we don't pick up our own change
+        this.listenersDisabled = true;
         loc.putToScreen();
+        this.listenersDisabled = false;
     },
+
+    // checks that the current location is valid before saving
     saveBookmarkHandler: function () {
         // check for valid data and save if ok
         if (this.$lat.val() === "" || this.$lng.val() === "") {
@@ -100,6 +121,8 @@ var Bookmarks = {
             this.saveBookmark();
         }
     },
+
+    // saves the current location as a new bookmark
     saveBookmark: function () {
         // collect bookmark data
         var bkm = new Location().loadFromScreen(),
@@ -120,13 +143,19 @@ var Bookmarks = {
             }
         });
     },
+
+    // resets the bookmark select widget so no bookmark is shown as currently selected
     selectNoBookmark: function () {
         this.$locationBookmarks.val("null");
     },
+
+    // pops up a dialog to confirm deletion of a bookmark
     requestDelete: function (data) {
         Dialogs.confirm('Are you sure you want to delete the bookmark "' + data.locality + '"?',
                 'Confirm delete', {label: 'Delete', handler: this.delete, context: this, params: [data.id]});
     },
+
+    // deletes a bookmark
     delete: function (id) {
         var that = this;
         $.ajax({
