@@ -24,13 +24,6 @@ if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
 println "(*) grails.config.locations = ${grails.config.locations}"
 
 /******************************************************************************\
- *  APP CONFIG
-\******************************************************************************/
-if (!upload.location.images) {
-    upload.location.images = '/data/sightings/images'
-}
-
-/******************************************************************************\
  *  ATLAS SERVERS
 \******************************************************************************/
 if (!bie.baseURL) {
@@ -51,12 +44,24 @@ if (!spatial.baseURL) {
 if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au/"
 }
-if (!ala.locationBookmarkServerURL) {
-    ala.locationBookmarkServerURL = "http://audax.ala.org.au:8080/fielddata"
-}
+
+//if (!ala.locationBookmarkServerURL) {
+    //ala.locationBookmarkServerURL = "http://localhost:8085/sightings/proxy/dummyBookmarks"
+    //ala.locationBookmarkServerURL = "http://audax.ala.org.au:8080/fielddata"
+//}
+//println ala.locationBookmarkServerURL
+
 if (!headerAndFooter.baseURL) {
     headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 }
+
+/******************************************************************************\
+ *  APP CONFIG
+ \******************************************************************************/
+if (!upload.images.path) {
+    upload.images.path = '/data/sightings/images'
+}
+
 /******************************************************************************\
  *  GRAILS CONFIG
 \******************************************************************************/
@@ -114,11 +119,18 @@ grails.hibernate.cache.queries = true
 environments {
     development {
         grails.logging.jul.usebridge = true
-        grails.serverURL = "http://localhost:8085/sightings"
+        //grails.hostname = "localhost"
+        grails.hostname = "192.168.0.18"
+        grails.serverURL = "http://${grails.hostname}:8085/sightings"
+        upload.images.url = "http://${grails.hostname}/sightings/images/"
+        ala.locationBookmarkServerURL = "http://${grails.hostname}:8085/sightings/proxy/dummyBookmarks"
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://sightings.ala.org.au"
+        grails.hostname = "sightings.ala.org.au"
+        grails.serverURL = "http://${grails.hostname}"
+        upload.images.url = "http://${grails.hostname}/images/"
+        ala.locationBookmarkServerURL = "http://audax.ala.org.au:8080/fielddata"
     }
 }
 
