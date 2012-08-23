@@ -106,7 +106,7 @@ var Bookmarks = {
         loc.loadFromBookmark(data);
         // disable listeners so we don't pick up our own change
         this.listenersDisabled = true;
-        loc.putToScreen();
+        loc.putToScreen({autoLookup:false});
         this.listenersDisabled = false;
     },
 
