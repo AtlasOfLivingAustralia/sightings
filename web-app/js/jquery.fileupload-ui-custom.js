@@ -100,7 +100,7 @@
                     // after the row has been added so we can inject exif data asynchronously
                     // NOTE that no existing callbacks cover this 'row complete' event
                     // TODO: inject this in a less coupled manner, ie set the callback method externally
-                    ExifLoader.onRowAdded(files);
+                    //ExifLoader.onRowAdded(files);
 
                     that._renderPreviews(files, data.context);
                     that._forceReflow(data.context);
