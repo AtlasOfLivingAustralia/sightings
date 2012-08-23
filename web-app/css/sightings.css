@@ -153,24 +153,23 @@ label.minor {
 }
 
 #location {
-    width: 250px;
+    width: 255px;
 }
 
 #symbol {
-    padding-top: 30px;
+    padding-top: 28px;
+    padding-left: 12px;
 }
 
 span.symbol {
     font-size: 2em;
     vertical-align: top;
-    padding-left: 8px;
     cursor: pointer;
 }
 
 img.lookup {
     cursor: pointer;
     padding-top: 4px;
-    padding-left: 8px;
 }
 
 img.lookup-off {
@@ -196,7 +195,8 @@ img.lookup-off {
 }
 
 #coordinate-container {
-    margin-left:12px;
+    margin-left:-5px;
+    padding-top: 10px;
 }
 
 /* small map */
