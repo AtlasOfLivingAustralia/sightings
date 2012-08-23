@@ -167,6 +167,16 @@ span.symbol {
     cursor: pointer;
 }
 
+img.lookup {
+    cursor: pointer;
+    padding-top: 4px;
+    padding-left: 8px;
+}
+
+img.lookup-off {
+    opacity: 0.5;
+}
+
 #small-map-container {
 }
 
