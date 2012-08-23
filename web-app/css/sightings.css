@@ -14,6 +14,15 @@ td {
 .hint {
     font-size: 1.1em;
     padding-bottom: 0;
+    width: 390px;
+    float: left;
+}
+
+#submit {
+    margin-left: 80px;
+    font-size: 1.6em;
+    color: #333A3F;
+    padding: 8px 16px !important;
 }
 
 .left {
@@ -23,6 +32,10 @@ td {
 .right {
     display: inline;
     float: right;
+}
+
+.smartspinner {
+    height: 15px;
 }
 
 #undoTaxon {
@@ -128,6 +141,10 @@ label.minor {
 #time {
     padding: 1px;
     margin: 2px;
+}
+#time-hours, #time-minutes {
+    width: 18px;
+    text-align:center;
 }
 
 /* where */
