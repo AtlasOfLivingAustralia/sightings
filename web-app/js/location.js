@@ -30,16 +30,20 @@ $(function() {
 var screenLocation = {
     latitudeField: null,
     longitudeField: null,
+    autoLookup: true,
+    usingReverseGeocodedLocality: false,
+    geocoder: null,
     listeners: [],
     init: function () {
         var that = this, lat, lng;
         this.latitudeField = $('#latitude');
         this.longitudeField = $('#longitude');
+        this.geocoder = new google.maps.Geocoder();
 
         // catch changes in lat and lon
         $('#latitude,#longitude').change(function () {
-            lat = $('#latitude').val();
-            lng = $('#longitude').val();
+            lat = that.getLat();
+            lng = that.getLng();
 
             // don't use a configured listener for this so we avoid infinite loops
             mainMap.setMarker(lat, lng);
@@ -49,6 +53,73 @@ var screenLocation = {
                 lis.handler.apply(that, ['latLngChange', new google.maps.LatLng(lat, lng)]);
             });
         });
+
+        // catch edits to the locality field
+        $('#location').change( function () {
+            that.setUsingReverseGeocodedLocality(false);
+        });
+
+        // wire location lookups
+        $('#reverseLookup').click(function () {
+            var locText = that.getlocality();
+            if (locText === "") { return; }
+            that.geocoder.geocode({
+                address: locText,
+                bounds: mainMap.map.getBounds()},
+                function (results, status) {
+                    var latLng;
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        latLng = results[0].geometry.location;
+                        $('#latitude').val(latLng.lat());
+                        $('#longitude').val(latLng.lng()).change();
+                        mainMap.show();
+                    }
+                });
+        });
+        $('#lookup').click(function () {
+            var lat = $('#latitude').val(),
+                lng = $('#longitude').val();
+            if (lat === "" || lng === "") { return; }
+            that.geocoder.geocode({
+                location: new google.maps.LatLng(lat, lng)},
+                function (results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        that.setLocality(results[1].formatted_address);
+                        that.setUsingReverseGeocodedLocality(true);
+                    }
+                });
+        });
+
+        // wire geocode icon
+        $('#isLookedUp').click(function () {
+            if (that.getlocality() === "") { return; }
+            that.setUsingReverseGeocodedLocality(!that.usingReverseGeocodedLocality);
+        });
+
+        // listen for dragend events in main map so we can modify locality
+        mainMap.addListener({handler: function (mouseEvent, event) {
+            if (event === 'dragend') {
+                if (that.getlocality() === "" || that.usingReverseGeocodedLocality) {
+                    // reverse geocode locality
+                    that.reverseGeocodeLocality(that.getLat(), that.getLng());
+                }
+            }
+        }});
+    },
+    setLatLng: function (lat, lng, options) {
+        var opts = options || {};
+        this.setLat(lat, opts.noNotify);
+        this.setLng(lng, opts.noNotify);
+        if (opts.autoLookup && (this.getlocality() === "" || this.usingReverseGeocodedLocality)) {
+            // reverse geocode locality
+            this.reverseGeocodeLocality(lat, lng);
+        }
+    },
+    getLat: function () {
+        return $('#latitude').val();
+    },
+    getLng: function () {
+        return $('#longitude').val();
     },
     setLat: function (num, noNotify) {
         this.latitudeField.val(num);//limit(num));
@@ -62,11 +133,43 @@ var screenLocation = {
             this.longitudeField.change();
         }
     },
+    getSource: function () {
+        return $('#coordinateSource').val();
+    },
     setSource: function (source) {
         $('#coordinateSource').val(source).change();
     },
+    getlocality: function () {
+        return $('#location').val();
+    },
+    setLocality: function (source) {
+        $('#location').val(source).change();
+    },
+    setUsingReverseGeocodedLocality: function (value) {
+        if (value === true) {
+            $('#isLookedUp').removeClass('lookup-off');
+            $('#isLookedUp').attr('title','Description has been looked up from the coordinates');
+            this.usingReverseGeocodedLocality = true;
+        } else {
+            $('#isLookedUp').addClass('lookup-off');
+            $('#isLookedUp').attr('title','');
+            this.usingReverseGeocodedLocality = false;
+        }
+    },
     isValid: function () {
         return new Location().loadFromScreen().isValid();
+    },
+    reverseGeocodeLocality: function (lat, lng) {
+        var latLng = new google.maps.LatLng(lat, lng),
+            that = this;
+        this.geocoder.geocode({'latLng': latLng}, function (results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+                if (results[0]) {
+                    that.setLocality(results[0].formatted_address);
+                    that.setUsingReverseGeocodedLocality(true);
+                }
+            }
+        });
     },
     addListener: function(listener) {
         this.listeners.push(listener);
@@ -163,13 +266,13 @@ Location.prototype.set = function (data) {
 };
 
 Location.prototype.loadFromScreen = function () {
-    this.decimalLatitude = $('#latitude').val();
-    this.decimalLongitude = $('#longitude').val();
+    this.decimalLatitude = screenLocation.getLat();
+    this.decimalLongitude = screenLocation.getLng();
     this.verbatimLatitude = $('#verbatimLatitude').val();
     this.verbatimLongitude = $('#verbatimLongitude').val();
-    this.locality = $('#location').val();
-    this.usingReverseGeocodedLocality = $('#usingReverseGeocodedLocality').val();
-    this.coordinateSource = $('#coordinateSource').val();
+    this.locality = screenLocation.getlocality();
+    this.usingReverseGeocodedLocality = screenLocation.usingReverseGeocodedLocality;
+    this.coordinateSource = screenLocation.getSource();
     this.geodeticDatum = $('#datum').val();
     if (this.coordinateSource === 'physical map') {
         this.physicalMapScale = $('#physicalMapScale').val();
@@ -214,14 +317,14 @@ Location.prototype.makeBookmark = function () {
     return bkm;
 };
 
-Location.prototype.putToScreen = function (noNotify) {
-    screenLocation.setLat(this.decimalLatitude, noNotify);
-    screenLocation.setLng(this.decimalLongitude, noNotify);
+Location.prototype.putToScreen = function (options) {
+    screenLocation.setLatLng(this.decimalLatitude, this.decimalLongitude, options);
     screenLocation.setSource(this.coordinateSource);
+    screenLocation.setUsingReverseGeocodedLocality(this.usingReverseGeocodedLocality);
+    // TODO: all the following should be migrated to screenLocation object
     $('#verbatimLatitude').val(this.verbatimLatitude).change();
     $('#verbatimLongitude').val(this.verbatimLongitude).change();
-    $('#location').val(this.locality).change();
-    $('#usingReverseGeocodedLocality').val(this.usingReverseGeocodedLocality).change();
+    screenLocation.setLocality(this.locality);
     $('#datum').val(this.geodeticDatum).change();
     $('#physicalMap').val(this.physicalMapScale).change();
     $('#otherSource').val(this.otherSource).change();
