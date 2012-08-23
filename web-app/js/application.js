@@ -62,36 +62,6 @@ $(function() {
         taxonStack.pop();
     });
 
-    // wire location lookups
-    $('#reverseLookup').click(function () {
-        var locText = $('#location').val();
-        if (locText === "") { return; }
-        new google.maps.Geocoder().geocode({
-            address: locText,
-            bounds: mainMap.map.getBounds()},
-            function (results, status) {
-                var latLng;
-                if (status == google.maps.GeocoderStatus.OK) {
-                    latLng = results[0].geometry.location;
-                    $('#latitude').val(latLng.lat());
-                    $('#longitude').val(latLng.lng()).change();
-                    mainMap.show();
-                }
-            });
-    });
-    $('#lookup').click(function () {
-        var lat = $('#latitude').val(),
-            lng = $('#longitude').val();
-        if (lat === "" || lng === "") { return; }
-        new google.maps.Geocoder().geocode({
-            location: new google.maps.LatLng(lat, lng)},
-            function (results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    $('#location').val(results[1].formatted_address);
-                }
-            });
-    });
-
     // wire coordinate source
     $('#coordinateSource').change(function () {
         // hide all
@@ -131,31 +101,6 @@ $(function() {
         screenLocation.setLng(mouseEvent.latLng.lng(),true);
         screenLocation.setSource("Google maps");
     }});
-
-    // map buttons
-    $('#centerOnPin').click(function () {
-        mainMap.setCenterToMarker();
-    });
-    $('#pinToCenter').click(function () {
-        mainMap.setMarker(mainMap.map.getCenter(), undefined, {zoom: 'same'});
-    });
-    $('#showOz').click(function () {
-        mainMap.resetMap();
-    });
-    $('#showWorld').click(function () {
-        mainMap.resetMapToWorld();
-    });
-    $('#discardPin').click(function () {
-        mainMap.removeMarker();
-    });
-
-    drag_area = document.getElementById('markers');
-    drag_area.onmousedown = initDrag;
-
-    // if the locality is edited it is no longer a lookup
-    $('#location').change(function () {
-        $('#usingReverseGeocodedLocality').val(false);
-    });
 
     // location bookmarks
     $('#locationBookmarks').change(function () {
@@ -364,13 +309,17 @@ var mainMap = {
             },
             that = this;
 
+        // create map
         this.map = new google.maps.Map(document.getElementById(containerId), options);
+
+        // create a marker
         this.marker = new google.maps.Marker({
             map:this.map,
             title: 'observation',
             draggable:true
         });
 
+        // hide map after it is drawn
         google.maps.event.addListener(this.map, 'idle', function () {
             if (that.firstShow) {
                 that.toggle();
@@ -378,27 +327,43 @@ var mainMap = {
             }
         });
 
+        // listen for drag events
         google.maps.event.addListener(this.marker, 'drag', function (event) {
             $.each(that.listeners, function (i, lis) {
                 lis.handler.apply(this, [event, 'drag']);
             });
         });
 
+        // listen for dragend
         google.maps.event.addListener(this.marker, 'dragend', function (event) {
             $.each(that.listeners, function (i, lis) {
                 lis.handler.apply(this, [event, 'dragend']);
             });
         });
 
-        /*google.maps.event.addListener(this.map, 'click', function (event) {
-            if (!that.activeMarker) {
-                that.setMarker(event.latLng);
-            }
-        });*/
-
         // Add a dummy overlay for later use.
         // Needed for API v3 to convert pixels to latlng.
         dummy = new DummyOView();
+
+        // wire map buttons
+        $('#centerOnPin').click(function () {
+            that.setCenterToMarker();
+        });
+        $('#pinToCenter').click(function () {
+            that.setMarker(that.map.getCenter(), undefined, {zoom: 'same'});
+        });
+        $('#showOz').click(function () {
+            that.resetMap();
+        });
+        $('#showWorld').click(function () {
+            that.resetMapToWorld();
+        });
+        $('#discardPin').click(function () {
+            that.removeMarker();
+        });
+
+        drag_area = document.getElementById('markers');
+        drag_area.onmousedown = initDrag;
 
     },
     setMarker: function (lat, lng, options) {
@@ -556,11 +521,11 @@ function moveObj(e) {
 
                 // Create a corresponding marker on the map
                 mainMap.setMarker(latlng, undefined, {zoom: 'same', center: 'same'});
-                //var src = obj.firstChild.getAttribute("src");
-                //createDraggedMarker(latlng, src);
 
-                // Create dragged marker anew
-                //fillMarker();
+                // set the coords to the screen
+                screenLocation.setLatLng(latlng.lat(), latlng.lng(), {autoLookup: true});
+
+                // hide the draggable pin in the menu
                 $(obj).hide();
             }
         };
