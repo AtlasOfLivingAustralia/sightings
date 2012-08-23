@@ -29,6 +29,7 @@
     <r:require module="jQueryCookie"/>
     <r:require module="jQueryTimeEntry"/>
     <r:require module="exif"/>
+    <r:require module="spinner"/>
     <r:layoutResources/>
 </head>
 <body>
@@ -37,6 +38,7 @@
         <h1>Report a sighting</h1>
         <p class="hint">Hint: If you are submitting images, select them first and we will try to pre-load the date
         and location fields from the image metadata.</p>
+        <button type="button" id="submit">Submit record</button>
     </div>
     <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
@@ -48,8 +50,10 @@
             <span class="scientificName">Notomys fuscus</span>
             <span class="commonName">Dusky Hopping-mouse</span>
             <div style="padding-top:10px;">
-                <div style="float:left;padding-right:20px;"><label for="count">Number seen</label><g:textField name="count" style="width:40px;text-align:right;" value="1"/></div>
-                <div style="float:left;"><label for="confidence">Confidence in identification</label><g:select from="['Confident','Uncertain']" name="confidence" value="1"/></div>
+                <div style="float:left;padding-right:20px;"><label for="count">Number seen</label>
+                    <g:textField name="count" class="smartspinner" value="1"/></div>
+                <div style="float:left;"><label for="confidence">Confidence in identification</label>
+                    <g:select from="['Confident','Uncertain']" name="confidence" value="1"/></div>
             </div>
         </div>
         <div class="left" style="width:35%;">
@@ -69,7 +73,9 @@
             dd-mm-yyy format.</p>
         </div>
         <div class="left" style="margin-top: 10px;margin-left:30px;width:54%;">
-            <p><label for="time">Time</label> <input type="text" id="time" size="10"></p>
+            <p><label for="time-hours">Time</label>
+                <input type="text" id="time-hours" class=""> <strong>:</strong>
+                <input type="text" id="time-minutes" class=""></p>
             <p>Type in the time (hh:mm 24hr clock) or use the time spinner. The centre dot sets the current time.
             Left/right arrows change the field. Up/down arrows change the values.</p>
         </div>
@@ -89,7 +95,7 @@
             <div style="clear:both;">
                 <label for="locationBookmarks" class="minor">Choose from a bookmarked location.</label><br/>
                 <g:select name="locationBookmarks" from="['Loading bookmarks..']"
-                 keys="['loading']" noSelection="[null:'bookmarked locations']"/>
+                 keys="['loading']" noSelection="[null:'-- bookmarked locations --']"/>
                 <button type="button" id="saveBookmarkButton">Bookmark current location</button>
                 <button type="button" id="manageBookmarksButton">Manage bookmarks</button>
             </div>
@@ -269,7 +275,7 @@
         </td>--}%
         <td class="imageDate">
             Date image was captured:<br/>
-            <span class="imageDateTime">Not available</span><br/>
+            <span class="imageDateTime">{%=file.date%}</span><br/>
             <button type="button" class="useImageDate" disabled="disabled">Use this date</button>
         </td>
         <td class="imageLocation">
@@ -305,43 +311,66 @@
     <tr class="template-download fade">
         {% if (file.error) { %}
         <td></td>
-        <td class="name"><span>{%=file.name%}</span></td>
-        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        <td class="name"><b><span class="name">{%=file.name%}</span></b><br/><span>{%=o.formatFileSize(file.size)%}</span></td>
         <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
         {% } else { %}
         <td class="preview">{% if (file.thumbnail_url) { %}
             <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
-            {% } %}</td>
-        <td class="name">
-            <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
+        {% } %}</td>
+        <td class="name"><b><span class="name">{%=file.name%}</span></b><br/><span>{%=o.formatFileSize(file.size)%}</span></td>
+        <td class="imageDate">
+            Date image was captured:<br/>
+            <span class="imageDateTime">
+                <span class="imageDate">{%=file.date%}</span>
+                <span class="imageTime">{%=file.time%}</span>
+            </span><br/>
+            <button type="button" class="useImageDate" disabled="disabled">Use this date</button>
+            <input type="hidden" class="imageDateISO8601" value="{%=file.isoDate%}"/>
         </td>
-        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
-        <td colspan="2"></td>
+        <td class="imageLocation">
+            Location image was captured:<br/>
+            <span class="imageLatLng">{% if (file.decimalLatitude) { %}
+                Lat: <span class="lat">{%=file.decimalLatitude%}</span>,
+                Lng: <span class="lng">{%=file.decimalLongitude%}</span>
+            {% } else { %}
+                Not available
+            {% } %}
+            </span><br/>
+            <button type="button" class="useImageLocation" disabled="disabled">Use this location</button>
+            <input type="hidden" class="imageVerbatimLatitude" value="{%=file.verbatimLatitude%}"/>
+            <input type="hidden" class="imageVerbatimLongitude" value="{%=file.verbatimLongitude%}"/>
+        </td>
+        <td class="imageInfo">
+            Use all info<br/>from this image<br/>
+            <button type="button" class="useImageInfo" disabled="disabled">Use both</button>
+        </td>
         {% } %}
         <td class="delete">
             <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
                 <i class="icon-trash icon-white"></i>
                 <span>{%=locale.fileupload.destroy%}</span>
             </button>
-            <input type="checkbox" name="delete" value="1">
         </td>
     </tr>
     {% } %}
 </script>
 <r:script>
     $(function() {
-        var countSpinner = $("#count").spinner({min: 1});
+        //var countSpinner = $("#count").spinner({min: 1});
         $("#date").datepicker({
             dateFormat: "dd-mm-yy",
             maxDate: "+0",
             appendText: " (dd-mm-yyyy)",
-            numberOfMonths: 3
+            numberOfMonths: 1
         });
-        $('#time').timeEntry({
+        $('#count').spinit({min:1, height:15, initValue:1, stepInc:1});
+        //$('#time-hours').spinit({min:0, max:23, width:25, height:15, initValue:12, stepInc:1});
+        //$('#time-minutes').spinit({min:0, max:59, width:25, height:15, initValue:0, stepInc:1});
+        /*$('#time').timeEntry({
             spinnerImage: 'img/spinnerDefault.png',
             spinnerBigImage: 'img/spinnerDefaultBig.png',
             show24Hours: true
-        });
+        });*/
     });
 </r:script>
 <!-- The Templates plugin is included to render the upload/download listings -->
