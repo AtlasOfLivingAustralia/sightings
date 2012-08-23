@@ -228,7 +228,7 @@ $(function() {
                     loc = that.getLocationFromRow($tr);
                 if (loc !== undefined) {
                     // write to current location
-                    loc.putToScreen();
+                    loc.putToScreen({autoLookup:true});
                     // set 'Use..' buttons appropriately
                     that.refreshButtonStates('location');
                 }
