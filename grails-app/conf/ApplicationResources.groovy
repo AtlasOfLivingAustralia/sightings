@@ -78,4 +78,9 @@ modules = {
         defaultBundle false
         resource url: 'js/ajalabox/exif.js', disposition: 'head'
     }
+
+    spinner {
+        resource url: 'css/smartspinner/smartspinner.css'
+        resource url: 'js/smartspinner.js'
+    }
 }
