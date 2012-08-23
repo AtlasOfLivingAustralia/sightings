@@ -1,8 +1,15 @@
 package au.org.ala.sightings
 
 import org.springframework.web.multipart.MultipartFile
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.converters.JSON
+import com.drew.imaging.ImageMetadataReader
+import com.drew.metadata.Metadata
+import com.drew.metadata.Directory
+import com.drew.metadata.exif.ExifSubIFDDirectory
+import com.drew.metadata.exif.GpsDirectory
+import com.drew.lang.GeoLocation
+import java.text.SimpleDateFormat
+import java.text.DecimalFormat
 
 class ImageController {
 
@@ -10,7 +17,61 @@ class ImageController {
 
     def test() {}
 
-    def exif() {}
+    def exif() {
+        def f = new File("/data/sightings/DSCN6487.jpg")
+        def result = getExifMetadata(f)
+        render result as JSON
+    }
+
+    private Map getExifMetadata(file) {
+        def exif = [:]
+
+        Metadata metadata = ImageMetadataReader.readMetadata(file);
+
+        Directory directory = metadata.getDirectory(ExifSubIFDDirectory.class)
+        if (directory) {
+            Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
+            exif.date = date
+        }
+
+        Directory gpsDirectory = metadata.getDirectory(GpsDirectory.class)
+        if (gpsDirectory) {
+            //gpsDirectory.getTags().each { println it }
+            def lat = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LATITUDE)
+            def lng = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LONGITUDE)
+            GeoLocation loc = gpsDirectory.getGeoLocation()
+            exif.latitude = lat.toArrayString()
+            exif.longitude = lng.toArrayString()
+            exif.decLat = loc.latitude
+            exif.decLng = loc.longitude
+        }
+
+        return exif
+    }
+
+    private isoDateStrToDate(date) {
+        if (date) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy")
+            return sdf.format(date)
+        }
+        return ""
+    }
+
+    private isoDateStrToTime(date) {
+        if (date) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm")
+            return sdf.format(date)
+        }
+        return ""
+    }
+
+    private doubleToString(d) {
+        if (d) {
+            DecimalFormat df = new DecimalFormat("0.0000000")
+            return df.format(d)
+        }
+        return ""
+    }
 
     def sample() {}
 
@@ -27,22 +88,32 @@ class ImageController {
                 def filename = file.getOriginalFilename()
                 //println "filename=${filename}"
 
-                def colDir = new File(ConfigurationHolder.config.upload.location.images as String)
+                def colDir = new File(grailsApplication.config.upload.images.path as String)
                 colDir.mkdirs()
                 File f = new File(colDir, filename)
                 //println "saving ${filename} to ${f.absoluteFile}"
                 file.transferTo(f)
-                result = [[
+                def exifMd = getExifMetadata(f)
+
+                def md = [
                         name: filename,
                         size: file.size,
-                        url: 'http://localhost/data/sightings/images/' + filename,
-                        thumbnail_url: 'http://localhost/data/sightings/images/' + filename,
-                        delete_url: ConfigurationHolder.config.grails.serverURL +
+                        isoDate: exifMd.date,
+                        date: isoDateStrToDate(exifMd.date) ?: 'Not available',
+                        time: isoDateStrToTime((exifMd.date)),
+                        decimalLatitude: doubleToString(exifMd.decLat),
+                        decimalLongitude: doubleToString(exifMd.decLng),
+                        verbatimLatitude: exifMd.latitude,
+                        verbatimLongitude: exifMd.longitude,
+                        url: grailsApplication.config.upload.images.url + filename,
+                        thumbnail_url: grailsApplication.config.upload.images.url + filename,
+                        delete_url: grailsApplication.config.grails.serverURL +
                                 "/image/delete?filename=" + filename,
-                        delete_type: 'DELETE']]
+                        delete_type: 'DELETE']
+                result = [md]
             }
         }
-        //println result
+        println result
         render result as JSON
     }
 
