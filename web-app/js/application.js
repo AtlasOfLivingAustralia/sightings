@@ -116,6 +116,9 @@ $(function() {
         return false;
     });
 
+    // activate submit button
+    submitHandler.init();
+
     // create small map
     smallMap.init('small-map');
 
@@ -181,6 +184,37 @@ $(function() {
         }
     });
 });
+
+var submitHandler = {
+    init: function () {
+        var that = this;
+        // wire submit button
+        $('#submit').click(function () {
+            var missing = [];
+            // check that we have the minimum data
+            if (!screenDate.isValid()) {
+                missing.push('Date');
+            }
+            if (!screenLocation.isValid()) {
+                missing.push('Location');
+            }
+            if (missing.length > 0) {
+                // show an error dialog
+                that.showInsufficientDataDialog(missing);
+            } else {
+                that.submit();
+            }
+        });
+    },
+    showInsufficientDataDialog: function (missing) {
+        // TODO: just alert for now
+        var msg = missing.length === 2 ? "Both are missing." : missing[0] + " is missing.";
+        alert("You must at least enter a date and a location. " + msg);
+    },
+    submit: function () {
+        alert("here we go!");
+    }
+};
 
 var taxonStack = {
     // holds a stack of selected taxa
