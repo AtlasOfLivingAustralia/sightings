@@ -4,6 +4,21 @@ var ExifLoader = {};
 
 $(function() {
 
+   /* // Initialize the jQuery File Upload widget:
+    $('#fileupload').fileupload({
+        autoUpload: true
+    });
+
+    // Enable iframe cross-domain access via redirect option:
+    $('#fileupload').fileupload(
+        'option',
+        'redirect',
+        window.location.href.replace(
+            /\/[^\/]*$/,
+            '/cors/result.html?%s'
+        )
+    );*/
+
     /* ExifLoader handles the extraction of EXIF data from any files that are added to the upload list. */
     ExifLoader = {
         geocoder: new google.maps.Geocoder(),
@@ -197,25 +212,28 @@ $(function() {
                     $.cookie('upload-auto-insert','false');
                 }
             });
-            // wire the 'Use this ..' buttons
+            // wire the 'Use this date' buttons
             $('#filesTable').on('click', '.useImageDate', function (e) {
-                var $td = $(this).parents('td'),
-                    dt = $td.data('dateTime');
+                var $tr = $(this).parents('tr'),
+                    dt = that.getDateFromRow($tr);
                 if (dt !== undefined) {
                     // use 'noNotify=true' so we don't get listener loops
                     dt.putToScreen(true);
                     that.refreshButtonStates('date');
                 }
             });
+            // wire the 'Use this location' buttons
             $('#filesTable').on('click', '.useImageLocation', function (e) {
-                var $td = $(this).parents('td');
-                var loc = $td.data('location');
+                var $tr = $(this).parents('tr'),
+                    loc = that.getLocationFromRow($tr);
                 if (loc !== undefined) {
-                    // use 'noNotify=true' so we don't get listener loops
+                    // write to current location
                     loc.putToScreen();
+                    // set 'Use..' buttons appropriately
                     that.refreshButtonStates('location');
                 }
             });
+            // wire the 'Use both' buttons
             $('#filesTable').on('click', '.useImageInfo', function (e) {
                 var $tr = $(this).parents('tr');
                 $tr.find('.useImageDate').click();
@@ -239,7 +257,7 @@ $(function() {
         refreshButtonStates: function (which) {
             var currentDt = new DateTime().loadFromScreen(),
                 currentLoc = new Location().loadFromScreen(),
-                dt, loc,
+                dt, loc, that = this,
                 $dtButton, $locButton, $bothButton,
                 refreshDate = (which === undefined || which === "date"),
                 refreshLocation = (which === undefined || which === "location");
@@ -248,7 +266,7 @@ $(function() {
                 $locButton = $(this).find('button.useImageLocation');
                 $bothButton = $(this).find('button.useImageInfo');
                 if (refreshDate) {
-                    dt = $(this).find("td.imageDate").data('dateTime');
+                    dt = that.getDateFromRow(this);
                     //console.log("Date: " + (dt === undefined || currentDt.isSame(dt)));
                     if (dt === undefined || currentDt.isSame(dt)) {
                         // then disable this one
@@ -259,7 +277,7 @@ $(function() {
                     }
                 }
                 if (refreshLocation) {
-                    loc = $(this).find("td.imageLocation").data('location');
+                    loc = that.getLocationFromRow(this);
                     //console.log("Loc: " + (loc === undefined || currentLoc.isSame(loc)));
                     if (loc === undefined || currentLoc.isSame(loc)) {
                         // then disable this one
@@ -278,10 +296,45 @@ $(function() {
                 }
             });
         },
+        getDateFromRow: function (tr) {
+            var dt = $(tr).find("td.imageDate").data('dateTime'),
+                date, time, isoDt;
+            if (dt === undefined) {
+                // try the field values
+                date = $(tr).find("span.imageDate").html();
+                time = $(tr).find("span.imageTime").html();
+                //isoDt = $(tr).find("input.imageDateISO8601").val();
+                if (date && time) {
+                    dt = new DateTime().set(date, time);
+                }
+            }
+            return dt;
+        },
+        getLocationFromRow: function (tr) {
+            // see if a location object has been stored
+            var loc = $(tr).find("td.imageLocation").data('location');
+            if (loc === undefined) {
+                // try the fields and hidden fields
+                loc = new Location();
+                loc.decimalLatitude = $(tr).find('span.lat').html();
+                loc.decimalLongitude = $(tr).find('span.lng').html();
+                loc.verbatimLatitude = $(tr).find('input.imageVerbatimLatitude').val();
+                loc.verbatimLongitude = $(tr).find('input.imageVerbatimLongitude').val();
+                loc.coordinateSource = "camera/phone";
+            }
+            return loc.isValid() ? loc : undefined;
+        },
         rowAdded: function () {
             // minimise 'Add..' button as soon as one image is added
             $('#addImageButtonLarge').hide();
             $('#addImageButtonSmall').show();
+        },
+        rowDeleted: function () {
+            // maximise 'Add..' button when no rows shown
+            if ($('#filesTable tr').length === 0) {
+                $('#addImageButtonLarge').show();
+                $('#addImageButtonSmall').hide();
+            }
         },
         injectLocationIntoNewlyAddedImage: function (filename, loc) {
             var $rows = $('#filesTable tr'),
@@ -362,7 +415,13 @@ $(function() {
     // $('#files').change({that: ExifLoader}, ExifLoader.onFileSelect);
 
     imageList.init();
-    //$(Document).bind('fileuploadsubmit', {that: ExifLoader}, ExifLoader.onAdd);
+    $('#fileupload').bind('fileuploadcompleted', function () {
+        imageList.rowAdded();
+        imageList.refreshButtonStates();
+    });
+    $('#fileupload').bind('fileuploaddestroyed', function () {
+        imageList.rowDeleted();
+    });
 });
 
 /*
