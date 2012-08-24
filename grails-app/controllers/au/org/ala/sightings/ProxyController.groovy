@@ -55,4 +55,18 @@ class ProxyController {
         }
         render (contentType: "application/json", text: locs)
     }
+
+    /**
+     * for testing only
+     * simulates the submission of a fielddata record for testing and development
+     * jsonp
+     */
+    def submitRecord() {
+        params.remove('controller')
+        params.remove('action')
+        params.each { println it }
+
+        def result = [id: '23457635']
+        render result as JSON
+    }
 }
