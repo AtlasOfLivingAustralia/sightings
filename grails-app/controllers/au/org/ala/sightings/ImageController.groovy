@@ -36,12 +36,18 @@ class ImageController {
 
         Directory gpsDirectory = metadata.getDirectory(GpsDirectory.class)
         if (gpsDirectory) {
-            //gpsDirectory.getTags().each { println it }
-            def lat = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LATITUDE)
-            def lng = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LONGITUDE)
+            /*gpsDirectory.getTags().each {
+                println it.getTagType()
+                println it.getTagName()
+                println it.getTagTypeHex()
+                println it.getDescription()
+                println it.toString()
+            }*/
+            //def lat = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LATITUDE)
+            //def lng = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LONGITUDE)
             GeoLocation loc = gpsDirectory.getGeoLocation()
-            exif.latitude = lat.toArrayString()
-            exif.longitude = lng.toArrayString()
+            exif.latitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LATITUDE)
+            exif.longitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LONGITUDE)
             exif.decLat = loc.latitude
             exif.decLng = loc.longitude
         }
