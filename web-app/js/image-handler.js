@@ -418,6 +418,9 @@ $(function() {
     $('#fileupload').bind('fileuploadcompleted', function () {
         imageList.rowAdded();
         imageList.refreshButtonStates();
+        if (imageList.isAuto()) {
+            $('#filesTable tr:first-child').find("button.useImageInfo").click();
+        }
     });
     $('#fileupload').bind('fileuploaddestroyed', function () {
         imageList.rowDeleted();
