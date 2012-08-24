@@ -154,6 +154,7 @@ label.minor {
 
 #location {
     width: 255px;
+    height: 80px;
 }
 
 #symbol {
@@ -176,9 +177,6 @@ img.lookup-off {
     opacity: 0.5;
 }
 
-#small-map-container {
-}
-
 #main-map-container {
     margin-top: 10px;
     float: left;
@@ -199,10 +197,21 @@ img.lookup-off {
     padding-top: 10px;
 }
 
+#main-map-link {
+    position: absolute;
+    top: 160px;
+    left: 590px;
+}
+
 /* small map */
+
+#small-map-container {
+    padding: 10px 10px 0 0;
+}
+
 #small-map {
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
 }
 
 /* main map */
