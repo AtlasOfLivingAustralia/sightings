@@ -102,6 +102,10 @@ $(function() {
         screenLocation.setSource("Google maps");
     }});
 
+    $('#main-map-link').click(function () {
+        mainMap.toggle();
+    });
+
     // location bookmarks
     $('#locationBookmarks').change(function () {
         var locKey = $(this).val(),
@@ -157,7 +161,20 @@ var submitHandler = {
         alert("You must at least enter a date and a location. " + msg);
     },
     submit: function () {
-        alert("here we go!");
+        var payload = $.extend(
+            screenDate.getAll(),
+            screenLocation.getAll(),
+            {userId: userId, scientificName: 'Notomys fuscus', commonName: 'Dusky Hopping-mouse'}
+        );
+        $.ajax({
+            url: recordsServerUrl + "/submitRecord",
+            method: 'POST',
+            dataType: 'json',
+            data: payload,
+            success: function (data) {
+                alert(data.id);
+            }
+        });
     }
 };
 
