@@ -119,11 +119,12 @@ grails.hibernate.cache.queries = true
 environments {
     development {
         grails.logging.jul.usebridge = true
-        //grails.hostname = "localhost"
-        grails.hostname = "192.168.0.18"
+        grails.hostname = "localhost"
+        //grails.hostname = "192.168.0.18"
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
         ala.locationBookmarkServerURL = "http://${grails.hostname}:8085/sightings/proxy/dummyBookmarks"
+        ala.recordsServerURL = "http://${grails.hostname}:8085/sightings/proxy"
     }
     production {
         grails.logging.jul.usebridge = false
@@ -131,6 +132,7 @@ environments {
         grails.serverURL = "http://${grails.hostname}"
         upload.images.url = "http://${grails.hostname}/images/"
         ala.locationBookmarkServerURL = "http://audax.ala.org.au:8080/fielddata"
+        ala.recordsServerURL = "http://audax.ala.org.au:8080/fielddata"
     }
 }
 
