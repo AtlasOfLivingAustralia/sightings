@@ -61,7 +61,7 @@ var screenLocation = {
 
         // wire location lookups
         $('#reverseLookup').click(function () {
-            var locText = that.getlocality();
+            var locText = that.getLocality();
             if (locText === "") { return; }
             that.geocoder.geocode({
                 address: locText,
@@ -92,25 +92,47 @@ var screenLocation = {
 
         // wire geocode icon
         $('#isLookedUp').click(function () {
-            if (that.getlocality() === "") { return; }
+            if (that.getLocality() === "") { return; }
             that.setUsingReverseGeocodedLocality(!that.usingReverseGeocodedLocality);
         });
 
         // listen for dragend events in main map so we can modify locality
         mainMap.addListener({handler: function (mouseEvent, event) {
             if (event === 'dragend') {
-                if (that.getlocality() === "" || that.usingReverseGeocodedLocality) {
+                if (that.getLocality() === "" || that.usingReverseGeocodedLocality) {
                     // reverse geocode locality
                     that.reverseGeocodeLocality(that.getLat(), that.getLng());
                 }
             }
         }});
     },
+    getAll: function () {
+        var l = {
+            decimalLatitude: this.getLat(),
+            decimalLongitude: this.getLng(),
+            verbatimLatitude: $('#verbatimLatitude').val(),
+            verbatimLongitude: $('#verbatimLongitude').val(),
+            locality: this.getLocality(),
+            coordinateSource: this.getSource(),
+            geodeticDatum: $('#datum').val()
+            },
+            other = $('#otherSource').val();
+        if (this.usingReverseGeocodedLocality) {
+            l.usingReverseGeocodedLocality = true;
+        }
+        if (other !== "") {
+            l.otherSource = other;
+        }
+        if (l.coordinateSource === 'physical map') {
+            l.physicalMapScale = $('#physicalMapScale').val();
+        }
+        return l;
+    },
     setLatLng: function (lat, lng, options) {
         var opts = options || {};
         this.setLat(lat, opts.noNotify);
         this.setLng(lng, opts.noNotify);
-        if (opts.autoLookup && (this.getlocality() === "" || this.usingReverseGeocodedLocality)) {
+        if (opts.autoLookup && (this.getLocality() === "" || this.usingReverseGeocodedLocality)) {
             // reverse geocode locality
             this.reverseGeocodeLocality(lat, lng);
         }
@@ -139,7 +161,7 @@ var screenLocation = {
     setSource: function (source) {
         $('#coordinateSource').val(source).change();
     },
-    getlocality: function () {
+    getLocality: function () {
         return $('#location').val();
     },
     setLocality: function (source) {
@@ -270,7 +292,7 @@ Location.prototype.loadFromScreen = function () {
     this.decimalLongitude = screenLocation.getLng();
     this.verbatimLatitude = $('#verbatimLatitude').val();
     this.verbatimLongitude = $('#verbatimLongitude').val();
-    this.locality = screenLocation.getlocality();
+    this.locality = screenLocation.getLocality();
     this.usingReverseGeocodedLocality = screenLocation.usingReverseGeocodedLocality;
     this.coordinateSource = screenLocation.getSource();
     this.geodeticDatum = $('#datum').val();
@@ -390,6 +412,11 @@ var screenDate = {
                 lis.handler.apply(that, ['dateTimeChange']);
             });
         });
+    },
+    getAll: function () {
+        return {
+            eventDate: this.getDate() + " " + this.getTime()
+        }
     },
     getDate: function () {
         return this.dateField.val();
