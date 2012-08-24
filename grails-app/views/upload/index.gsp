@@ -21,6 +21,7 @@
         var serverUrl = "${ConfigurationHolder.config.grails.serverURL}",
             bieUrl = "${ConfigurationHolder.config.bie.baseURL}",
             userId = "mark.woolston@csiro.au",
+            recordsServerUrl = "${grailsApplication.config.ala.recordsServerURL}",
             bookmarkServerUrl = "${ConfigurationHolder.config.ala.locationBookmarkServerURL}";
     </r:script>
     <r:require module="application"/>
@@ -121,9 +122,10 @@
                 <g:textField name="otherSource"/>
 
             </div>
+            <button id="main-map-link">Locate on a map</button>
         </div>
         <div class="right" id="small-map-container">
-            <span>Or click the map to locate.</span>
+            %{--<span>Or click the map to locate.</span>--}%
             <div id="small-map"></div>
         </div>
         <section style="clear: both;">
