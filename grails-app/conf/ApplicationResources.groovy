@@ -1,12 +1,18 @@
 // resource bundles
 modules = {
 
+    // TODO: separate upload-specific resources into their own bundle
+    // TODO: move upload-specific js into it's own js file and leave application.js generic to all pages
     application {
         defaultBundle false
         resource url:'js/application.js'
         resource url:'js/image-handler.js'
         resource url:'js/bookmarks.js'
         resource url:'js/location.js'
+        resource url:'css/sightings.css'
+    }
+
+    applicationMin {
         resource url:'css/sightings.css'
     }
 
