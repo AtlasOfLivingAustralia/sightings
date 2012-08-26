@@ -45,11 +45,11 @@
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
     <section class="sightings-block ui-corner-all">
         <a href="http://bie.ala.org.au/species/Notomys fuscus" target="_blank">
-            <r:img id="taxonImage" class="taxon-image ui-corner-all" uri="/images/Notomys-fuscus.jpg"/>
+            <img id="taxonImage" class="taxon-image ui-corner-all" src="${imageUrl}"/>
         </a>
         <div class="left" style="width:53%;padding-top:15px;">
-            <span class="scientificName">Notomys fuscus</span>
-            <span class="commonName">Dusky Hopping-mouse</span>
+            <span class="scientificName" id="scientificName">${scientificName}</span>
+            <span class="commonName" id="commonName">${commonName}</span>
             <div style="padding-top:10px;">
                 <div style="float:left;padding-right:20px;"><label for="count">Number seen</label>
                     <g:textField name="count" class="smartspinner" value="1"/></div>
@@ -61,7 +61,7 @@
             <p>Not the right species? To change identification, type a scientific or common name into
             the box below and choose from the auto-complete list.</p>
             <input type="text" value="" id="taxa" name="taxonText" class="name_autocomplete ac_input" style="width:75%" autocomplete="off">
-            <input type="hidden" name="lsid" id="lsid" value="urn:lsid:biodiversity.org.au:afd.taxon:dbb2125e-bf71-4388-b129-562e4d7a8eb4">
+            <input type="hidden" name="lsid" id="lsid" value="${guid}">
             <button class="ui-state-disabled" type="button" id="undoTaxon" disabled="disabled">Undo</button>
         </div>
     </section>
