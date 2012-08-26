@@ -164,15 +164,16 @@ var submitHandler = {
         var payload = $.extend(
             screenDate.getAll(),
             screenLocation.getAll(),
+            imageList.getAll(),
             {userId: userId, scientificName: 'Notomys fuscus', commonName: 'Dusky Hopping-mouse'}
         );
         $.ajax({
-            url: recordsServerUrl + "/submitRecord",
+            url: recordsServerUrl,
             method: 'POST',
             dataType: 'json',
             data: payload,
             success: function (data) {
-                alert(data.id);
+                alert(data.resp.id);
             }
         });
     }
