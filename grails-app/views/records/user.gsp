@@ -47,6 +47,9 @@
                 </section>
             </g:each>
         </section>
+        <section style="padding-bottom:20px;margin-left:10px;">
+            <a href="${grailsApplication.config.grails.serverURL}/upload/demo/">Add another sighting</a>
+        </section>
     </div>
     <r:script>
         $(function() {
