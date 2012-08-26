@@ -44,7 +44,7 @@
     <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
     <section class="sightings-block ui-corner-all">
-        <a href="http://bie.ala.org.au/species/Notomys fuscus" target="_blank">
+        <a href="http://bie.ala.org.au/species/${scientificName}" target="_blank">
             <img id="taxonImage" class="taxon-image ui-corner-all" src="${imageUrl}"/>
         </a>
         <div class="left" style="width:53%;padding-top:15px;">
