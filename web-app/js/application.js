@@ -165,7 +165,9 @@ var submitHandler = {
             screenDate.getAll(),
             screenLocation.getAll(),
             imageList.getAll(),
-            {userId: userId, scientificName: 'Notomys fuscus', commonName: 'Dusky Hopping-mouse'}
+            {userId: userId, scientificName: $('#scientificName').html(),
+                commonName: $('#commonName').html(),
+                guid: $('#lsid').val()}
         );
         $.ajax({
             url: recordsServerUrl,
@@ -173,7 +175,11 @@ var submitHandler = {
             dataType: 'json',
             data: payload,
             success: function (data) {
-                alert(data.resp.id);
+                if (data.error !== null) {
+                    alert(data.error.error);
+                } else {
+                    document.location.href = serverUrl + "/proxy/dummyGetRecords/";
+                }
             }
         });
     }
@@ -205,7 +211,7 @@ var taxonStack = {
     // set the current taxon
     set: function (guid, name) {
         // set name up front
-        $(".scientificName").html(name);
+        $("#scientificName").html(name);
         // and guid
         $('#lsid').val(guid);
         // get some metadata for the preferred common name and the pic
@@ -215,7 +221,7 @@ var taxonStack = {
             success: function(data) {
                 var commonName = data.commonName || "",
                     thumbnail = data.thumbnail || (serverUrl + "/images/noImage85.jpg");
-                $(".commonName").html(commonName);
+                $("#commonName").html(commonName);
                 $('#taxonImage').attr('src', thumbnail);
                 $('#taxonImage').parent().attr('href', bieUrl + "species/" + guid);
             }
