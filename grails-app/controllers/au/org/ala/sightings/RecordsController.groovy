@@ -17,7 +17,9 @@ class RecordsController {
                 // TODO: handle service errors
                 println records.error
             }
+            records = records.records
         }
+        println records
         [records: records]
     }
 
