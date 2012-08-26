@@ -251,6 +251,20 @@ $(function() {
                 that.refreshButtonStates('date');
             }});
         },
+        // collect all files for submission
+        getAll: function () {
+            var list = [];
+            $('#filesTable tr').each(function (i, row) {
+                list.push($(this).find('span.name').html());
+            });
+            if (list.length === 0) {
+                return {};
+            }
+            /*if (list.length === 1) {
+                return {associatedMedia: list[0]};
+            }*/
+            return {associatedMedia: list.join(',')};
+        },
         isAuto: function () {
             return $('#autoUse').is(':checked');
         },
