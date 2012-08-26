@@ -7,7 +7,9 @@ class ProxyController {
 
     def webService
     def username = 'mark.woolston@csiro.au' // until CAS is integrated
+    static mockRecords = []
 
+    /******* bookmarks ***************/
     def submitLocationBookmark = {
         params.each { println it }
         def serviceParams = [userId:username]
@@ -56,6 +58,7 @@ class ProxyController {
         render (contentType: "application/json", text: locs)
     }
 
+    /******* records ***************/
     /**
      * for testing only
      * simulates the submission of a fielddata record for testing and development
@@ -64,8 +67,10 @@ class ProxyController {
     def submitRecord() {
         def serviceParams = [userId:username]
         def media = []
-        params.associatedMedia.tokenize(',').each {
-            //media << 'http://localhost/' + grailsApplication.config.upload.images.path + '/' + it
+        if (params.associatedMedia) {
+            params.associatedMedia.tokenize(',').each {
+                media << grailsApplication.config.upload.images.url + it
+            }
         }
         params.remove('action')
         params.remove('controller')
@@ -74,22 +79,40 @@ class ProxyController {
             serviceParams.put it.key as String, it.value as String
         }
         serviceParams.associatedMedia = media
-        /*params.remove('controller')
-        params.remove('action')
-        def media = []
-        params['associatedMedia[]'].each {
-            println "media = " + it
-            media << grailsApplication.config.upload.images.path + '/' + it
-        }
-        params.associatedMedia = media*/
-        media.each { println it }
-        serviceParams.each {println it}
+//        media.each { println it }
+//        serviceParams.each {println it}
         def body = (serviceParams as JSON).toString()
         println body
+        def result
 
-        def result = webService.doPost(grailsApplication.config.ala.recordsServerURL, body)
+        if (grailsApplication.config.mock.records.service) {
+            def key = (body + new Date().toGMTString()).encodeAsMD5()
+            serviceParams.id = key
+            serviceParams.images = []
+            mockRecords << serviceParams
+            result = [error: null, resp: [id: key]]
+        } else {
+            result = webService.doPost(grailsApplication.config.ala.recordsServerURL, body)
+        }
 
         println "result = " + result
         render result as JSON
+    }
+
+    def dummyGetRecords() {
+        def records = [records: getRecords()]
+        render records as JSON
+    }
+
+    static getRecords() {
+        return mockRecords.reverse()
+    }
+
+    static void deleteRecord(String id) {
+        def target = mockRecords.find {it.id == params.id}
+        if (target) {
+            mockRecords - target
+        }
+        println "record ${id} deleted"
     }
 }
