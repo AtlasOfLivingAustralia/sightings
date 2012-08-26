@@ -21,7 +21,7 @@
         var serverUrl = "${ConfigurationHolder.config.grails.serverURL}",
             bieUrl = "${ConfigurationHolder.config.bie.baseURL}",
             userId = "mark.woolston@csiro.au",
-            recordsServerUrl = "${grailsApplication.config.ala.recordsServerURL}",
+            recordsServerUrl = serverUrl + "/proxy/submitRecord/",
             bookmarkServerUrl = "${ConfigurationHolder.config.ala.locationBookmarkServerURL}";
     </r:script>
     <r:require module="application"/>
