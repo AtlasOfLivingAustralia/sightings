@@ -62,11 +62,34 @@ class ProxyController {
      * jsonp
      */
     def submitRecord() {
-        params.remove('controller')
+        def serviceParams = [userId:username]
+        def media = []
+        params.associatedMedia.tokenize(',').each {
+            //media << 'http://localhost/' + grailsApplication.config.upload.images.path + '/' + it
+        }
         params.remove('action')
-        params.each { println it }
+        params.remove('controller')
+        params.remove('associatedMedia')
+        params.each {
+            serviceParams.put it.key as String, it.value as String
+        }
+        serviceParams.associatedMedia = media
+        /*params.remove('controller')
+        params.remove('action')
+        def media = []
+        params['associatedMedia[]'].each {
+            println "media = " + it
+            media << grailsApplication.config.upload.images.path + '/' + it
+        }
+        params.associatedMedia = media*/
+        media.each { println it }
+        serviceParams.each {println it}
+        def body = (serviceParams as JSON).toString()
+        println body
 
-        def result = [id: '23457635']
+        def result = webService.doPost(grailsApplication.config.ala.recordsServerURL, body)
+
+        println "result = " + result
         render result as JSON
     }
 }
