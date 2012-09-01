@@ -2,12 +2,28 @@ package au.org.ala.sightings
 
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
+import grails.util.GrailsUtil
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
+import org.joda.time.DateTime
 
 class ProxyController {
 
     def webService
     def username = 'mark.woolston@csiro.au' // until CAS is integrated
     static mockRecords = []
+
+    /**
+     * Do logouts through this app so we can invalidate the session.
+     *
+     * @param casUrl the url for logging out of cas
+     * @param appUrl the url to redirect back to after the logout
+     */
+    def logout = {
+        session.invalidate()
+        redirect(url:"${params.casUrl}?url=${params.appUrl}")
+    }
 
     /******* bookmarks ***************/
     def submitLocationBookmark = {
@@ -59,11 +75,7 @@ class ProxyController {
     }
 
     /******* records ***************/
-    /**
-     * for testing only
-     * simulates the submission of a fielddata record for testing and development
-     * jsonp
-     */
+    // TODO: move to records controller
     def submitRecord() {
         def serviceParams = [userId:username]
         def media = []
@@ -79,13 +91,23 @@ class ProxyController {
             serviceParams.put it.key as String, it.value as String
         }
         serviceParams.associatedMedia = media
-//        media.each { println it }
-//        serviceParams.each {println it}
+
+        // event date
+        def dt = new DateTime(params.year)
+        dt = dt.monthOfYear().setCopy(params.month as String)
+        dt = dt.dayOfMonth().setCopy(params.day as String)
+        if (params.hours) { dt = dt.hourOfDay().setCopy(params.hours as String) }
+        if (params.minutes) { dt = dt.minuteOfHour().setCopy(params.minutes as String) }
+        println dt
+
+        serviceParams.eventDate = dt.toString()
+
         def body = (serviceParams as JSON).toString()
         println body
         def result
 
         if (grailsApplication.config.mock.records.service) {
+            println "mocking"
             def key = (body + new Date().toGMTString()).encodeAsMD5()
             serviceParams.id = key
             serviceParams.images = []
@@ -109,10 +131,56 @@ class ProxyController {
     }
 
     static void deleteRecord(String id) {
-        def target = mockRecords.find {it.id == params.id}
+        def target = mockRecords.find {it.id == id}
         if (target) {
             mockRecords - target
         }
         println "record ${id} deleted"
     }
+
+    def reloadConfig = {
+        // reload system config
+        def resolver = new PathMatchingResourcePatternResolver()
+        def resource = resolver.getResource(ConfigurationHolder.config.grails.config.locations[0])
+        def stream = null
+
+        try {
+            stream = resource.getInputStream()
+            ConfigSlurper configSlurper = new ConfigSlurper(GrailsUtil.getEnvironment())
+            if(resource.filename.endsWith('.groovy')) {
+                def newConfig = configSlurper.parse(stream.text)
+                ConfigurationHolder.getConfig().merge(newConfig)
+            }
+            else if(resource.filename.endsWith('.properties')) {
+                def props = new Properties()
+                props.load(stream)
+                def newConfig = configSlurper.parse(props)
+                ConfigurationHolder.getConfig().merge(newConfig)
+            }
+            String res = "<ul>"
+            ConfigurationHolder.config.each { key, value ->
+                if (value instanceof Map) {
+                    res += "<p>" + key + "</p>"
+                    res += "<ul>"
+                    value.each { k1, v1 ->
+                        res += "<li>" + k1 + " = " + v1 + "</li>"
+                    }
+                    res += "</ul>"
+                }
+                else {
+                    res += "<li>${key} = ${value}</li>"
+                }
+            }
+            render res + "</ul>"
+        }
+        catch (GroovyRuntimeException gre) {
+            println "Unable to reload configuration. Please correct problem and try again: " + gre.getMessage()
+            render "Unable to reload configuration - " + gre.getMessage()
+        }
+        finally {
+            stream?.close()
+        }
+
+    }
+
 }
