@@ -61,6 +61,9 @@ if (!headerAndFooter.baseURL) {
 if (!upload.images.path) {
     upload.images.path = '/data/sightings/images'
 }
+if (!mock.records.service) {
+    mock.records.service = false
+}
 
 /******************************************************************************\
  *  GRAILS CONFIG
@@ -124,7 +127,7 @@ environments {
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
         ala.locationBookmarkServerURL = "http://${grails.hostname}:8085/sightings/proxy/dummyBookmarks"
-        ala.recordsServerURL = "http://${grails.hostname}:8085/sightings/proxy"
+        ala.recordsServerURL = "http://audax.ala.org.au:8080/fielddata/record/"
     }
     production {
         grails.logging.jul.usebridge = false
@@ -132,7 +135,7 @@ environments {
         grails.serverURL = "http://${grails.hostname}"
         upload.images.url = "http://${grails.hostname}/images/"
         ala.locationBookmarkServerURL = "http://audax.ala.org.au:8080/fielddata"
-        ala.recordsServerURL = "http://audax.ala.org.au:8080/fielddata"
+        ala.recordsServerURL = "http://audax.ala.org.au:8080/fielddata/record/"
     }
 }
 
@@ -146,6 +149,9 @@ log4j = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
+    appenders {
+        rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat6/sightings-stacktrace.log"
+    }
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
            'org.codehaus.groovy.grails.web.pages', //  GSP
