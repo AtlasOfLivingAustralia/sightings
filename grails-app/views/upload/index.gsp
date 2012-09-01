@@ -3,16 +3,7 @@
 <html>
 <head>
     <title>Report a sighting | Atlas of Living Australia</title>
-%{--    <meta name="viewport" content="width=device-width">--}%
     <meta name="layout" content="ala" />
-    <!-- Bootstrap CSS Toolkit styles -->
-    %{--<link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">--}%
-    <!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
-    <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
-    <!-- Bootstrap CSS fixes for IE6 -->
-    <!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
-    <!-- Bootstrap Image Gallery styles -->
-    <link rel="stylesheet" href="http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css">
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
@@ -376,16 +367,6 @@
         });*/
     });
 </r:script>
-<!-- The Templates plugin is included to render the upload/download listings -->
-<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js"></script>
-<!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
-<!-- The Canvas to Blob plugin is included for image resizing functionality -->
-<script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js"></script>
-<!-- Bootstrap JS and Bootstrap Image Gallery are not required, but included for the demo -->
-%{--<script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
-<script src="http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js"></script>--}%
-<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
 <r:layoutResources/>
 </body>
 </html>
