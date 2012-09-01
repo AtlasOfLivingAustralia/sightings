@@ -10,6 +10,9 @@ import com.drew.metadata.exif.GpsDirectory
 import com.drew.lang.GeoLocation
 import java.text.SimpleDateFormat
 import java.text.DecimalFormat
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
+import org.imgscalr.Scalr
 
 class ImageController {
 
@@ -92,6 +95,10 @@ class ImageController {
             //println "file is " + file
             if (file?.size) {  // will only have size if a file was selected
                 def filename = file.getOriginalFilename()
+                def bits = filename.tokenize('.')
+                def filenamename = bits[0]
+                def ext = bits[1]
+                def thumbFilename = filenamename + "-thumb." + ext
                 //println "filename=${filename}"
 
                 def colDir = new File(grailsApplication.config.upload.images.path as String)
@@ -100,6 +107,16 @@ class ImageController {
                 //println "saving ${filename} to ${f.absoluteFile}"
                 file.transferTo(f)
                 def exifMd = getExifMetadata(f)
+
+                // thumbnail it
+                BufferedImage img = ImageIO.read(f)
+                BufferedImage tn = Scalr.resize(img, 150, Scalr.OP_ANTIALIAS)
+                File tnFile = new File(colDir, thumbFilename)
+                try {
+                    ImageIO.write(tn, ext, tnFile)
+                } catch(IOException e) {
+                    println "Write error for " + tnFile.getPath() + ": " + e.getMessage()
+                }
 
                 def md = [
                         name: filename,
@@ -112,7 +129,8 @@ class ImageController {
                         verbatimLatitude: exifMd.latitude,
                         verbatimLongitude: exifMd.longitude,
                         url: grailsApplication.config.upload.images.url + filename,
-                        thumbnail_url: grailsApplication.config.upload.images.url + filename,
+                        thumbnail_url: grailsApplication.config.upload.images.url +
+                                thumbFilename,
                         delete_url: grailsApplication.config.grails.serverURL +
                                 "/image/delete?filename=" + filename,
                         delete_type: 'DELETE']
