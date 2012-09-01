@@ -16,10 +16,23 @@ modules = {
         resource url:'css/sightings.css'
     }
 
+    errors {
+        resource url: 'css/errors.css'
+    }
+
+    blueimpIE {
+        resource url: 'css/bootstrap-ie6.min.css'
+    }
+
     jQueryImageUpload {
 //        dependsOn 'jQuery'
         defaultBundle false
 //        resource url: 'js/jquery.ui.widget.js', disposition: 'head'
+        resource url: 'css/bootstrap-responsive.min.css'
+        resource url: 'css/bootstrap-image-gallery.min.css'
+        resource url: 'js/tmpl.min.js'
+        resource url: 'js/load-image.min.js'
+        resource url: 'js/canvas-to-blob.min.js'
         resource url: 'js/jquery.iframe-transport.js'
         resource url: 'js/jquery.fileupload.js'
         resource url: 'js/jquery.fileupload-fp.js'
@@ -30,6 +43,8 @@ modules = {
         resource url: 'css/jquery.fileupload-ui.css', disposition: 'head'
         resource url: 'js/cors/jquery.xdr-transport.js',
                 wrapper: { s -> "<!--[if gte IE 8]>$s<![endif]-->" }
+        resource url: 'css/bootstrap-ie6.min.css',
+                wrapper: { s -> "<!--[if lt IE 7]>$s<![endif]-->" }
     }
 
     /*jQueryUI19 {
