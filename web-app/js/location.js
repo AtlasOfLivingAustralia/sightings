@@ -414,8 +414,22 @@ var screenDate = {
         });
     },
     getAll: function () {
+        var dt = new DateTime().loadFromScreen(),
+            time = dt.time,
+            timeBits,
+            hours = "", minutes = "";
+        if (time !== null && time !== "") {
+            timeBits = time.split(':');
+            hours = timeBits[0];
+            minutes = timeBits[1];
+        }
         return {
-            eventDate: this.getDate() + " " + this.getTime()
+            eventDate: this.getDate() + " " + this.getTime(),
+            year: dt.year,
+            month: dt.month,
+            day: dt.day,
+            hours: hours,
+            minutes: minutes
         }
     },
     getDate: function () {
@@ -428,6 +442,7 @@ var screenDate = {
         }
     },
     getTime: function () {
+        if (this.hoursField.val() === "") { return ""; }
         return this.hoursField.val() + ':' + this.minutesField.val();
     },
     setTime: function (time, noNotify) {
@@ -459,7 +474,7 @@ function DateTime () {
 }
 
 DateTime.prototype.isValid = function () {
-    return hasValue(this.year) && hasValue(this.month) && hasValue(this.day) && hasValue(this.time);
+    return hasValue(this.year) && hasValue(this.month) && hasValue(this.day);
 };
 
 DateTime.prototype.getDateForScreen = function () {
