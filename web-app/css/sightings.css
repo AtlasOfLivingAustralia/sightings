@@ -266,6 +266,10 @@ img.lookup-off {
     font-weight: normal;
 }
 
+.span5 {
+    width: auto !important; /* override blueimp width limit */
+}
+
 /* dialogs */
 .noTitle .ui-dialog-titlebar { display: none; }
 
