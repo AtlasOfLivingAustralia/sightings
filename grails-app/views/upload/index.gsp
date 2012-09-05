@@ -12,10 +12,12 @@
         var serverUrl = "${ConfigurationHolder.config.grails.serverURL}",
             bieUrl = "${ConfigurationHolder.config.bie.baseURL}",
             userId = "mark.woolston@csiro.au",
+            guid = "${guid}",
             recordsServerUrl = serverUrl + "/proxy/submitRecord/",
             bookmarkServerUrl = "${ConfigurationHolder.config.ala.locationBookmarkServerURL}";
     </r:script>
     <r:require module="application"/>
+    <r:require module="upload"/>
     <r:require module="jQueryImageUpload"/>
     <r:require module="jQueryUI"/>
     <r:require module="jQueryCookie"/>
@@ -35,11 +37,11 @@
     <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
     <section class="sightings-block ui-corner-all">
-        <a href="http://bie.ala.org.au/species/${scientificName}" target="_blank">
+        <a href="http://bie.ala.org.au/species/${guid}" target="_blank">
             <img id="taxonImage" class="taxon-image ui-corner-all" src="${imageUrl}"/>
         </a>
         <div class="left" style="width:53%;padding-top:15px;">
-            <span class="scientificName" id="scientificName">${scientificName}</span>
+            <span class="scientificName" id="scientificName">Loading..</span>
             <span class="commonName" id="commonName">${commonName}</span>
             <div style="padding-top:10px;">
                 <div style="float:left;padding-right:20px;"><label for="count">Number seen</label>
@@ -126,6 +128,7 @@
                     <button type="button" id="centerOnPin">Centre map on current pin</button>
                     <button type="button" id="pinToCenter">Move pin to centre of map</button>
                     <button type="button" id="showOz">Show whole of Australia</button>
+                    <button type="button" id="zoomPin">Zoom into pin</button>
                     <button type="button" id="showWorld">Show world</button>
                     %{--<button type="button" id="discardPin">Discard pin</button>--}%
                     <div id="markers" style="position:absolute; top:370px; left:680px; width:200px; height:100px;">
@@ -196,7 +199,7 @@
     <!-- NOTES -->
     <div class="heading ui-corner-left"><h2>Notes</h2><r:img uri="/images/notes.png"/></div>
     <section class="sightings-block ui-corner-all">
-        <label for="notes">Notes</label><g:textArea name="notes" rows="8" cols="80"/>
+        <label for="occurrenceRemarks">Notes</label><g:textArea name="occurrenceRemarks" rows="8" cols="80"/>
     </section>
 </div>
 <!-- modal-gallery is the modal dialog used for the image gallery -->
