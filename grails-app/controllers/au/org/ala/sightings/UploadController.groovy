@@ -20,6 +20,11 @@ class UploadController {
 
     def demo() {}
 
+    def media() {
+        def model = [physicalMapScales: scales]
+        model
+    }
+
     private Map getDemoSpecies(id) {
         switch (id) {
             case '1': return [scientificName: 'Notomys fuscus', commonName: 'Dusky Hopping-mouse',
