@@ -27,6 +27,11 @@
         <section id="mySightings">
             <g:each in="${records}" var="rec">
                 <section class="record" id="${rec.id}">
+                    %{--<div class="media">
+                        <g:if test="${rec.images}">
+                            <img src="${rec.images[0].thumb}"/>
+                        </g:if>
+                    </div>--}%
                     <div class="what">
                         <span class="scientificName">${rec.scientificName}</span><br/>
                         <span class="commonName">${rec.commonName}</span><br/>
@@ -43,6 +48,13 @@
                     <div class="actions">
                         <button type="button" class="delete">Remove</button>
                         <button type="button" class="edit">Edit</button>
+                    </div>
+                    <div class="extraMedia">
+                        <g:if test="${rec.images.size() > 0}">
+                            <g:each in="${rec.images[0..-1]}" var="img">
+                                <img src="${img.thumb}"/>
+                            </g:each>
+                        </g:if>
                     </div>
                 </section>
             </g:each>
