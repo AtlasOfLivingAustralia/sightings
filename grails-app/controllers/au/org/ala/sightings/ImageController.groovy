@@ -94,7 +94,7 @@ class ImageController {
             MultipartFile file = request.getFile('files')
             //println "file is " + file
             if (file?.size) {  // will only have size if a file was selected
-                def filename = file.getOriginalFilename()
+                def filename = file.getOriginalFilename().replaceAll(' ','_')
                 def bits = filename.tokenize('.')
                 def filenamename = bits[0]
                 def ext = bits[1]
@@ -110,7 +110,7 @@ class ImageController {
 
                 // thumbnail it
                 BufferedImage img = ImageIO.read(f)
-                BufferedImage tn = Scalr.resize(img, 150, Scalr.OP_ANTIALIAS)
+                BufferedImage tn = Scalr.resize(img, 100, Scalr.OP_ANTIALIAS)
                 File tnFile = new File(colDir, thumbFilename)
                 try {
                     ImageIO.write(tn, ext, tnFile)
