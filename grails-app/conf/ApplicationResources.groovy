@@ -6,14 +6,19 @@ modules = {
     application {
         defaultBundle false
         resource url:'js/application.js'
-        resource url:'js/image-handler.js'
-        resource url:'js/bookmarks.js'
-        resource url:'js/location.js'
         resource url:'css/sightings.css'
     }
 
     applicationMin {
         resource url:'css/sightings.css'
+    }
+
+    upload {
+        defaultBundle false
+        resource url:'js/image-handler.js'
+        resource url:'js/bookmarks.js'
+        resource url:'js/location.js'
+        resource url:'js/sightings.js'
     }
 
     errors {
