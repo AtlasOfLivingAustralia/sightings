@@ -35,9 +35,6 @@ if (!bie.searchPath) {
 if (!biocache.baseURL) {
     biocache.baseURL = "http://biocache.ala.org.au/"
 }
-if (!fielddata.baseURL) {
-    fielddata.baseURL = "http://audax.ala.org.au:8080/fielddata"
-}
 if (!spatial.baseURL) {
     spatial.baseURL = "http://spatial.ala.org.au/"
 }
@@ -126,8 +123,9 @@ environments {
         //grails.hostname = "192.168.0.18"
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
-        ala.locationBookmarkServerURL = "http://${grails.hostname}:8085/sightings/proxy/dummyBookmarks"
-        ala.recordsServerURL = "http://audax.ala.org.au:8080/fielddata/record/"
+        //ala.locationBookmarkServerURL = "http://${grails.hostname}:8085/sightings/proxy/dummyBookmarks"
+        ala.locationBookmarkServerURL = "http://localhost:8086/fielddata"
+        ala.recordsServerURL = "http://localhost:8086/fielddata/record/"
     }
     production {
         grails.logging.jul.usebridge = false
