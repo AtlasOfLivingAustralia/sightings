@@ -35,7 +35,7 @@ class ProxyController {
             }
         }
         println serviceParams
-        def result = webService.doPost(ConfigurationHolder.config.fielddata.baseURL +
+        def result = webService.doPost(ConfigurationHolder.config.ala.locationBookmarkServerURL +
                 '/location', (serviceParams as JSON).toString())
 
         if (result.error) {
@@ -48,14 +48,15 @@ class ProxyController {
     }
 
     def deleteAllLocationBookmarks = {
-        def responseCode = webService.doDelete(ConfigurationHolder.config.fielddata.baseURL + "/location/user/" + username)
+        def responseCode = webService.doDelete(ConfigurationHolder.config.ala.locationBookmarkServerURL +
+                "/location/user/" + username)
         def resp = [code: responseCode.toString()]
         render resp as JSON
     }
 
     def deleteLocationBookmark(String id)  {
         //params.each {println it}
-        def responseCode = webService.doDelete(ConfigurationHolder.config.fielddata.baseURL + "/location/" + id)
+        def responseCode = webService.doDelete(ConfigurationHolder.config.ala.locationBookmarkServerURL + "/location/" + id)
         //println "Code = ${responseCode} trying to delete bookmark ${id}"
         def resp = [code: responseCode.toString()]
         render resp as JSON
@@ -78,29 +79,46 @@ class ProxyController {
     // TODO: move to records controller
     def submitRecord() {
         def serviceParams = [userId:username]
-        def media = []
-        if (params.associatedMedia) {
-            params.associatedMedia.tokenize(',').each {
-                media << grailsApplication.config.upload.images.url + it
-            }
-        }
-        params.remove('action')
-        params.remove('controller')
-        params.remove('associatedMedia')
-        params.each {
-            serviceParams.put it.key as String, it.value as String
-        }
-        serviceParams.associatedMedia = media
 
         // event date
-        def dt = new DateTime(params.year)
-        dt = dt.monthOfYear().setCopy(params.month as String)
+        /*def dt = new DateTime(params.year)
+        dt = dt.monthOfYear().setCopy(params.month?.toInteger() as int)
         dt = dt.dayOfMonth().setCopy(params.day as String)
         if (params.hours) { dt = dt.hourOfDay().setCopy(params.hours as String) }
         if (params.minutes) { dt = dt.minuteOfHour().setCopy(params.minutes as String) }
         println dt
-
         serviceParams.eventDate = dt.toString()
+        println serviceParams.eventDate*/
+
+        // alternate event date
+        def dateStr = params.year
+        if (params.month) {
+            dateStr += '-' + params.month
+            if (params.day) {
+                dateStr += '-' + params.day
+                if (params.hours && params.minutes) {
+                    dateStr += 'T' + params.hours + ':' + params.minutes
+                }
+            }
+        }
+        serviceParams.eventDate = dateStr
+
+        // media
+        println grailsApplication.config.upload.images.url
+        def media = []
+        if (params.associatedMedia) {
+            params.associatedMedia.tokenize(',').each {
+                media << grailsApplication.config.upload.images.url + it.replaceAll(' ','_')
+            }
+        }
+        serviceParams.associatedMedia = media
+
+        // remaining parameters
+        params.each {
+            if (!(it.key in ['action','controller','associatedMedia','year','month','day','hours','minutes','eventDate'])) {
+                serviceParams.put it.key as String, it.value as String
+            }
+        }
 
         def body = (serviceParams as JSON).toString()
         println body
