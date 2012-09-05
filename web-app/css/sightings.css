@@ -61,7 +61,7 @@ section.sightings-block button {
     font-weight: bold;
 }
 
-.commonName {
+section.sightings-block .commonName {
     font-size: 1.2em;
     padding-left: 25px;
 }
@@ -342,6 +342,10 @@ section.record {
     border-bottom: 1px solid #ccc;
 }
 
+div.media {
+    width: 102px;
+    display: inline-block;
+}
 div.what {
     width: 25%;
     display: inline-block;
@@ -357,4 +361,50 @@ div.what {
 .actions {
     width: 18%;
     display: inline-block;
+}
+
+/** for multi-image upload table **/
+#multiFilesTable td.identification {
+    text-align: left;
+}
+
+#multiFilesTable {
+    margin-bottom: 0;
+    clear: both;
+}
+
+#multiFilesTable td {
+    text-align: left;
+    vertical-align: middle;
+    padding-right: 15px;
+}
+
+#multiFilesTable td.imageDate {
+    margin-left: 20px;
+    min-width: 120px;
+}
+
+#multiFilesTable td.imageLocation {
+    margin-left: 20px;
+    min-width: 120px;
+}
+
+#addImageButton {
+    float: left;
+    margin: 3px 20px 3px 5px;
+}
+
+#submitImagesButton {
+    float: left;
+    margin: 3px 0 3px 15px;
+}
+
+#intro-text {
+    font-size: 1.2em;
+    width: 650px;
+    float: left;
+}
+
+tr.record {
+    min-height: 150px;
 }
