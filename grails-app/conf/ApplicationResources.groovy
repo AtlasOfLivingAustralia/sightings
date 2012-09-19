@@ -25,6 +25,10 @@ modules = {
         resource url: 'css/errors.css'
     }
 
+    bbq {
+        resource url: 'js/jquery.ba-bbq.min.js'
+    }
+
     blueimpIE {
         resource url: 'css/bootstrap-ie6.min.css'
     }
