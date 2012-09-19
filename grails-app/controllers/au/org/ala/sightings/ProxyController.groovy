@@ -104,7 +104,7 @@ class ProxyController {
         serviceParams.eventDate = dateStr
 
         // media
-        println grailsApplication.config.upload.images.url
+        //println grailsApplication.config.upload.images.url
         def media = []
         if (params.associatedMedia) {
             params.associatedMedia.tokenize(',').each {
@@ -159,7 +159,7 @@ class ProxyController {
     def reloadConfig = {
         // reload system config
         def resolver = new PathMatchingResourcePatternResolver()
-        def resource = resolver.getResource(ConfigurationHolder.config.grails.config.locations[0])
+        def resource = resolver.getResource(grailsApplication.config.grails.config.locations[0])
         def stream = null
 
         try {
@@ -167,16 +167,16 @@ class ProxyController {
             ConfigSlurper configSlurper = new ConfigSlurper(GrailsUtil.getEnvironment())
             if(resource.filename.endsWith('.groovy')) {
                 def newConfig = configSlurper.parse(stream.text)
-                ConfigurationHolder.getConfig().merge(newConfig)
+                grailsApplication.getConfig().merge(newConfig)
             }
             else if(resource.filename.endsWith('.properties')) {
                 def props = new Properties()
                 props.load(stream)
                 def newConfig = configSlurper.parse(props)
-                ConfigurationHolder.getConfig().merge(newConfig)
+                grailsApplication.getConfig().merge(newConfig)
             }
             String res = "<ul>"
-            ConfigurationHolder.config.each { key, value ->
+            grailsApplication.config.each { key, value ->
                 if (value instanceof Map) {
                     res += "<p>" + key + "</p>"
                     res += "<ul>"
