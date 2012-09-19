@@ -345,22 +345,35 @@ section.record {
 div.media {
     width: 102px;
     display: inline-block;
+    vertical-align: middle;
 }
 div.what {
     width: 25%;
     display: inline-block;
+    vertical-align: top;
 }
 .when {
     width: 20%;
     display: inline-block;
+    vertical-align: top;
 }
 .where {
     width: 25%;
     display: inline-block;
+    vertical-align: top;
 }
 .actions {
-    width: 18%;
+    width: 29%;
     display: inline-block;
+    vertical-align: middle;
+}
+
+.actions img {
+    padding-top: 4px;
+}
+
+.last-updated, .created {
+    color: #777;
 }
 
 /** for multi-image upload table **/
@@ -407,4 +420,55 @@ div.what {
 
 tr.record {
     min-height: 150px;
+}
+
+#sortControls {
+    background-color: #e3e3e3;
+    color: black;
+    font-weight: bold;
+    font-size: 1.1em;
+    border-top: #333 solid 1px;
+    border-bottom: #333 solid 1px;
+    padding-left: 15px;
+    height: 35px;
+}
+
+#sortControls div {
+    padding-top: 6px;
+}
+
+div.sort {
+    font-weight: normal !important;
+    display: inline-block;
+}
+
+div.sort label {
+    font-weight: normal !important;
+    padding-right: 0;
+}
+
+#sortOrder {
+    padding-top: 0 !important;
+    display: inline;
+    position: relative;
+}
+
+#sort-asc {
+    position: relative;
+    top: -6px;
+    left: 0;
+    cursor: pointer;
+}
+
+#sort-desc {
+    position: relative;
+    top: 2px;
+    left: -10px;
+    cursor: pointer;
+}
+
+.whereTitle {
+    width: 20%;
+    display: inline-block;
+    vertical-align: top;
 }
