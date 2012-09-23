@@ -201,6 +201,9 @@
     <section class="sightings-block ui-corner-all">
         <label for="occurrenceRemarks">Notes</label><g:textArea name="occurrenceRemarks" rows="8" cols="80"/>
     </section>
+    <section style="clear:both; padding:20px 0 0 340px;">
+        <button type="button" id="alt-submit">Submit record</button>
+    </section>
 </div>
 <!-- modal-gallery is the modal dialog used for the image gallery -->
 <div id="modal-gallery" class="modal modal-gallery hide fade" data-filter=":odd">

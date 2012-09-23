@@ -18,7 +18,7 @@ td {
     float: left;
 }
 
-#submit {
+#submit, #alt-submit {
     margin-left: 80px;
     font-size: 1.6em;
     color: #333A3F;
@@ -98,7 +98,6 @@ section.sightings-block {
     border: 3px solid #ccc;
     padding: 5px 5px 5px 15px;
     background-color: white;
-    float: left;
     margin: 20px 0 0 0;
     position: relative;
 }

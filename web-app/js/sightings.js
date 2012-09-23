@@ -131,7 +131,7 @@ var submitHandler = {
     init: function () {
         var that = this;
         // wire submit button
-        $('#submit').click(function () {
+        $('#submit,#alt-submit').click(function () {
             var missing = [];
             // check that we have the minimum data
             if (!screenDate.isValid()) {
