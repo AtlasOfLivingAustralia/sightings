@@ -24,37 +24,27 @@ if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
 println "(*) grails.config.locations = ${grails.config.locations}"
 
 /******************************************************************************\
- *  ATLAS SERVERS
-\******************************************************************************/
-if (!bie.baseURL) {
-    bie.baseURL = "http://bie.ala.org.au/"
-}
-if (!bie.searchPath) {
-    bie.searchPath = "/search"
-}
-if (!biocache.baseURL) {
-    biocache.baseURL = "http://biocache.ala.org.au/"
-}
-if (!spatial.baseURL) {
-    spatial.baseURL = "http://spatial.ala.org.au/"
-}
-if (!ala.baseURL) {
-    ala.baseURL = "http://www.ala.org.au/"
-}
+ * ALA standard config
+ \******************************************************************************/
 
-//if (!ala.locationBookmarkServerURL) {
-    //ala.locationBookmarkServerURL = "http://localhost:8085/sightings/proxy/dummyBookmarks"
-    //ala.locationBookmarkServerURL = "http://audax.ala.org.au:8080/fielddata"
-//}
-//println ala.locationBookmarkServerURL
-
-if (!headerAndFooter.baseURL) {
-    headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
-}
+appName = 'sightings'
+security.cas.uriFilterPattern = '/,/records/user,/upload/index/*'
+headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
+security.cas.casServerName = 'https://auth.ala.org.au'
+security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
+security.cas.loginUrl = 'https://auth.ala.org.au/cas/login'
+security.cas.logoutUrl = 'https://auth.ala.org.au/cas/logout'
+security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
+security.cas.bypass = false
+ala.baseURL = "http://www.ala.org.au/"
+bie.baseURL = "http://bie.ala.org.au/"
+bie.searchPath = "/search"
+grails.project.groupId = au.org.ala // change this to alter the default package name and Maven publishing destination
 
 /******************************************************************************\
  *  APP CONFIG
  \******************************************************************************/
+
 if (!upload.images.path) {
     upload.images.path = '/data/sightings/images'
 }
@@ -120,12 +110,13 @@ environments {
     development {
         grails.logging.jul.usebridge = true
         grails.hostname = "localhost"
+        // grails.hostname = "moyesyside.ala.org.au"
         //grails.hostname = "192.168.0.18"
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
         //ala.locationBookmarkServerURL = "http://${grails.hostname}:8085/sightings/proxy/dummyBookmarks"
-        ala.locationBookmarkServerURL = "http://localhost:8086/fielddata"
-        ala.recordsServerURL = "http://localhost:8086/fielddata/record/"
+        ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata"
+        ala.recordsServerURL = "http://${grails.hostname}:8086/fielddata/record/"
     }
     production {
         grails.logging.jul.usebridge = false
