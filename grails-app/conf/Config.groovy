@@ -28,7 +28,7 @@ println "(*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 
 appName = 'sightings'
-security.cas.uriFilterPattern = '/,/records/user,/upload/index/*'
+security.cas.uriFilterPattern = '/,/records/user,/upload/index/.*'
 headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 security.cas.casServerName = 'https://auth.ala.org.au'
 security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
