@@ -92,7 +92,7 @@
 <body class="${pageProperty(name:'body.class')}" id="${pageProperty(name:'body.id')}" onload="${pageProperty(name:'body.onload')}">
 <div id="wrapper">
 
-    <hf:banner logoutUrl="${ConfigurationHolder.config.grails.serverURL}/public/logout"/>
+    <hf:banner logoutUrl="${ConfigurationHolder.config.grails.serverURL}/proxy/logout"/>
 
     <hf:menu/>
 
