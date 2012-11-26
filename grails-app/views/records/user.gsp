@@ -11,7 +11,7 @@
         var serverUrl = "${grailsApplication.config.grails.serverURL}",
             bieUrl = "${grailsApplication.config.bie.baseURL}",
             biocacheUrl = "${grailsApplication.config.biocache.baseURL}",
-            userId = "mark.woolston@csiro.au",
+            //userId = "mark.woolston@csiro.au",
             recordsServerUrl = serverUrl + "/proxy/submitRecord/",
             bookmarkServerUrl = "${grailsApplication.config.ala.locationBookmarkServerURL}";
     </r:script>
@@ -26,7 +26,6 @@
 <div class="inner">
     <div class="page-header">
         <h1>My sightings</h1>
-
         <p>This is a simple list of the sightings you have submitted. You can filter, sort and map your
         sightings using the Atlas's
         <a href="${grailsApplication.config.biocache.baseURL}occurrences/search?q=data_resource_uid:dr364&fq=user_id:robyn.lawrence@csiro.au">occurrence explorer</a>.</p>

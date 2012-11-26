@@ -2,18 +2,24 @@ package au.org.ala.sightings
 
 class UploadController {
 
+    def authService
+
     def index(String id) {
         def model = [physicalMapScales: scales]
         if (id && id.startsWith("urn:lsid")) {
             // TODO bie lookup ?
             println "id is a lsid"
             model['guid'] = id
+
         } else if (id) {
             // treat this as a demo index
             model += getDemoSpecies(id)
         } else {
             model += getDemoSpecies('1')
         }
+
+        model['userId'] = authService.userId()
+        model['userName'] = authService.username()
         //println model
         model
     }

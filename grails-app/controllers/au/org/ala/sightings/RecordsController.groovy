@@ -3,9 +3,15 @@ package au.org.ala.sightings
 class RecordsController {
 
     def webService
-    def username = 'mark.woolston@csiro.au' // until CAS is integrated
+    def authService
+    //def username = 'mark.woolston@csiro.au' // until CAS is integrated
 
     def user() {
+
+        def userId = authService.userId()
+        println("userId : " + userId)
+        println("username : " + authService.username())
+
         // handle sort options
         def opts = ""
         if (params.sort) {
@@ -21,7 +27,7 @@ class RecordsController {
             records = ProxyController.getRecords()
         } else {
             records = webService.getJson(grailsApplication.config.ala.recordsServerURL +
-            "user/" + username + opts)
+            "user/" + userId + opts)
             if (records.error) {
                 // TODO: handle service errors
                 println records.error

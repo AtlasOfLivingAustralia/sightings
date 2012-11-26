@@ -11,7 +11,8 @@
     <r:script disposition="head">
         var serverUrl = "${ConfigurationHolder.config.grails.serverURL}",
             bieUrl = "${ConfigurationHolder.config.bie.baseURL}",
-            userId = "mark.woolston@csiro.au",
+            userId = "${userId}",
+            userName = "${userName}",
             guid = "${guid}",
             recordsServerUrl = serverUrl + "/proxy/submitRecord/",
             bookmarkServerUrl = "${ConfigurationHolder.config.ala.locationBookmarkServerURL}";

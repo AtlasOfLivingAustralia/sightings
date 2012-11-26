@@ -11,7 +11,7 @@ import org.joda.time.DateTime
 class ProxyController {
 
     def webService
-    def username = 'mark.woolston@csiro.au' // until CAS is integrated
+    def authService
     static mockRecords = []
 
     /**
@@ -28,7 +28,7 @@ class ProxyController {
     /******* bookmarks ***************/
     def submitLocationBookmark = {
         params.each { println it }
-        def serviceParams = [userId:username]
+        def serviceParams = [userId:authService.userId()]
         params.each {
             if (!(it in ['action','controller'])) {
                 serviceParams.put it.key as String, it.value as String
@@ -49,7 +49,7 @@ class ProxyController {
 
     def deleteAllLocationBookmarks = {
         def responseCode = webService.doDelete(ConfigurationHolder.config.ala.locationBookmarkServerURL +
-                "/location/user/" + username)
+                "/location/user/" + authService.userId())
         def resp = [code: responseCode.toString()]
         render resp as JSON
     }
@@ -78,7 +78,7 @@ class ProxyController {
     /******* records ***************/
     // TODO: move to records controller
     def submitRecord() {
-        def serviceParams = [userId:username]
+        def serviceParams = [userId:authService.userId()]
 
         // event date
         /*def dt = new DateTime(params.year)
