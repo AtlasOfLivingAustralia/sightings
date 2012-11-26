@@ -457,6 +457,9 @@ var screenDate = {
     isValid: function () {
         return new DateTime().loadFromScreen().isValid();
     },
+    isEmpty: function () {
+        return this.dateField == null;
+    },
     addListener: function(listener) {
         this.listeners.push(listener);
     },
@@ -479,7 +482,7 @@ DateTime.prototype.isValid = function () {
 
 DateTime.prototype.getDateForScreen = function () {
     //console.log(this.isValid());
-    if (this.isValid()) {
+    if (!this.isEmpty() && this.isValid()) {
         return this.day + "-" + this.month + "-" + this.year;
     } else {
         return "";
