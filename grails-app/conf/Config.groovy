@@ -126,12 +126,10 @@ environments {
     production {
         grails.logging.jul.usebridge = false
         grails.hostname = "sightings.ala.org.au"
-        serverName = "${grails.hostname}"
-        contextPath = "/"
+        serverName = "http://${grails.hostname}"
+        contextPath = ""
         grails.serverURL = "http://${grails.hostname}"
         upload.images.url = "http://${grails.hostname}/images/"
-//        ala.locationBookmarkServerURL = "http://audax.ala.org.au:8080/fielddata"
-//        ala.recordsServerURL = "http://audax.ala.org.au:8080/fielddata/record/"
         ala.locationBookmarkServerURL = "http://fielddata.ala.org.au"
         ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
     }
