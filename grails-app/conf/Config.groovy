@@ -127,7 +127,7 @@ environments {
         grails.logging.jul.usebridge = false
         grails.hostname = "sightings.ala.org.au"
         serverName = "${grails.hostname}"
-        contextPath = "/"
+        contextPath = "/sightings"
         grails.serverURL = "http://${grails.hostname}"
         upload.images.url = "http://${grails.hostname}/images/"
 //        ala.locationBookmarkServerURL = "http://audax.ala.org.au:8080/fielddata"
