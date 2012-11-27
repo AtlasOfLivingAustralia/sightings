@@ -144,6 +144,7 @@
     <!-- MEDIA -->
     <div class="heading ui-corner-left"><h2>Media</h2><r:img uri="/images/media.png"/></div>
     <section class="sightings-block ui-corner-all">
+        <label for="addImageButtonLarge">Use the button to select one or more images or drag and drop your images into this page.</label>
 
     <!-- The file upload form used as target for the file upload widget -->
     <g:form name="fileupload" controller="image" action="upload" method="POST" enctype="multipart/form-data">
