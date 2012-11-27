@@ -199,7 +199,6 @@ var Bookmarks = {
             // use the select options to tell us whether the bookmarks have been loaded
             bookmarkOptions = this.$locationBookmarks.get(0).options,
             // create a delete element that removes the bookmark
-            deleteImageUrl = serverUrl + "/images/ala/delete.png",
             $deleteLink = $('<img src="' + deleteImageUrl + '" alt="delete"/>')
                 .click(function() {
                     that.requestDelete($(this).parent().data('location'));

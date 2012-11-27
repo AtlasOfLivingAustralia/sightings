@@ -15,7 +15,8 @@
             userName = "${userName}",
             guid = "${guid}",
             recordsServerUrl = serverUrl + "/proxy/submitRecord/",
-            bookmarkServerUrl = "${ConfigurationHolder.config.ala.locationBookmarkServerURL}";
+            bookmarkServerUrl = "${ConfigurationHolder.config.ala.locationBookmarkServerURL}",
+            deleteImageUrl = "${resource(dir:'images/ala',file:'delete.png')}";
     </r:script>
     <r:require module="application"/>
     <r:require module="upload"/>
