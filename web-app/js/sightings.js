@@ -99,12 +99,12 @@ var taxon = {
             this.bieUrl = bieUrl + 'species/' + guid;
             // lookup taxon details in bie
             $.ajax({
-                url: bieUrl + 'ws/species/shortProfile/' + guid + '.json',
+                url: bieUrl + 'ws/species/info/' + guid + '.json',
                 dataType: 'jsonp',
                 success: function (data) {
-                    that.scientificName = data.scientificName;
-                    that.commonName = data.commonName;
-                    that.imageUrl = data.thumbnail;
+                    that.scientificName = data.taxonConcept.name;
+                    that.commonName = data.taxonConcept.commonNameSingle;
+                    that.imageUrl = data.taxonConcept.smallImageUrl;
                     that.putToScreen();
                 }
             });
@@ -208,11 +208,11 @@ var taxonStack = {
         $('#lsid').val(guid);
         // get some metadata for the preferred common name and the pic
         $.ajax({
-            url: bieUrl + "species/shortProfile/" + guid + ".json",
+            url: bieUrl + "species/info/" + guid + ".json",
             dataType: 'jsonp',
             success: function(data) {
-                var commonName = data.commonName || "",
-                    thumbnail = data.thumbnail || (serverUrl + "/images/noImage85.jpg");
+                var commonName = data.taxonConcept.commonNameSingle || "",
+                    thumbnail = data.taxonConcept.smallImageUrl || (serverUrl + "/images/noImage85.jpg");
                 $("#commonName").html(commonName);
                 $('#taxonImage').attr('src', thumbnail);
                 $('#taxonImage').parent().attr('href', bieUrl + "species/" + guid);
