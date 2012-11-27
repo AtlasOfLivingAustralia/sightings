@@ -70,9 +70,10 @@ var Bookmarks = {
         });
     },
     load: function () {
+       // alert( bookmarkServerUrl + "user/" + userId);
         var that = this;
         $.ajax({
-            url: bookmarkServerUrl + "/location/user/" + userId,
+            url: bookmarkServerUrl + "user/" + userId,
             dataType: 'jsonp',
             success: function (data) {
                 that.injectBookmarksIntoLists(data.locations);

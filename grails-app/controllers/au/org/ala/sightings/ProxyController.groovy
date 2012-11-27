@@ -34,9 +34,11 @@ class ProxyController {
                 serviceParams.put it.key as String, it.value as String
             }
         }
+
+        serviceParams.put "userId", authService.userId()
+
         println serviceParams
-        def result = webService.doPost(ConfigurationHolder.config.ala.locationBookmarkServerURL +
-                '/location', (serviceParams as JSON).toString())
+        def result = webService.doPost(ConfigurationHolder.config.ala.locationBookmarkServerURL, (serviceParams as JSON).toString())
 
         if (result.error) {
             println "Error: " + result.error
@@ -48,15 +50,17 @@ class ProxyController {
     }
 
     def deleteAllLocationBookmarks = {
-        def responseCode = webService.doDelete(ConfigurationHolder.config.ala.locationBookmarkServerURL +
-                "/location/user/" + authService.userId())
+        def url = ConfigurationHolder.config.ala.locationBookmarkServerURL + "user/" + authService.userId()
+        println("Delete all bookmarks for: " + url)
+        def responseCode = webService.doDelete(url)
         def resp = [code: responseCode.toString()]
         render resp as JSON
     }
 
     def deleteLocationBookmark(String id)  {
         //params.each {println it}
-        def responseCode = webService.doDelete(ConfigurationHolder.config.ala.locationBookmarkServerURL + "/location/" + id)
+        def url = ConfigurationHolder.config.ala.locationBookmarkServerURL + id
+        def responseCode = webService.doDelete(url)
         //println "Code = ${responseCode} trying to delete bookmark ${id}"
         def resp = [code: responseCode.toString()]
         render resp as JSON
@@ -198,7 +202,5 @@ class ProxyController {
         finally {
             stream?.close()
         }
-
     }
-
 }

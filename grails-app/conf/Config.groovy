@@ -28,7 +28,7 @@ println "(*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 
 appName = 'sightings'
-security.cas.uriFilterPattern = '/,/records/user,/upload/index/.*'
+security.cas.uriFilterPattern = '/,/records/user,/mine,/mine/,/upload/index/.*,/proxy/submitLocationBookmark,/proxy/deleteAllLocationBookmarks,/proxy/deleteLocationBookmark,/proxy/deleteLocationBookmark/.*'
 headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 security.cas.casServerName = 'https://auth.ala.org.au'
 security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
@@ -116,12 +116,10 @@ environments {
         //grails.hostname = "192.168.0.18"
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
-        //ala.locationBookmarkServerURL = "http://${grails.hostname}:8085/sightings/proxy/dummyBookmarks"
-//        ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata"
-  //      ala.recordsServerURL = "http://${grails.hostname}:8086/fielddata/record/"
-        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au"
+        //ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata/location/"
+        //ala.recordsServerURL = "http://${grails.hostname}:8086/fielddata/record/"
+        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
         ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
-
     }
     production {
         grails.logging.jul.usebridge = false
@@ -130,7 +128,7 @@ environments {
         contextPath = ""
         grails.serverURL = "http://${grails.hostname}"
         upload.images.url = "http://${grails.hostname}/images/"
-        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au"
+        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
         ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
     }
 }
@@ -142,18 +140,20 @@ log4j = {
     // Example of changing the log pattern for the default console
     // appender:
     //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
+    appenders {
+        console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+    }
     appenders {
         rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat6/sightings-stacktrace.log"
     }
+
+   // all 'org.codehaus.groovy.grails.web.mapping'
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
            'org.codehaus.groovy.grails.web.pages', //  GSP
            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping', // URL mapping
+           //'org.codehaus.groovy.grails.web.mapping', // URL mapping
            'org.codehaus.groovy.grails.commons', // core / classloading
            'org.codehaus.groovy.grails.plugins', // plugins
            'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration

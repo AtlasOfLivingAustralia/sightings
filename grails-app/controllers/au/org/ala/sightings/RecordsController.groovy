@@ -38,6 +38,34 @@ class RecordsController {
         [records: records]
     }
 
+    def userById() {
+
+        // handle sort options
+        def opts = ""
+        if (params.sort) {
+            opts += "?sort=" + params.sort
+        }
+        if (params.order) {
+            opts += (opts ? "&" : "?") + "order=" + params.order
+        }
+        //println opts
+        // get records for current user
+        def records
+        if (grailsApplication.config.mock.records.service) {
+            records = ProxyController.getRecords()
+        } else {
+            records = webService.getJson(grailsApplication.config.ala.recordsServerURL +
+            "user/" + params.userId + opts)
+            if (records.error) {
+                // TODO: handle service errors
+                println records.error
+            }
+            records = records.records
+        }
+        //println records
+        render( view: 'user', model:[records: records])
+    }
+
     /**
      * Get real records from the biocache so we can view them in this context.
      * This is just a sanity check used during development.

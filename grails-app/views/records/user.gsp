@@ -77,7 +77,7 @@
                 <div class="actions">
                     <button type="button" class="delete">Remove</button>
                     <button type="button" class="edit">Edit</button><br/>
-                    <g:if test="${rec.images.size() > 0}">
+                    <g:if test="${rec.images && rec.images?.size() > 0}">
                         <g:each in="${rec.images[0..-1]}" var="img">
                             <a href="${img.large}">
                                 <img src="${img.thumb}"/>
@@ -92,7 +92,8 @@
         </g:each>
     </section>
     <section style="padding-bottom:20px;margin-left:10px;">
-        <a href="${grailsApplication.config.grails.serverURL}/upload/demo/">Add another sighting</a>
+        <a href="${grailsApplication.config.grails.serverURL}/upload/demo/">Add another sighting (DEMO)</a><br/>
+        <a href="${grailsApplication.config.grails.serverURL}/">Add another sighting</a>
     </section>
 </div>
 <r:script>
