@@ -1,6 +1,7 @@
 package au.org.ala.au.org.ala.sightings
 
 import java.text.SimpleDateFormat
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 class SightingsTagLib {
 
@@ -12,7 +13,7 @@ class SightingsTagLib {
         println "date: " + attrs.date
         log.debug 'formatting date: ' + attrs.date
         def dateStr
-        if (attrs.date) {
+        if (attrs.date && attrs.date != 'null' && !attrs.date.is(JSONObject.NULL) ) {
             def date = new Date().parse("yyyy-MM-dd'T'HH:mm:ss'Z'", attrs.date)
             dateStr = outFormat.format(date)
             // remove time if it is 00:00
