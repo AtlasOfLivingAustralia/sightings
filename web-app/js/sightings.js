@@ -124,6 +124,9 @@ var taxon = {
             individualCount: $('#count').val(),
             confidence: $('#confidence').val()
         };
+    },
+    isValid: function () {
+        return this.guid !== null;
     }
 };
 
@@ -134,11 +137,15 @@ var submitHandler = {
         $('#submit,#alt-submit').click(function () {
             var missing = [];
             // check that we have the minimum data
-            if (!screenDate.isValid()) {
+            // removed for now but maybe we should check that at least 1 of date, location, image is present
+            /*if (!screenDate.isValid()) {
                 missing.push('Date');
             }
             if (!screenLocation.isValid()) {
                 missing.push('Location');
+            }*/
+            if (!taxon.isValid()) {
+                missing.push('Taxon');
             }
             if (missing.length > 0) {
                 // show an error dialog
@@ -149,9 +156,10 @@ var submitHandler = {
         });
     },
     showInsufficientDataDialog: function (missing) {
-        // TODO: just alert for now
-        var msg = missing.length === 2 ? "Both are missing." : missing[0] + " is missing.";
-        alert("You must at least enter a date and a location. " + msg);
+        // TODO: just alert for now - and only report missing taxon
+        //var msg = missing.length === 2 ? "Both are missing." : missing[0] + " is missing.";
+        var msg = missing[0] + " is missing.";
+        alert("You must at least identify the species (or higher taxonomic group). " + msg);
     },
     submit: function () {
         var payload = $.extend(
@@ -214,6 +222,11 @@ var taxonStack = {
                 var commonName = data.taxonConcept.commonNameSingle || "",
                     thumbnail = data.taxonConcept.smallImageUrl || (serverUrl + "/images/noImage85.jpg");
                 $("#commonName").html(commonName);
+                // switch to 'taxon chosen' mode
+                $('#taxonBlock').removeClass('hidden');
+                $('#chooseTaxonText').addClass('hidden');
+                $('#changeTaxonText').removeClass('hidden');
+                // add image
                 $('#taxonImage').attr('src', thumbnail);
                 $('#taxonImage').parent().attr('href', bieUrl + "species/" + guid);
             }

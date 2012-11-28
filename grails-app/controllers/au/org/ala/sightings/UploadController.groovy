@@ -14,13 +14,11 @@ class UploadController {
         } else if (id) {
             // treat this as a demo index
             model += getDemoSpecies(id)
-        } else {
-            model += getDemoSpecies('1')
         }
+        // else no taxon is selected
 
         model['userId'] = authService.userId()
         model['userName'] = authService.username()
-        //println model
         model
     }
 
@@ -38,13 +36,13 @@ class UploadController {
                     imageUrl: 'http://bie.ala.org.au/repo/1009/24/250681/smallRaw.jpg']
             case '2': return [scientificName: 'Notomys alexis', commonName: 'Spinifex Hopping-mouse',
                     guid: 'urn:lsid:biodiversity.org.au:afd.taxon:49001532-929e-4b78-97d3-c885e97d671b',
-                    imageUrl: 'http://bie.ala.org.au/repo/1051/177/1772158/thumbnail.jpg']
+                    imageUrl: 'http://bie.ala.org.au/repo/1051/177/1772158/smallRaw.jpg']
             case '3': return [scientificName: 'Papilio aegeus', commonName: 'Large Citrus Butterfly',
                     guid: 'urn:lsid:biodiversity.org.au:afd.taxon:f2b75626-e37a-4c54-8632-e3c5560c8039',
-                    imageUrl: 'http://bie.ala.org.au/repo/1013/127/1279857/thumbnail.jpg']
+                    imageUrl: 'http://bie.ala.org.au/repo/1013/127/1279857/smallRaw.jpg']
             case '4': return [scientificName: 'Hirundo (Hirundo) neoxena', commonName: 'Welcome Swallow',
                     guid: 'urn:lsid:biodiversity.org.au:afd.taxon:4701f4ee-6fbc-475b-be7d-3eaa9acfa8fb',
-                    imageUrl: 'http://bie.ala.org.au/repo/1013/167/1674015/thumbnail.jpg']
+                    imageUrl: 'http://bie.ala.org.au/repo/1013/167/1674015/smallRaw.jpg']
             default: return [:]
         }
     }
