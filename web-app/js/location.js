@@ -485,7 +485,7 @@ DateTime.prototype.isValid = function () {
 
 DateTime.prototype.getDateForScreen = function () {
     //console.log(this.isValid());
-    if (!this.isEmpty() && this.isValid()) {
+    if (this.isValid()) {
         return this.day + "-" + this.month + "-" + this.year;
     } else {
         return "";
