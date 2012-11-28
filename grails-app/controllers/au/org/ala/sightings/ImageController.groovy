@@ -13,6 +13,8 @@ import java.text.DecimalFormat
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import org.imgscalr.Scalr
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 
 class ImageController {
 
@@ -28,31 +30,35 @@ class ImageController {
 
     private Map getExifMetadata(file) {
         def exif = [:]
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(file);
 
-        Metadata metadata = ImageMetadataReader.readMetadata(file);
+            Directory directory = metadata.getDirectory(ExifSubIFDDirectory.class)
+            if (directory) {
+                Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
+                exif.date = date
+            }
 
-        Directory directory = metadata.getDirectory(ExifSubIFDDirectory.class)
-        if (directory) {
-            Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
-            exif.date = date
-        }
-
-        Directory gpsDirectory = metadata.getDirectory(GpsDirectory.class)
-        if (gpsDirectory) {
-            /*gpsDirectory.getTags().each {
-                println it.getTagType()
-                println it.getTagName()
-                println it.getTagTypeHex()
-                println it.getDescription()
-                println it.toString()
-            }*/
-            //def lat = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LATITUDE)
-            //def lng = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LONGITUDE)
-            GeoLocation loc = gpsDirectory.getGeoLocation()
-            exif.latitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LATITUDE)
-            exif.longitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LONGITUDE)
-            exif.decLat = loc.latitude
-            exif.decLng = loc.longitude
+            Directory gpsDirectory = metadata.getDirectory(GpsDirectory.class)
+            if (gpsDirectory) {
+                /*gpsDirectory.getTags().each {
+                    println it.getTagType()
+                    println it.getTagName()
+                    println it.getTagTypeHex()
+                    println it.getDescription()
+                    println it.toString()
+                }*/
+                //def lat = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LATITUDE)
+                //def lng = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LONGITUDE)
+                GeoLocation loc = gpsDirectory.getGeoLocation()
+                exif.latitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LATITUDE)
+                exif.longitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LONGITUDE)
+                exif.decLat = loc.latitude
+                exif.decLng = loc.longitude
+            }
+        } catch (Exception e){
+            //this will be thrown if its a PNG....
+            log.debug(e.getMessage(),e)
         }
 
         return exif
@@ -95,9 +101,8 @@ class ImageController {
             //println "file is " + file
             if (file?.size) {  // will only have size if a file was selected
                 def filename = file.getOriginalFilename().replaceAll(' ','_')
-                def bits = filename.tokenize('.')
-                def filenamename = bits[0]
-                def ext = bits[1]
+                def filenamename = FilenameUtils.getBaseName(filename)
+                def ext = FilenameUtils.getExtension(filename)
                 def thumbFilename = filenamename + "-thumb." + ext
                 //println "filename=${filename}"
 
@@ -113,8 +118,10 @@ class ImageController {
                 BufferedImage tn = Scalr.resize(img, 100, Scalr.OP_ANTIALIAS)
                 File tnFile = new File(colDir, thumbFilename)
                 try {
-                    ImageIO.write(tn, ext, tnFile)
+                    def success = ImageIO.write(tn, ext, tnFile)
+                    println "Thumbnailing: " + success
                 } catch(IOException e) {
+                    e.printStackTrace()
                     println "Write error for " + tnFile.getPath() + ": " + e.getMessage()
                 }
 
