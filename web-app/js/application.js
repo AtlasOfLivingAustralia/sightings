@@ -48,7 +48,7 @@ $(function() {
         selectFirst: false
     }).result(function(event, item) {
         // user has selected an autocomplete item
-        taxonStack.push(item.guid, item.name);
+        taxon.set(item.guid, item.name);
         // remove name from autocomplete widget
         $(".name_autocomplete").val("");
     });

@@ -86,50 +86,6 @@ $(function() {
     });
 });
 
-var taxon = {
-    guid: null,
-    scientificName: null,
-    commonName: null,
-    imageUrl: null,
-    bieUrl: null,
-    set: function (guid) {
-        var that = this;
-        if (guid) {
-            this.guid = guid;
-            this.bieUrl = bieUrl + 'species/' + guid;
-            // lookup taxon details in bie
-            $.ajax({
-                url: bieUrl + 'ws/species/info/' + guid + '.json',
-                dataType: 'jsonp',
-                success: function (data) {
-                    that.scientificName = data.taxonConcept.name;
-                    that.commonName = data.taxonConcept.commonNameSingle;
-                    that.imageUrl = data.taxonConcept.smallImageUrl;
-                    that.putToScreen();
-                }
-            });
-        }
-    },
-    putToScreen: function () {
-        $('#scientificName').html(this.scientificName);
-        $('#commonName').html(this.commonName);
-        $('#taxonImage').attr('src', this.imageUrl);
-        $('#taxonImage').parent('a').attr('href', this.bieUrl);
-    },
-    getAll: function () {
-        return {
-            scientificName: this.scientificName,
-            commonName: this.commonName,
-            guid: this.guid,
-            individualCount: $('#count').val(),
-            confidence: $('#confidence').val()
-        };
-    },
-    isValid: function () {
-        return this.guid !== null;
-    }
-};
-
 var submitHandler = {
     init: function () {
         var that = this;
@@ -144,7 +100,7 @@ var submitHandler = {
             if (!screenLocation.isValid()) {
                 missing.push('Location');
             }*/
-            if (!taxon.isValid()) {
+            if ($('#lsid').val() == '') {
                 missing.push('Taxon');
             }
             if (missing.length > 0) {
@@ -185,14 +141,76 @@ var submitHandler = {
     }
 };
 
+var taxon = {
+    guid: null,
+    scientificName: null,
+    commonName: null,
+    imageUrl: null,
+    bieUrl: null,
+    set: function (guid, name, noStack) {
+        var that = this;
+        // set name up front while we lookup full profile from bie
+        if (name !== undefined) {
+            this.scientificName = name;
+            $("#scientificName").html(name);
+        }
+        // and guid
+        if (guid) {
+            $('#lsid').val(guid);
+            this.guid = guid;
+            // lookup taxon details in bie
+            $.ajax({
+                url: bieUrl + 'ws/species/info/' + guid + '.json',
+                dataType: 'jsonp',
+                success: function (data) {
+                    that.scientificName = data.taxonConcept.name;
+                    that.commonName = data.taxonConcept.commonNameSingle || "";
+                    that.imageUrl = data.taxonConcept.smallImageUrl || (serverUrl + "/images/noImage85.jpg");
+                    that.bieUrl = bieUrl + "species/" + that.guid;
+                    // push any current taxon onto stack (unless we are popping from the stack)
+                    if (noStack === undefined) {
+                        taxonStack.push(guid, name);
+                    }
+                    // show new taxon
+                    that.putToScreen();
+                    // make sure screen is set up for having a taxon
+                    that.setTaxonKnownMode();
+                }
+            });
+        }
+    },
+    setTaxonKnownMode: function () {
+        // switch to 'taxon chosen' mode
+        $('#taxonBlock').removeClass('hidden');
+        $('#chooseTaxonText').addClass('hidden');
+        $('#changeTaxonText').removeClass('hidden');
+    },
+    putToScreen: function () {
+        $('#scientificName').html(this.scientificName);
+        $('#commonName').html(this.commonName);
+        $('#taxonImage').attr('src', this.imageUrl);
+        $('#taxonImage').parent('a').attr('href', this.bieUrl);
+    },
+    getAll: function () {
+        return {
+            scientificName: this.scientificName,
+            commonName: this.commonName,
+            guid: this.guid,
+            individualCount: $('#count').val(),
+            confidence: $('#confidence').val()
+        };
+    },
+    isValid: function () {
+        return this.guid !== null;
+    }
+};
+
 var taxonStack = {
     // holds a stack of selected taxa
     stack: [],
     push: function (guid, name) {
         // add current taxon to stack
         this.stack.push({guid: $('#lsid').val(), name: $('.scientificName').html()});
-        // set new taxon
-        this.set(guid, name);
         // activate undo
         $('#undoTaxon').removeAttr('disabled');
         $('#undoTaxon').removeClass('ui-state-disabled');
@@ -200,37 +218,13 @@ var taxonStack = {
     pop: function () {
         var top = this.stack.pop();
         if (top) {
-            this.set(top.guid, top.name);
+            taxon.set(top.guid, top.name, true);
         }
         if (this.stack.length === 0) {
             // disable undo
             $('#undoTaxon').attr('disabled','disabled');
             $('#undoTaxon').addClass('ui-state-disabled');
         }
-    },
-    // set the current taxon
-    set: function (guid, name) {
-        // set name up front
-        $("#scientificName").html(name);
-        // and guid
-        $('#lsid').val(guid);
-        // get some metadata for the preferred common name and the pic
-        $.ajax({
-            url: bieUrl + "species/info/" + guid + ".json",
-            dataType: 'jsonp',
-            success: function(data) {
-                var commonName = data.taxonConcept.commonNameSingle || "",
-                    thumbnail = data.taxonConcept.smallImageUrl || (serverUrl + "/images/noImage85.jpg");
-                $("#commonName").html(commonName);
-                // switch to 'taxon chosen' mode
-                $('#taxonBlock').removeClass('hidden');
-                $('#chooseTaxonText').addClass('hidden');
-                $('#changeTaxonText').removeClass('hidden');
-                // add image
-                $('#taxonImage').attr('src', thumbnail);
-                $('#taxonImage').parent().attr('href', bieUrl + "species/" + guid);
-            }
-        });
     }
 };
 
