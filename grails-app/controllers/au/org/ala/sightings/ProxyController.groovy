@@ -95,12 +95,12 @@ class ProxyController {
         println serviceParams.eventDate*/
 
         // alternate event date
-        def dateStr = params.year
-        if (params.month) {
+        def dateStr = params.year == 'null' ? null : params.year
+        if (params.month != 'null') {
             dateStr += '-' + params.month
-            if (params.day) {
+            if (params.day != 'null') {
                 dateStr += '-' + params.day
-                if (params.hours && params.minutes) {
+                if (params.hours != 'null' && params.minutes != 'null') {
                     dateStr += 'T' + params.hours + ':' + params.minutes
                 }
             }
