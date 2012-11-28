@@ -424,13 +424,16 @@ var screenDate = {
             minutes = timeBits[1];
         }
         return {
-            eventDate: this.getDate() + " " + this.getTime(),
+            eventDate: this.getEventDate(),
             year: dt.year,
             month: dt.month,
             day: dt.day,
             hours: hours,
             minutes: minutes
         }
+    },
+    getEventDate: function () {
+        return this.isValid() ? this.getDate() + " " + this.getTime() : null;
     },
     getDate: function () {
         return this.dateField.val();
