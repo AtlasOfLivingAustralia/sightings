@@ -49,6 +49,8 @@ $(function() {
     }).result(function(event, item) {
         // user has selected an autocomplete item
         taxonStack.push(item.guid, item.name);
+        // remove name from autocomplete widget
+        $(".name_autocomplete").val("");
     });
 
     $('#undoTaxon').click(function () {
@@ -56,47 +58,3 @@ $(function() {
     });
 
 });
-
-var taxonStack = {
-    // holds a stack of selected taxa
-    stack: [],
-    push: function (guid, name) {
-        // add current taxon to stack
-        this.stack.push({guid: $('#lsid').val(), name: $('.scientificName').html()});
-        // set new taxon
-        this.set(guid, name);
-        // activate undo
-        $('#undoTaxon').removeAttr('disabled');
-        $('#undoTaxon').removeClass('ui-state-disabled');
-    },
-    pop: function () {
-        var top = this.stack.pop();
-        if (top) {
-            this.set(top.guid, top.name);
-        }
-        if (this.stack.length === 0) {
-            // disable undo
-            $('#undoTaxon').attr('disabled','disabled');
-            $('#undoTaxon').addClass('ui-state-disabled');
-        }
-    },
-    // set the current taxon
-    set: function (guid, name) {
-        // set name up front
-        $("#scientificName").html(name);
-        // and guid
-        $('#lsid').val(guid);
-        // get some metadata for the preferred common name and the pic
-        $.ajax({
-            url: bieUrl + "species/shortProfile/" + guid + ".json",
-            dataType: 'jsonp',
-            success: function(data) {
-                var commonName = data.commonName || "",
-                    thumbnail = data.thumbnail || (serverUrl + "/images/noImage85.jpg");
-                $("#commonName").html(commonName);
-                $('#taxonImage').attr('src', thumbnail);
-                $('#taxonImage').parent().attr('href', bieUrl + "species/" + guid);
-            }
-        });
-    }
-};
