@@ -10,6 +10,28 @@ if (typeof jQuery !== 'undefined') {
 
 $(function() {
 
+    $(".name_autocomplete").keypress(function(e) {
+        if(e.which == 13) {
+            $.ajax({
+                type: 'GET',
+                url: "http://bie.ala.org.au/search/auto.json?q=" + $('#taxa').val(),
+                async: false,
+                contentType: "application/json",
+                dataType: 'jsonp',
+                success: function(json) {
+                    if(json.autoCompleteList && json.autoCompleteList.length>0){
+                       var item = json.autoCompleteList[0];
+                       //console.log("item: " + item.guid + ", item: " + item.name);
+                       taxon.set(item.guid, item.name);
+                       $(".name_autocomplete").val("");
+                    }
+                },
+                error: function(e) {
+                }
+            });
+        }
+    });
+
     //  for taxon lookups
     $(".name_autocomplete").autocomplete('http://bie.ala.org.au/search/auto.json', {
         //width: 350,
@@ -32,7 +54,8 @@ $(function() {
         highlight: false,
         delay: 600,
         formatItem: function(row, i, n) {
-            var result = (row.scientificNameMatches) ? row.scientificNameMatches[0] : row.commonNameMatches ;
+            var commonNameMatches = row.commonNameMatches !== undefined ? row.commonNameMatches : "";
+            var result = (row.scientificNameMatches && row.scientificNameMatches.length>0) ? row.scientificNameMatches[0] : commonNameMatches ;
             if (row.name != result && row.rankString) {
                 result = result + "<div class='autoLine2'>" + row.rankString + ": " + row.name + "</div>";
             } else if (row.rankString) {
