@@ -48,8 +48,8 @@
             <div style="padding-top:10px;">
                 <div style="float:left;padding-right:20px;"><label for="count">Number seen</label>
                     <g:textField name="count" class="smartspinner" value="1"/></div>
-                <div style="float:left;"><label for="confidence">Confidence in identification</label>
-                    <g:select from="['Confident','Uncertain']" name="confidence" value="1"/></div>
+                <div style="float:left;"><label for="identificationVerificationStatus">Confidence in identification</label>
+                    <g:select from="['Confident','Uncertain']" name="identificationVerificationStatus" value="1"/></div>
             </div>
         </div>
         <div class="left" style="width:35%;">
@@ -105,8 +105,8 @@
             <label for="longitude">Longitude</label><g:textField name="longitude" size="17"/><br/>
             <g:hiddenField name="verbatimLatitude"/>
             <g:hiddenField name="verbatimLongitude"/>
-            <label for="coordinateSource">What is the source of these coordinates?</label>
-            <g:select name="coordinateSource" from="['Google maps','Google earth','GPS device','camera/phone','physical map','other']"/><br/>
+            <label for="georeferenceProtocol">What is the source of these coordinates?</label>
+            <g:select name="georeferenceProtocol" from="['Google maps','Google earth','GPS device','camera/phone','physical map','other']"/><br/>
             <div id="precisionFields">
                 <span id="geodeticDatumField" class="ui-helper-hidden"><label for="datum">Enter the geodetic datum for your device</label>
                     <g:select name="datum" from="['WGS84','GDA94','AGD 1966','AGD 1984','other','unknown']"/>

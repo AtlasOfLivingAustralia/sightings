@@ -45,7 +45,7 @@ $(function() {
                     lng: exifObject.GPSLongitude,
                     lngRef: exifObject.GPSLongitudeRef
                 }});
-                loc.coordinateSource = 'camera/phone';
+                loc.georeferenceProtocol = 'camera/phone';
 
                 // load date-time data
                 dt.setFromExifFormat(exifObject.DateTimeOriginal);
@@ -334,7 +334,7 @@ $(function() {
                 loc.decimalLongitude = $(tr).find('span.lng').html();
                 loc.verbatimLatitude = $(tr).find('input.imageVerbatimLatitude').val();
                 loc.verbatimLongitude = $(tr).find('input.imageVerbatimLongitude').val();
-                loc.coordinateSource = "camera/phone";
+                loc.georeferenceProtocol = "camera/phone";
             }
             return loc.isValid() ? loc : undefined;
         },

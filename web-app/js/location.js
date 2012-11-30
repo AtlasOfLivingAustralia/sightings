@@ -58,7 +58,11 @@ var screenLocation = {
         $('#location').change( function () {
             that.setUsingReverseGeocodedLocality(false);
         });
-
+        $("#location").keypress(function(e) {
+            if(e.which == 13) {
+                that.geocodeLookup();
+            }
+        });
         // wire location lookups
         $('#reverseLookup').click(function () {
             var locText = that.getLocality();
@@ -106,6 +110,23 @@ var screenLocation = {
             }
         }});
     },
+    geocodeLookup: function(){
+        var locText = this.getLocality();
+        if (locText === "") { return; }
+        this.geocoder.geocode({
+            address: locText,
+            bounds: mainMap.map.getBounds()
+        },
+        function (results, status) {
+            var latLng;
+            if (status == google.maps.GeocoderStatus.OK) {
+                latLng = results[0].geometry.location;
+                $('#latitude').val(latLng.lat());
+                $('#longitude').val(latLng.lng()).change();
+                mainMap.show();
+            }
+        });
+    },
     getAll: function () {
         var l = {
             decimalLatitude: this.getLat(),
@@ -113,7 +134,7 @@ var screenLocation = {
             verbatimLatitude: $('#verbatimLatitude').val(),
             verbatimLongitude: $('#verbatimLongitude').val(),
             locality: this.getLocality(),
-            coordinateSource: this.getSource(),
+            georeferenceProtocol: this.getSource(),
             geodeticDatum: $('#datum').val()
             },
             other = $('#otherSource').val();
@@ -123,7 +144,7 @@ var screenLocation = {
         if (other !== "") {
             l.otherSource = other;
         }
-        if (l.coordinateSource === 'physical map') {
+        if (l.georeferenceProtocol === 'physical map') {
             l.physicalMapScale = $('#physicalMapScale').val();
         }
         return l;
@@ -156,10 +177,10 @@ var screenLocation = {
         }
     },
     getSource: function () {
-        return $('#coordinateSource').val();
+        return $('#georeferenceProtocol').val();
     },
     setSource: function (source) {
-        $('#coordinateSource').val(source).change();
+        $('#georeferenceProtocol').val(source).change();
     },
     getLocality: function () {
         return $('#location').val();
@@ -208,7 +229,7 @@ function Location () {
     this.verbatimLongitude = "";
     this.locality = "";
     this.usingReverseGeocodedLocality = "false";
-    this.coordinateSource = "";
+    this.georeferenceProtocol = "";
     this.geodeticDatum = "";
     this.physicalMapScale = "";
     this.otherSource = "";
@@ -264,7 +285,7 @@ Location.prototype.toDecimalDegrees = function (num, ref) {
 
 Location.prototype.set = function (data) {
     var that = this;
-    $.each(['locality','coordinateSource','geodeticDatum','physicalMapScale','otherSource'], function (i,prop) {
+    $.each(['locality','georeferenceProtocol','geodeticDatum','physicalMapScale','otherSource'], function (i,prop) {
         if (data[prop] !== undefined) {
             that[prop] = data[prop];
         }
@@ -294,9 +315,9 @@ Location.prototype.loadFromScreen = function () {
     this.verbatimLongitude = $('#verbatimLongitude').val();
     this.locality = screenLocation.getLocality();
     this.usingReverseGeocodedLocality = screenLocation.usingReverseGeocodedLocality;
-    this.coordinateSource = screenLocation.getSource();
+    this.georeferenceProtocol = screenLocation.getSource();
     this.geodeticDatum = $('#datum').val();
-    if (this.coordinateSource === 'physical map') {
+    if (this.georeferenceProtocol === 'physical map') {
         this.physicalMapScale = $('#physicalMapScale').val();
     }
     this.otherSource = $('#otherSource').val();
@@ -310,7 +331,7 @@ Location.prototype.loadFromBookmark = function (bkm) {
     this.verbatimLongitude = bkm.verbatimLongitude;
     this.locality = bkm.locality;
     this.usingReverseGeocodedLocality = bkm.usingReverseGeocodedLocality;
-    this.coordinateSource = bkm.coordinateSource;
+    this.georeferenceProtocol = bkm.georeferenceProtocol;
     this.geodeticDatum = bkm.geodeticDatum;
     this.physicalMapScale = bkm.physicalMapScale;
     this.otherSource = bkm.otherSource;
@@ -327,13 +348,13 @@ Location.prototype.makeBookmark = function () {
     if (this.usingReverseGeocodedLocality === "true") {
         bkm.usingReverseGeocodedLocality = "true";
     }
-    $.each(['verbatimLatitude','verbatimLongitude','coordinateSource','geodeticDatum',
+    $.each(['verbatimLatitude','verbatimLongitude','georeferenceProtocol','geodeticDatum',
         'otherSource'], function (i,prop) {
         if (that[prop] !== "") {
             bkm[prop] = that[prop];
         }
     });
-    if (this.coordinateSource === 'physical map') {
+    if (this.georeferenceProtocol === 'physical map') {
         bkm.physicalMapScale = this.physicalMapScale;
     }
     return bkm;
@@ -341,7 +362,7 @@ Location.prototype.makeBookmark = function () {
 
 Location.prototype.putToScreen = function (options) {
     screenLocation.setLatLng(this.decimalLatitude, this.decimalLongitude, options);
-    screenLocation.setSource(this.coordinateSource);
+    screenLocation.setSource(this.georeferenceProtocol);
     screenLocation.setUsingReverseGeocodedLocality(this.usingReverseGeocodedLocality);
     // TODO: all the following should be migrated to screenLocation object
     $('#verbatimLatitude').val(this.verbatimLatitude).change();

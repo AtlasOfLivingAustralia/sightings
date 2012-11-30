@@ -15,7 +15,7 @@ $(function() {
     });
 
     // wire coordinate source
-    $('#coordinateSource').change(function () {
+    $('#georeferenceProtocol').change(function () {
         // hide all
         $('#precisionFields span').css('display','none');
         // show one
@@ -75,8 +75,8 @@ $(function() {
                 $('#latitude').change();
                 $('#longitude').change();
                 if (loc.source !== undefined) {
-                    $('#coordinateSource').val(loc.source);
-                    $('#coordinateSource').change();
+                    $('#georeferenceProtocol').val(loc.source);
+                    $('#georeferenceProtocol').change();
                 }
                 if (loc.datum !== undefined) {
                     $('#datum').val(loc.datum);
@@ -195,7 +195,7 @@ var taxon = {
         return {
             scientificName: this.scientificName,
             commonName: this.commonName,
-            guid: this.guid,
+            taxonConceptID: this.guid,
             individualCount: $('#count').val(),
             confidence: $('#confidence').val()
         };

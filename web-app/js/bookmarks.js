@@ -140,6 +140,9 @@ var Bookmarks = {
                 } else {
                     // reload bookmarks
                     that.load();
+                    //set the drop down to the currently selected bookmark
+
+
                 }
             }
         });
