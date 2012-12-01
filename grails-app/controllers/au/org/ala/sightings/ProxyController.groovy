@@ -109,7 +109,6 @@ class ProxyController {
         }
 
         // media
-        //println grailsApplication.config.upload.images.url
         def media = []
         if (params.associatedMedia) {
             params.associatedMedia.tokenize(',').each {
@@ -120,7 +119,8 @@ class ProxyController {
 
         // remaining parameters
         params.each {
-            if (!(it.key in ['action','controller','associatedMedia','year','month','day','hours','minutes','eventDate'])) {
+            if (!(it.key in ['action','controller','associatedMedia','year','month','day','hours','minutes',
+                    'eventDate','id'])) {
                 serviceParams.put it.key as String, it.value as String
             }
         }
@@ -136,6 +136,8 @@ class ProxyController {
             serviceParams.images = []
             mockRecords << serviceParams
             result = [error: null, resp: [id: key]]
+        } else if (params.id) {
+            result = webService.doPost(grailsApplication.config.ala.recordsServerURL + params.id, body)
         } else {
             result = webService.doPost(grailsApplication.config.ala.recordsServerURL, body)
         }
