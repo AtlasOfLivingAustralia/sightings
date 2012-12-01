@@ -100,14 +100,16 @@ class ProxyController {
             dateStr += '-' + params.month
             if (params.day != 'null') {
                 dateStr += '-' + params.day
-                if (params.hours != 'null' && params.minutes != 'null') {
-                    dateStr += 'T' + params.hours + ':' + params.minutes
-                }
             }
         }
         serviceParams.eventDate = dateStr
 
+        if (params.hours && params.hours != 'null' && params.minutes && params.minutes != 'null') {
+            serviceParams.eventTime = params.hours + ':' + params.minutes
+        }
+
         // media
+        //println grailsApplication.config.upload.images.url
         def media = []
         if (params.associatedMedia) {
             params.associatedMedia.tokenize(',').each {
@@ -118,14 +120,13 @@ class ProxyController {
 
         // remaining parameters
         params.each {
-            if (!(it.key in ['action','controller','associatedMedia','year','month','day','hours','minutes',
-                    'eventDate','id'])) {
+            if (!(it.key in ['action','controller','associatedMedia','year','month','day','hours','minutes','eventDate'])) {
                 serviceParams.put it.key as String, it.value as String
             }
         }
 
         def body = (serviceParams as JSON).toString()
-        println body
+        //println body
         def result
 
         if (grailsApplication.config.mock.records.service) {
@@ -135,8 +136,6 @@ class ProxyController {
             serviceParams.images = []
             mockRecords << serviceParams
             result = [error: null, resp: [id: key]]
-        } else if (params.id) {
-            result = webService.doPost(grailsApplication.config.ala.recordsServerURL + params.id, body)
         } else {
             result = webService.doPost(grailsApplication.config.ala.recordsServerURL, body)
         }

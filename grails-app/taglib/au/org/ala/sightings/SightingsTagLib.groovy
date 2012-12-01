@@ -15,7 +15,8 @@ class SightingsTagLib {
         def dateStr
         if (attrs.date && attrs.date != 'null' && !attrs.date.is(JSONObject.NULL) ) {
             //def date = new Date().parse("yyyy-MM-dd'T'HH:mm:ss'Z'", attrs.date)
-            def date = new Date().parse("yyyy-MM-dd'T'HH:mm", attrs.date)
+            //def date = new Date().parse("yyyy-MM-dd'T'HH:mm", attrs.date)
+            def date = new Date().parse("yyyy-MM-dd", attrs.date)
             dateStr = outFormat.format(date)
             // remove time if it is 00:00
             if (dateStr.size() > 15 && dateStr[-5..-1] == "00:00") {
