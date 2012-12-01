@@ -10,7 +10,7 @@ class SightingsTagLib {
     //static outFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm")
 
     def formatDate = { attrs ->
-        println "date: " + attrs.date
+        //println "date: " + attrs.date
         log.debug 'formatting date: ' + attrs.date
         def dateStr
         if (attrs.date && attrs.date != 'null' && !attrs.date.is(JSONObject.NULL) ) {
