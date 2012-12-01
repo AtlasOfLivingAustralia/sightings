@@ -483,7 +483,7 @@ var screenDate = {
         return this.hoursField.val() + ':' + this.minutesField.val();
     },
     setTime: function (time, noNotify) {
-        if (time.length > 4) {
+        if (time !=null && time.length > 4) {
             this.hoursField.val(time.substr(0,2));
             this.minutesField.val(time.substr(3,2));
             if (noNotify !== true) {
