@@ -558,15 +558,15 @@ DateTime.prototype.setFromIsoFormat = function (dateStr) {
     // iso format example is "2005-10-22T03:08:18Z"
     // TODO: use a date library
     if (!dateStr) { return {}; }
-    if (dateStr.length !== 20) {
-        alert("invalid iso date " + dateStr);
+    if (dateStr.length !== 10) {
+        alert("Invalid iso date format (invalid length): " + dateStr);
         return this;
     }
-    var dt = dateStr.split('T');
-    this.year = dt[0].slice(0,4);
-    this.month = dt[0].slice(5,7);
-    this.day = dt[0].slice(8,10);
-    this.time = dt[1].slice(0,5);
+    //var dt = dateStr.split('T');
+    this.year = dateStr.slice(0,4);
+    this.month = dateStr.slice(5,7);
+    this.day = dateStr.slice(8,10);
+    //this.time = dt[1].slice(0,5);
     this.verbatimDate = dateStr;
     return this;
 };
