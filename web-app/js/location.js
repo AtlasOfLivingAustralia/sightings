@@ -25,6 +25,13 @@ $(function() {
 //    var currentLocation = new Location();
     screenLocation.init();
     screenDate.init();
+    // date
+    if (typeof eventDate !== 'undefined') {
+        if (eventDate !== "" && eventDate !== 'null') {
+            new DateTime().setFromIsoFormat(eventDate).putToScreen();
+        }
+    }
+
 });
 
 var screenLocation = {
@@ -134,14 +141,16 @@ var screenLocation = {
             verbatimLatitude: $('#verbatimLatitude').val(),
             verbatimLongitude: $('#verbatimLongitude').val(),
             locality: this.getLocality(),
-            georeferenceProtocol: this.getSource(),
-            geodeticDatum: $('#datum').val()
+            georeferenceProtocol: this.getSource()
             },
             other = $('#otherSource').val();
         if (this.usingReverseGeocodedLocality) {
             l.usingReverseGeocodedLocality = true;
         }
-        if (other !== "") {
+        if (l.georeferenceProtocol === 'GPS device') {
+            l.geodeticDatum = $('#geodeticDatum').val();
+        }
+        if (l.georeferenceProtocol === 'other') {
             l.otherSource = other;
         }
         if (l.georeferenceProtocol === 'physical map') {
@@ -178,6 +187,10 @@ var screenLocation = {
     },
     getSource: function () {
         return $('#georeferenceProtocol').val();
+    },
+    clearVerbatimLatLon: function () {
+        $('#verbatimLatitude').val('');
+        $('#verbatimLongitude').val('');
     },
     setSource: function (source) {
         $('#georeferenceProtocol').val(source).change();
@@ -316,7 +329,7 @@ Location.prototype.loadFromScreen = function () {
     this.locality = screenLocation.getLocality();
     this.usingReverseGeocodedLocality = screenLocation.usingReverseGeocodedLocality;
     this.georeferenceProtocol = screenLocation.getSource();
-    this.geodeticDatum = $('#datum').val();
+    this.geodeticDatum = $('#geodeticDatum').val();
     if (this.georeferenceProtocol === 'physical map') {
         this.physicalMapScale = $('#physicalMapScale').val();
     }
@@ -368,7 +381,7 @@ Location.prototype.putToScreen = function (options) {
     $('#verbatimLatitude').val(this.verbatimLatitude).change();
     $('#verbatimLongitude').val(this.verbatimLongitude).change();
     screenLocation.setLocality(this.locality);
-    $('#datum').val(this.geodeticDatum).change();
+    $('#geodeticDatum').val(this.geodeticDatum).change();
     $('#physicalMap').val(this.physicalMapScale).change();
     $('#otherSource').val(this.otherSource).change();
     return this;
@@ -545,6 +558,10 @@ DateTime.prototype.setFromIsoFormat = function (dateStr) {
     // iso format example is "2005-10-22T03:08:18Z"
     // TODO: use a date library
     if (!dateStr) { return {}; }
+    if (dateStr.length !== 20) {
+        alert("invalid iso date " + dateStr);
+        return this;
+    }
     var dt = dateStr.split('T');
     this.year = dt[0].slice(0,4);
     this.month = dt[0].slice(5,7);

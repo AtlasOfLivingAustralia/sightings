@@ -25,6 +25,10 @@ $(function() {
             case 'other': $('#otherSourceField').css('display','inline'); break;
         }
     });
+    // fire coordinateSource change event if the field has been preloaded with a non-default value (eg in edit mode)
+    if ($('#georeferenceProtocol').val() !== 'Google maps') {
+        $('#georeferenceProtocol').change();
+    }
 
     // wire help dialogs
     $("#datumDialog" ).dialog({
@@ -49,9 +53,13 @@ $(function() {
 
     // catch changes in main map pin
     mainMap.addListener({handler: function(mouseEvent, event) {
+        // update lat & lon on screen
         screenLocation.setLat(mouseEvent.latLng.lat(),true);
         screenLocation.setLng(mouseEvent.latLng.lng(),true);
+        // change georeferenceProtocol (coord source) to google maps
         screenLocation.setSource("Google maps");
+        // clear any verbatim lat & lon that have been set from other sources eg image exif
+        screenLocation.clearVerbatimLatLon();
     }});
 
     $('#main-map-link').click(function () {
@@ -197,7 +205,7 @@ var taxon = {
             commonName: this.commonName,
             taxonConceptID: this.guid,
             individualCount: $('#count').val(),
-            confidence: $('#confidence').val()
+            identificationVerificationStatus: $('#identificationVerificationStatus').val()
         };
     },
     isValid: function () {

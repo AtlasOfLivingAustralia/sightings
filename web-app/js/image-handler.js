@@ -83,7 +83,7 @@ $(function() {
                     lng: exifObject.GPSLongitude,
                     lngRef: exifObject.GPSLongitudeRef
                 }});
-                loc.coordinateSource = 'camera/phone';
+                loc.georeferenceProtocol = 'camera/phone';
 
                 // load date-time data
                 dt.setFromExifFormat(exifObject.DateTimeOriginal);
@@ -239,6 +239,13 @@ $(function() {
                 $tr.find('.useImageDate').click();
                 $tr.find('.useImageLocation').click();
             });
+            // wire the delete button for existing images
+            $('#existingMedia button.delete-button').click(function () {
+                $(this).parent('li').remove();
+                if ($('#existingMedia li').length === 0) {
+                    $('#existingMediaLabel').hide();
+                }
+            });
             // listen for external changes to the location so we can update the button states
             mainMap.addListener({handler: function(mouseEvent, event) { // map drag
                 that.refreshButtonStates('location');
@@ -254,6 +261,11 @@ $(function() {
         // collect all files for submission
         getAll: function () {
             var list = [];
+            // get the existing media (edits only)
+            $('#existingMedia li').each(function (i, row) {
+                list.push($(this).attr('id'));
+            });
+            // get the newly added media
             $('#filesTable tr').each(function (i, row) {
                 list.push($(this).find('span.name').html());
             });

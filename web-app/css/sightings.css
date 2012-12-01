@@ -112,6 +112,33 @@ img.taxon-image {
     max-width: 100px;
 }
 
+#existingMedia ul {
+    padding-bottom: 0;
+    margin-left: 0;
+}
+
+#existingMedia li {
+    list-style-type: none;
+    display: inline;
+}
+
+#existingMedia li > img {
+    margin-top: 20px;
+    margin-left: 10px;
+}
+
+#existingMediaLabel {
+    vertical-align: 70px;
+}
+
+button.delete-button {
+    border: none;
+    background-image: none;
+    background-color: transparent;
+    position: relative;
+    margin-left: -12px;
+}
+
 label {
     padding-right: 10px;
     font-weight: bold;

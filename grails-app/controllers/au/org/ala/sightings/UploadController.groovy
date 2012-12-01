@@ -2,8 +2,13 @@ package au.org.ala.sightings
 
 class UploadController {
 
-    def authService
+    def authService, webService
 
+    /**
+     * Creates a new sighting
+     * @param id an lsid of a taxon - may be blank
+     * @return
+     */
     def index(String id) {
         def model = [physicalMapScales: scales]
         if (id && id.startsWith("urn:lsid")) {
@@ -16,6 +21,26 @@ class UploadController {
             model += getDemoSpecies(id)
         }
         // else no taxon is selected
+
+        model['userId'] = authService.userId()
+        model['userName'] = authService.username()
+        model
+    }
+
+    /**
+     * Edits an existing record
+     * @param id of the record to edit
+     * @return
+     */
+    def edit(String id) {
+        def model = [physicalMapScales: scales]
+        if (id) {
+            def resp = webService.getJson(
+                    grailsApplication.config.ala.recordsServerURL + id)
+            println resp.record
+            model += resp.record
+            model += [recordId: id]
+        }
 
         model['userId'] = authService.userId()
         model['userName'] = authService.username()
