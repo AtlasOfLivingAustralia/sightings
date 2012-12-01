@@ -133,6 +133,9 @@ var submitHandler = {
             taxon.getAll(),
             {userId: userId}
         );
+        if (typeof recordId !== 'undefined') {
+            payload.id = recordId;
+        }
         $.ajax({
             url: recordsServerUrl,
             method: 'POST',
