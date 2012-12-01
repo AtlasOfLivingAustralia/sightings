@@ -35,6 +35,7 @@
         <p class="hint">Hint: If you are submitting images, select them first and we will try to pre-load the date
         and location fields from the image metadata.</p>
         <button type="button" id="submit">Submit record</button>
+        <g:link controller="records" action="user" style="">Show my sightings</g:link>
     </div>
     <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
@@ -73,8 +74,7 @@
             <p><label for="time-hours">Time</label>
                 <input type="text" id="time-hours" class=""> <strong>:</strong>
                 <input type="text" id="time-minutes" class=""></p>
-            <p>Type in the time (hh:mm 24hr clock) or use the time spinner. The centre dot sets the current time.
-            Left/right arrows change the field. Up/down arrows change the values.</p>
+            <p>Type in the time (hh:mm 24hr clock) or leave blank if you wish.</p>
         </div>
     </section>
     <!-- WHERE -->
@@ -108,8 +108,8 @@
             <label for="georeferenceProtocol">What is the source of these coordinates?</label>
             <g:select name="georeferenceProtocol" from="['Google maps','Google earth','GPS device','camera/phone','physical map','other']"/><br/>
             <div id="precisionFields">
-                <span id="geodeticDatumField" class="ui-helper-hidden"><label for="datum">Enter the geodetic datum for your device</label>
-                    <g:select name="datum" from="['WGS84','GDA94','AGD 1966','AGD 1984','other','unknown']"/>
+                <span id="geodeticDatumField" class="ui-helper-hidden"><label for="geodeticDatum">Enter the geodetic datum for your device</label>
+                    <g:select name="geodeticDatum" from="['WGS84','GDA94','AGD 1966','AGD 1984','other','unknown']"/>
                     <r:img id="datumOpener" class="help" uri="/images/question_mark.jpg"/>
                 </span>
                 <span id="physicalMapScaleField" class="ui-helper-hidden"><label for="physicalMapScale">Enter the scale of the map</label>
