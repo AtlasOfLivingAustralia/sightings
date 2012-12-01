@@ -58,7 +58,12 @@
                 <div class="what">
                     <span class="scientificName">${rec.scientificName}</span><br/>
                     <span class="commonName">${rec.commonName}</span><br/>
-                    <g:if test="${rec.quantity > 1}">${rec.quantity}</g:if>
+                    <g:if test="${rec.individualCount > 1}">
+                        <span class="individualCount">${rec.individualCount} individuals recorded</span><br>
+                    </g:if>
+                    <g:if test="${rec.identificationVerificationStatus != 'Confident'}">
+                        <span>Identification ${rec.identificationVerificationStatus}</span><br>
+                    </g:if>
                     %{--<span class="id">${rec.id}</span>--}%
                 </div>
 
@@ -69,9 +74,20 @@
                 </div>
 
                 <div class="where">
-                    <span class="locality">${rec.locality}</span><br/>
-                    <span class="lat">Lat: ${rec.decimalLatitude}</span><br/>
-                    <span class="lng">Lng: ${rec.decimalLongitude}</span>
+                    <span class="locality">${rec.locality}</span><br>
+                    <span class="lat">Lat: ${rec.decimalLatitude}</span><br>
+                    <span class="lng">Lng: ${rec.decimalLongitude}</span><br>
+                    <span class="source">Coord source: ${rec.georeferenceProtocol}</span><br>
+                    <g:if test="${rec.georeferenceProtocol == 'GPS device'}">
+                        <span>Geodetic datum: ${rec.geodeticDatum}</span><br>
+                    </g:if>
+                    <g:if test="${rec.georeferenceProtocol == 'physical map'}">
+                        <span>Physical map scale: ${rec.physicalMapScale}</span><br>
+                    </g:if>
+                    <g:if test="${rec.georeferenceProtocol == 'other'}">
+                        <span>Other protocol: ${rec.otherSource}</span><br>
+                    </g:if>
+
                 </div>
 
                 <div class="actions">
@@ -119,6 +135,11 @@
         $('.delete').click(function () {
             var id = $(this).parents('section').attr('id');
             document.location.href = "${grailsApplication.config.grails.serverURL}/records/delete/" + id;
+        });
+        // handle edits
+        $('.edit').click(function () {
+            var id = $(this).parents('section').attr('id');
+            document.location.href = "${grailsApplication.config.grails.serverURL}/upload/edit/" + id;
         });
     });
 </r:script>
