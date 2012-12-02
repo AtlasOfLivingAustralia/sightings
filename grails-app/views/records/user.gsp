@@ -1,3 +1,4 @@
+<%@ page import="org.codehaus.groovy.grails.web.json.JSONObject" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -68,7 +69,8 @@
                 </div>
 
                 <div class="when">
-                    <span class="event-date">Observation: <b><si:formatDate date="${rec.eventDate}"/></b></span><br/>
+                    <span class="event-date">Observation: <b>${rec.eventDate}
+                        ${rec.eventTime != JSONObject.NULL ? rec.eventTime : ''}</b></span><br/>
                     <span class="last-updated">Edited: <si:formatDate date="${rec.lastUpdated}"/></span><br/>
                     <span class="created">Created: <si:formatDate date="${rec.dateCreated}"/></span>
                 </div>
