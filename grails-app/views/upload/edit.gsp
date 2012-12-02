@@ -15,7 +15,8 @@
             userName = "${userName}",
             recordId = "${recordId}",
             guid = "${taxonConceptID}",
-            eventDate = "${eventDate}",
+            eventDate = "${eventDate ?: null}",
+            eventTime = "${eventTime ?: null}",
 //            locality = "${location}",
 //            georeferenceProtocol = "${georeferenceProtocol}",
             recordsServerUrl = "${createLink(controller: 'proxy', action: 'submitRecord')}",
@@ -30,7 +31,7 @@
     <r:require module="jQueryCookie"/>
     <r:require module="jQueryTimeEntry"/>
     <r:require module="exif"/>
-    <r:require module="spinner"/>
+    <r:require module="maskedInput"/>
     <r:layoutResources/>
 </head>
 <body>
@@ -76,9 +77,8 @@
             dd-mm-yyy format.</p>
         </div>
         <div class="left" style="margin-top: 10px;margin-left:30px;width:54%;">
-            <p><label for="time-hours">Time</label>
-                <input type="text" id="time-hours" class=""> <strong>:</strong>
-                <input type="text" id="time-minutes" class=""></p>
+            <p><label for="time">Time</label>
+            <input type="text" id="time" size="5"/></p>
             <p>Type in the time (hh:mm 24hr clock) or leave blank if you wish.</p>
         </div>
     </section>
@@ -378,25 +378,6 @@
     </tr>
     {% } %}
 </script>
-<r:script>
-    $(function() {
-        //var countSpinner = $("#count").spinner({min: 1});
-        $("#date").datepicker({
-            dateFormat: "dd-mm-yy",
-            maxDate: "+0",
-            appendText: " (dd-mm-yyyy)",
-            numberOfMonths: 1
-        });
-        $('#count').spinit({min:1, height:15, initValue:1, stepInc:1, initValue:"${individualCount}"});
-        //$('#time-hours').spinit({min:0, max:23, width:25, height:15, initValue:12, stepInc:1});
-        //$('#time-minutes').spinit({min:0, max:59, width:25, height:15, initValue:0, stepInc:1});
-        /*$('#time').timeEntry({
-            spinnerImage: 'img/spinnerDefault.png',
-            spinnerBigImage: 'img/spinnerDefaultBig.png',
-            show24Hours: true
-        });*/
-    });
-</r:script>
 <r:layoutResources/>
 </body>
 </html>

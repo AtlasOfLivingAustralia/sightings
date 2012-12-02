@@ -84,30 +84,6 @@ class ProxyController {
     def submitRecord() {
         def serviceParams = [userId:authService.userId()]
 
-        // event date
-        /*def dt = new DateTime(params.year)
-        dt = dt.monthOfYear().setCopy(params.month?.toInteger() as int)
-        dt = dt.dayOfMonth().setCopy(params.day as String)
-        if (params.hours) { dt = dt.hourOfDay().setCopy(params.hours as String) }
-        if (params.minutes) { dt = dt.minuteOfHour().setCopy(params.minutes as String) }
-        println dt
-        serviceParams.eventDate = dt.toString()
-        println serviceParams.eventDate*/
-
-        // alternate event date
-        def dateStr = params.year == 'null' ? null : params.year
-        if (params.month != 'null') {
-            dateStr += '-' + params.month
-            if (params.day != 'null') {
-                dateStr += '-' + params.day
-            }
-        }
-        serviceParams.eventDate = dateStr
-
-        if (params.hours && params.hours != 'null' && params.minutes && params.minutes != 'null') {
-            serviceParams.eventTime = params.hours + ':' + params.minutes
-        }
-
         // media
         def media = []
         if (params.associatedMedia) {
@@ -119,8 +95,7 @@ class ProxyController {
 
         // remaining parameters
         params.each {
-            if (!(it.key in ['action','controller','associatedMedia','year','month','day','hours','minutes',
-                    'eventDate','id'])) {
+            if (!(it.key in ['action','controller','associatedMedia','id'])) {
                 serviceParams.put it.key as String, it.value as String
             }
         }

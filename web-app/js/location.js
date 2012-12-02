@@ -22,16 +22,21 @@
  */
 /* Manages locations --------------------------------------------------------------- */
 $(function() {
-//    var currentLocation = new Location();
+    $('#time').mask("99:99");
+    $("#date").datepicker({
+        dateFormat: "dd-mm-yy",
+        maxDate: "+0",
+        appendText: " (dd-mm-yyyy)",
+        numberOfMonths: 1
+    });
     screenLocation.init();
     screenDate.init();
-    // date
+    // preload date and time if they are supplied
     if (typeof eventDate !== 'undefined') {
         if (eventDate !== "" && eventDate !== 'null') {
-            new DateTime().setFromIsoFormat(eventDate).putToScreen();
+            new DateTime().setFromStoredFormat(eventDate, eventTime).putToScreen();
         }
     }
-
 });
 
 var screenLocation = {
@@ -68,6 +73,7 @@ var screenLocation = {
         $("#location").keypress(function(e) {
             if(e.which == 13) {
                 that.geocodeLookup();
+                return false;
             }
         });
         // wire location lookups
@@ -425,22 +431,17 @@ function hasValue(x) {
 /* Manages the current date and time --------------------------------------------------------------- */
 var screenDate = {
     dateField: null,
-    hoursField: null,
-    minutesField: null,
     timeField: null,
     listeners: [],
     init: function () {
         var that = this, date, time;
         this.dateField = $('#date');
-        this.hoursField = $('#time-hours');
-        this.minutesField = $('#time-minutes');
         this.timeField = $('#time');
 
         // catch changes in date and time
-        $('#date,#time-hours,#time-minutes').change(function () {
+        $('#date,#time').change(function () {
             date = that.dateField.val();
-            time = that.hoursField.val() + ':' + that.minutesField.val();
-
+            time = that.timeField.val();
             // notify listeners
             $.each(that.listeners, function (i, lis) {
                 lis.handler.apply(that, ['dateTimeChange']);
@@ -448,26 +449,8 @@ var screenDate = {
         });
     },
     getAll: function () {
-        var dt = new DateTime().loadFromScreen(),
-            time = dt.time,
-            timeBits,
-            hours = "", minutes = "";
-        if (time !== null && time !== "") {
-            timeBits = time.split(':');
-            hours = timeBits[0];
-            minutes = timeBits[1];
-        }
-        return {
-            eventDate: this.getEventDate(),
-            year: dt.year,
-            month: dt.month,
-            day: dt.day,
-            hours: hours,
-            minutes: minutes
-        }
-    },
-    getEventDate: function () {
-        return this.isValid() ? this.getDate() + " " + this.getTime() : null;
+        var dt = new DateTime().loadFromScreen();
+        return dt.isValid() ? dt.getEvent() : [];
     },
     getDate: function () {
         return this.dateField.val();
@@ -479,13 +462,11 @@ var screenDate = {
         }
     },
     getTime: function () {
-        if (this.hoursField.val() === "") { return ""; }
-        return this.hoursField.val() + ':' + this.minutesField.val();
+        return this.timeField.val();
     },
     setTime: function (time, noNotify) {
-        if (time !=null && time.length > 4) {
-            this.hoursField.val(time.substr(0,2));
-            this.minutesField.val(time.substr(3,2));
+        if (time !== null && time.length > 4) {
+            this.timeField.val(time);
             if (noNotify !== true) {
                 this.timeField.change();
             }
@@ -505,26 +486,43 @@ var screenDate = {
     }
 };
 
+/*
+Represents any date as a date string in the form 'YYYY', 'YYYY-MM' or 'YYYY-MM-DD'
+and a time string in the form 'HH:MM'. A blank/empty time is valid.
+ */
 function DateTime () {
-    this.year = null;
-    this.month = null;
-    this.day = null;
+    this.date = null;
     this.time = null;
     this.verbatimDate = "";
 }
 
 DateTime.prototype.isValid = function () {
-    return hasValue(this.year) && hasValue(this.month) && hasValue(this.day);
+    return hasValue(this.date);
+    // TODO check format of date
+    // TODO check format of time
 };
 
-DateTime.prototype.getDateForScreen = function () {
-    //console.log(this.isValid());
-    if (this.isValid()) {
-        return this.day + "-" + this.month + "-" + this.year;
-    } else {
-        return "";
+DateTime.prototype.storageDateToScreen = function (storageDate) {
+    switch (storageDate.length) {
+        case 4: return storageDate;  // year only
+        case 7: return storageDate.substr(5,2) + '-' + storageDate.substr(0,4);
+        case 10: return storageDate.substr(8,2) + '-' + storageDate.substr(5,2) + '-' + storageDate.substr(0,4);
+        default: return "";
     }
-    //return (this.isValid() ? (this.day + "-" + this.month + "-" + this.year) : "");
+};
+
+DateTime.prototype.screenDateToStorage = function (screenDate) {
+    switch (screenDate.length) {
+        case 4: return screenDate;  // year only
+        case 7: return screenDate.substr(3,4) + '-' + screenDate.substr(0,2);
+        case 10: return screenDate.substr(6,4) + '-' + screenDate.substr(3,2) + '-' + screenDate.substr(0,2);
+        default: return "";
+    }
+};
+
+// screen format id dd-mm-yyyy
+DateTime.prototype.getDateForScreen = function () {
+    return (this.isValid() ? this.storageDateToScreen(this.date) : "");
 };
 
 DateTime.prototype.getTimeForScreen = function () {
@@ -534,23 +532,42 @@ DateTime.prototype.getTimeForScreen = function () {
 // @param date - string in the form dd-mm-yyyy
 // @param time - string in the form hh:mm
 DateTime.prototype.set = function (date, time) {
-    if (!date || !time) { return this; }
-    this.year = date.slice(6,10);
-    this.month = date.slice(3,5);
-    this.day = date.slice(0,2);
+    this.date = this.screenDateToStorage(date);
     this.time = time;
     return this;
+};
+
+DateTime.prototype.getEvent = function () {
+    return {
+        eventDate: this.date,
+        eventTime: this.time
+    }
 };
 
 DateTime.prototype.setFromExifFormat = function (dateStr) {
     // exif format example is "2012:03:21 19:51:53"
     if (!dateStr) { return {}; }
     var dt = dateStr.split(' ');
-    this.year = dt[0].slice(0,4);
-    this.month = dt[0].slice(5,7);
-    this.day = dt[0].slice(8,10);
+    this.date = dt[0];
     this.time = dt[1];
+    // discard seconds
+    if (this.time.length > 5) {
+        this.time = this.time.slice(0,5);
+    }
     this.verbatimDate = dateStr;
+    return this;
+};
+
+DateTime.prototype.setFromStoredFormat = function (dateStr, timeStr) {
+    if (!dateStr) { return {}; }
+    this.verbatimDate = dateStr;
+    // assume one of YYYY, YYYY-MM, YYYY-MM-DD
+    this.date = dateStr;
+    if (typeof timeStr !== 'undefined') {
+        if (timeStr !== null && timeStr.length >= 5) {
+            this.time = timeStr;
+        }
+    }
     return this;
 };
 
@@ -558,28 +575,19 @@ DateTime.prototype.setFromIsoFormat = function (dateStr) {
     // iso format example is "2005-10-22T03:08:18Z"
     // TODO: use a date library
     if (!dateStr) { return {}; }
-    if (dateStr.length !== 10) {
-        alert("Invalid iso date format (invalid length): " + dateStr);
+    if (dateStr.length !== 20) {
+        alert("invalid iso date " + dateStr);
         return this;
     }
-    //var dt = dateStr.split('T');
-    this.year = dateStr.slice(0,4);
-    this.month = dateStr.slice(5,7);
-    this.day = dateStr.slice(8,10);
-    //this.time = dt[1].slice(0,5);
+    var dt = dateStr.split('T');
+    this.date = dt[0];
+    this.time = dt[1].slice(0,5);
     this.verbatimDate = dateStr;
     return this;
 };
 
 DateTime.prototype.loadFromScreen = function () {
-    var date = screenDate.getDate(),
-        bits;
-    if (date !== "") {
-        bits = date.split('-');
-        this.year = bits[2];
-        this.month = bits[1];
-        this.day = bits[0];
-    }
+    this.date = this.screenDateToStorage(screenDate.getDate());
     this.time = screenDate.getTime();
     return this;
 };
@@ -592,7 +600,7 @@ DateTime.prototype.putToScreen = function (noNotify) {
 
 DateTime.prototype.compare = function (dat) {
     var conflicts = [];
-    if (dat.isValid() && this.isValid() && dat.year != this.year && dat.month != this.month && dat.day != this.day) {
+    if (dat.isValid() && this.isValid() && dat.date != this.date) {
         conflicts.push('date');
     }
     if (dat.isValid() && this.isValid() && dat.time != this.time) {
@@ -602,8 +610,7 @@ DateTime.prototype.compare = function (dat) {
 };
 
 DateTime.prototype.isSame = function (dat) {
-    return !(dat === undefined || dat.year != this.year || dat.month != this.month ||
-        dat.day != this.day || dat.time != this.time);
+    return !(dat === undefined || dat.date != this.date || dat.time != this.time);
 };
 
 function numDecimalPlaces (x, dec_sep) {
