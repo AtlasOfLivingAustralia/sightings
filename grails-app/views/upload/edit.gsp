@@ -212,7 +212,6 @@
         </g:if>
         <ul style="display: inline;">
             <g:each in="${images}" var="image" status="idx">
-                <!--<li id="${associatedMedia[idx][associatedMedia[idx].lastIndexOf('\\')+1..-1]}"> -->
                 <li id="${image.raw}">
                     <img class="ui-corner-all" style="max-height:100px;max-width: 100px;" src="${image.thumb}"/>
                     <button type="button" class="delete-button"><img src="${resource(dir:'images/ala',file:'delete.png')}"/></button>
