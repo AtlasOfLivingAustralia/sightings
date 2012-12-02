@@ -93,8 +93,7 @@
             <div class="left" id="symbol">
                 <span id="reverseLookup" class="symbol" title="Lookup coordinates from description">&raquo;</span><br/>
                 <span id="lookup" class="symbol" title="Lookup description from coordinates">&laquo;</span><br/>
-                <r:img uri="/images/geocode.png" id="isLookedUp" class="lookup lookup-off"
-                       title=""/><br/>
+                <span id="isLookedUp" class="lookup" title="Locks the description preventing updates as the map pin is dragged">lock</span><br/>
             </div>
             <div style="clear:both;">
                 <label for="locationBookmarks" class="minor">Choose from a bookmarked location.</label><br/>
@@ -223,7 +222,8 @@
     <!-- NOTES -->
     <div class="heading ui-corner-left"><h2>Notes</h2><r:img uri="/images/notes.png"/></div>
     <section class="sightings-block ui-corner-all">
-        <label for="occurrenceRemarks">Notes</label><g:textArea name="occurrenceRemarks" rows="8" cols="80"/>
+        <label for="occurrenceRemarks">Notes</label><g:textArea name="occurrenceRemarks"
+              rows="8" cols="80" value="${occurrenceRemarks}"/>
     </section>
     <section style="clear:both; padding:20px 0 0 340px;">
         <button type="button" id="alt-submit">Update record</button>

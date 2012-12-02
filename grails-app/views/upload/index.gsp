@@ -87,8 +87,7 @@
             <div class="left" id="symbol">
                 <span id="reverseLookup" class="symbol" title="Lookup coordinates from description">&raquo;</span><br/>
                 <span id="lookup" class="symbol" title="Lookup description from coordinates">&laquo;</span><br/>
-                <r:img uri="/images/geocode.png" id="isLookedUp" class="lookup lookup-off"
-                       title=""/><br/>
+                <span id="isLookedUp" class="lookup" title="Locks the description preventing updates as the map pin is dragged">lock</span><br/>
             </div>
             <div style="clear:both;">
                 <label for="locationBookmarks" class="minor">Choose from a bookmarked location.</label><br/>

@@ -186,23 +186,25 @@ label.minor {
 }
 
 #symbol {
-    padding-top: 28px;
+    padding-top: 16px;
     padding-left: 12px;
 }
 
 span.symbol {
-    font-size: 2em;
-    vertical-align: top;
+    font-size: 3em;
     cursor: pointer;
 }
 
-img.lookup {
+.lookup {
     cursor: pointer;
+    background: url("../images/ala/lock_unlock.png") no-repeat;
+    color: transparent;
     padding-top: 4px;
+    line-height: 36px;
 }
 
-img.lookup-off {
-    opacity: 0.5;
+.lookup-off {
+    background: url("../images/ala/lock.png") no-repeat !important;
 }
 
 #main-map-container {
