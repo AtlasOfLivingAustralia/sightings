@@ -86,9 +86,15 @@ class ProxyController {
 
         // media
         def media = []
+        println "Associated MEDIA: " + params.associatedMedia
         if (params.associatedMedia) {
             params.associatedMedia.tokenize(',').each {
-                media << grailsApplication.config.upload.images.url + it.replaceAll(' ','_')
+                if(it.startsWith("http://")){
+                    //existing image already uploaded
+                    media << it
+                } else {
+                    media << grailsApplication.config.upload.images.url + it.replaceAll(' ','_')
+                }
             }
         }
         serviceParams.associatedMedia = media
