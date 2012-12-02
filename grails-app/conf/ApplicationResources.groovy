@@ -113,4 +113,8 @@ modules = {
         resource url: 'css/smartspinner/smartspinner.css'
         resource url: 'js/smartspinner.js'
     }
+
+    maskedInput {
+        resource url: 'js/jquery.maskedinput-1.3.min.js'
+    }
 }
