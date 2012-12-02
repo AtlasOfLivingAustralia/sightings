@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="where">
-                    <g:if test="${rec.decimalLatitude != JSONObject.NULL}">
+                    <g:if test="${rec.decimalLatitude != JSONObject.NULL && rec.decimalLatitude != 'null'}">
                         <span class="locality">${rec.locality}</span><br>
                         <span class="lat">Lat: ${rec.decimalLatitude}</span><br>
                         <span class="lng">Lng: ${rec.decimalLongitude}</span><br>
