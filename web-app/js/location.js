@@ -141,6 +141,10 @@ var screenLocation = {
         });
     },
     getAll: function () {
+        // nothing else matters if there is no lat/lon
+        if (!this.getLat()) {
+            return {};
+        }
         var l = {
             decimalLatitude: this.getLat(),
             decimalLongitude: this.getLng(),
@@ -149,20 +153,27 @@ var screenLocation = {
             locality: this.getLocality(),
             georeferenceProtocol: this.getSource()
             },
-            other = $('#otherSource').val();
+            other = $('#otherSource').val(),
+            props = {}, p;
+        // only propagate non-null values
+        for (p in l) {
+            if (l.hasOwnProperty(p) && l[p]) {
+                props[p] = l[p];
+            }
+        }
         if (this.usingReverseGeocodedLocality) {
-            l.usingReverseGeocodedLocality = true;
+            props.usingReverseGeocodedLocality = true;
         }
-        if (l.georeferenceProtocol === 'GPS device') {
-            l.geodeticDatum = $('#geodeticDatum').val();
+        if (props.georeferenceProtocol === 'GPS device') {
+            props.geodeticDatum = $('#geodeticDatum').val();
         }
-        if (l.georeferenceProtocol === 'other') {
-            l.otherSource = other;
+        if (props.georeferenceProtocol === 'other') {
+            props.otherSource = other;
         }
-        if (l.georeferenceProtocol === 'physical map') {
-            l.physicalMapScale = $('#physicalMapScale').val();
+        if (props.georeferenceProtocol === 'physical map') {
+            props.physicalMapScale = $('#physicalMapScale').val();
         }
-        return l;
+        return props;
     },
     setLatLng: function (lat, lng, options) {
         var opts = options || {};
@@ -210,11 +221,9 @@ var screenLocation = {
     setUsingReverseGeocodedLocality: function (value) {
         if (value === true) {
             $('#isLookedUp').removeClass('lookup-off');
-            $('#isLookedUp').attr('title','Description has been looked up from the coordinates');
             this.usingReverseGeocodedLocality = true;
         } else {
             $('#isLookedUp').addClass('lookup-off');
-            $('#isLookedUp').attr('title','');
             this.usingReverseGeocodedLocality = false;
         }
     },
