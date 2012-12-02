@@ -126,13 +126,16 @@ var submitHandler = {
         alert("You must at least identify the species (or higher taxonomic group). " + msg);
     },
     submit: function () {
-        var payload = $.extend(
+        var payload = $.extend({},
             screenDate.getAll(),
             screenLocation.getAll(),
             imageList.getAll(),
             taxon.getAll(),
             {userId: userId}
         );
+        if ($('#occurrenceRemarks').val()) {
+            payload.occurrenceRemarks = $('#occurrenceRemarks').val();
+        }
         if (typeof recordId !== 'undefined') {
             payload.id = recordId;
         }
@@ -203,13 +206,13 @@ var taxon = {
         $('#taxonImage').parent('a').attr('href', this.bieUrl);
     },
     getAll: function () {
-        return {
+        return this.guid ? {
             scientificName: this.scientificName,
             commonName: this.commonName,
             taxonConceptID: this.guid,
             individualCount: $('#count').val(),
             identificationVerificationStatus: $('#identificationVerificationStatus').val()
-        };
+        } : {};
     },
     isValid: function () {
         return this.guid !== null;
@@ -388,6 +391,7 @@ var mainMap = {
             });
             $('#pinToCenter').click(function () {
                 that.setMarker(that.map.getCenter(), undefined, {zoom: 'same'});
+                screenLocation.setLatLng(that.map.getCenter().lat(), that.map.getCenter().lng(), {autoLookup: true});
             });
             $('#showOz').click(function () {
                 that.resetMap();
@@ -430,6 +434,7 @@ var mainMap = {
         }
         this.marker.setVisible(true);
         this.activeMarker = true;
+        this.hideMenuMarker();  // don't want the menu pin once a pin is set on the map
     },
     removeMarker: function () {
         this.marker.setVisible(false);
@@ -448,6 +453,9 @@ var mainMap = {
     zoomIntoPin: function () {
         this.setCenterToMarker();
         this.map.setZoom(15);
+    },
+    hideMenuMarker: function () { // hides the marker in the menu so it can't be dragged
+        $('#m1').hide();
     },
     redraw: function () {
         google.maps.event.trigger(this.map, "resize");
