@@ -69,27 +69,30 @@
                 </div>
 
                 <div class="when">
-                    <span class="event-date">Observation: <b>${rec.eventDate}
-                        ${rec.eventTime != JSONObject.NULL ? rec.eventTime : ''}</b></span><br/>
+                    <g:if test="${rec.eventDate && rec.eventDate != JSONObject.NULL}">
+                        <span class="event-date">Observation: <b>${rec.eventDate}
+                            ${rec.eventTime != JSONObject.NULL ? rec.eventTime : ''}</b></span><br/>
+                    </g:if>
                     <span class="last-updated">Edited: <si:formatDate date="${rec.lastUpdated}"/></span><br/>
                     <span class="created">Created: <si:formatDate date="${rec.dateCreated}"/></span>
                 </div>
 
                 <div class="where">
-                    <span class="locality">${rec.locality}</span><br>
-                    <span class="lat">Lat: ${rec.decimalLatitude}</span><br>
-                    <span class="lng">Lng: ${rec.decimalLongitude}</span><br>
-                    <span class="source">Coord source: ${rec.georeferenceProtocol}</span><br>
-                    <g:if test="${rec.georeferenceProtocol == 'GPS device'}">
-                        <span>Geodetic datum: ${rec.geodeticDatum}</span><br>
+                    <g:if test="${rec.decimalLatitude != JSONObject.NULL}">
+                        <span class="locality">${rec.locality}</span><br>
+                        <span class="lat">Lat: ${rec.decimalLatitude}</span><br>
+                        <span class="lng">Lng: ${rec.decimalLongitude}</span><br>
+                        <span class="source">Coord source: ${rec.georeferenceProtocol}</span><br>
+                        <g:if test="${rec.georeferenceProtocol == 'GPS device'}">
+                            <span>Geodetic datum: ${rec.geodeticDatum}</span><br>
+                        </g:if>
+                        <g:if test="${rec.georeferenceProtocol == 'physical map'}">
+                            <span>Physical map scale: ${rec.physicalMapScale}</span><br>
+                        </g:if>
+                        <g:if test="${rec.georeferenceProtocol == 'other'}">
+                            <span>Other protocol: ${rec.otherSource}</span><br>
+                        </g:if>
                     </g:if>
-                    <g:if test="${rec.georeferenceProtocol == 'physical map'}">
-                        <span>Physical map scale: ${rec.physicalMapScale}</span><br>
-                    </g:if>
-                    <g:if test="${rec.georeferenceProtocol == 'other'}">
-                        <span>Other protocol: ${rec.otherSource}</span><br>
-                    </g:if>
-
                 </div>
 
                 <div class="actions">
