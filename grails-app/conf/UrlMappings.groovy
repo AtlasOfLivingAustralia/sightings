@@ -2,6 +2,8 @@ class UrlMappings {
 
 	static mappings = {
 
+        "/recent"(controller: "records"){ action = [GET:"recent"] }
+        "/recent/"(controller: "records"){ action = [GET:"recent"] }
         "/mine"(controller: "records"){ action = [GET:"user"] }
         "/mine/"(controller: "records"){ action = [GET:"user"] }
         "/spotter/$userId"(controller: "records"){ action = [GET:"userById"] }

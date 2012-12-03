@@ -84,9 +84,10 @@ class ProxyController {
     def submitRecord() {
         def serviceParams = [userId:authService.userId()]
 
+        def paramstofix = params
+
         // media
         def media = []
-        println "Associated MEDIA: " + params.associatedMedia
         if (params.associatedMedia) {
             params.associatedMedia.tokenize(',').each {
                 if(it.startsWith("http://")){
@@ -101,6 +102,7 @@ class ProxyController {
 
         // remaining parameters
         params.each {
+            println((it.key as String) + ": " + it.value)
             if (!(it.key in ['action','controller','associatedMedia','id'])) {
                 serviceParams.put it.key as String, it.value as String
             }
