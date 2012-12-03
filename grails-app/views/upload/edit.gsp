@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+<%@ page import="org.codehaus.groovy.grails.web.json.JSONObject; org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -105,8 +105,10 @@
         </div>
         <div class="left" id="coordinate-container">
             <span>Enter coordinates (decimal degrees) if you already have them.</span><br/>
-            <label for="latitude">Latitude</label><g:textField name="latitude" size="17" value="${decimalLatitude}"/>
-            <label for="longitude">Longitude</label><g:textField name="longitude" size="17" value="${decimalLongitude}"/><br/>
+            <label for="latitude">Latitude</label><g:textField name="latitude" size="17"
+                    value="${decimalLatitude != JSONObject.NULL ? decimalLatitude : ''}"/>
+            <label for="longitude">Longitude</label><g:textField name="longitude" size="17"
+                    value="${decimalLongitude != JSONObject.NULL ? decimalLongitude : ''}"/><br/>
             <g:hiddenField name="verbatimLatitude" value="${verbatimLatitude}"/>
             <g:hiddenField name="verbatimLongitude" value="${verbatimLongitude}"/>
             <label for="georeferenceProtocol">What is the source of these coordinates?</label>
