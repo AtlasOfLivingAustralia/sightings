@@ -12,7 +12,7 @@
         var serverUrl = "${grailsApplication.config.grails.serverURL}",
             bieUrl = "${grailsApplication.config.bie.baseURL}",
             biocacheUrl = "${grailsApplication.config.biocache.baseURL}",
-            //userId = "mark.woolston@csiro.au",
+            userId = "${userId}",
             recordsServerUrl = serverUrl + "/proxy/submitRecord/",
             bookmarkServerUrl = "${grailsApplication.config.ala.locationBookmarkServerURL}";
     </r:script>
@@ -26,7 +26,7 @@
 <body>
 <div class="inner">
     <div class="page-header">
-        <h1>My sightings</h1>
+        <h1>${sightingsOwner} sightings</h1>
         <p>This is a simple list of the sightings you have submitted. You can filter, sort and map your
         sightings using the Atlas's
         <a href="${grailsApplication.config.biocache.baseURL}occurrences/search?q=data_resource_uid:dr364&fq=user_id:robyn.lawrence@csiro.au">occurrence explorer</a>.</p>
@@ -60,7 +60,9 @@
                     <span class="scientificName">${rec.scientificName}</span><br/>
                     <span class="commonName">${rec.commonName}</span><br/>
                     <g:if test="${rec.individualCount > 1}">
-                        <span class="individualCount">${rec.individualCount} individuals recorded</span><br>
+                        <span class="individualCount">${rec.individualCount}
+                            ${rec.individualCount && rec.individualCount.toInteger() >1 ? 'individuals' : 'individual'}  recorded
+                        </span><br>
                     </g:if>
                     <g:if test="${rec.identificationVerificationStatus != 'Confident'}">
                         <span>Identification ${rec.identificationVerificationStatus}</span><br>
@@ -72,6 +74,9 @@
                     <g:if test="${rec.eventDate && rec.eventDate != JSONObject.NULL}">
                         <span class="event-date">Observation: <b>${rec.eventDate}
                             ${rec.eventTime != JSONObject.NULL ? rec.eventTime : ''}</b></span><br/>
+                    </g:if>
+                    <g:if test="${showUser}">
+                        <span class="submitted-by">Recorded by: <b>${rec.userDisplayName}</b></span><br/>
                     </g:if>
                     <span class="last-updated">Edited: <si:formatDate date="${rec.lastUpdated}"/></span><br/>
                     <span class="created">Created: <si:formatDate date="${rec.dateCreated}"/></span>
@@ -96,8 +101,11 @@
                 </div>
 
                 <div class="actions">
-                    <button type="button" class="delete">Remove</button>
-                    <button type="button" class="edit">Edit</button><br/>
+                    <g:if test="${isAdmin || rec.userId == userId }">
+                        <button type="button" class="delete">Remove</button>
+                        <button type="button" class="edit">Edit</button><br/>
+                    </g:if>
+
                     <g:if test="${rec.images && rec.images?.size() > 0}">
                         <g:each in="${rec.images[0..-1]}" var="img">
                             <a href="${img.large}">
@@ -113,7 +121,6 @@
         </g:each>
     </section>
     <section style="padding-bottom:20px;margin-left:10px;">
-        <a href="${grailsApplication.config.grails.serverURL}/upload/demo/">Add another sighting (DEMO)</a><br/>
         <a href="${grailsApplication.config.grails.serverURL}/">Add another sighting</a>
     </section>
 </div>
