@@ -126,7 +126,23 @@ var submitHandler = {
         alert("You must at least identify the species (or higher taxonomic group). " + msg);
     },
     submit: function () {
-        var payload = $.extend({},
+        var payload;
+        // check time is valid
+        if (!new DateTime().loadFromScreen().validateTime()) {
+            screenDate.showInvalidTimeAlert();
+            return;
+        }
+        // check lat is valid
+        if (!new Location().loadFromScreen().validateLatitude()) {
+            screenLocation.showInvalidLatitudeAlert();
+            return;
+        }
+        // check lon is valid
+        if (!new Location().loadFromScreen().validateLongitude()) {
+            screenLocation.showInvalidLongitudeAlert();
+            return;
+        }
+        payload = $.extend({},
             screenDate.getAll(),
             screenLocation.getAll(),
             imageList.getAll(),
@@ -336,7 +352,7 @@ var mainMap = {
         var options = {
             scrollwheel: false,
             streetViewControl: false,
-            mapTypeControl: false,
+            mapTypeControl: true,
             //scaleControl: false,
             panControl: false,
             //zoomControl: false,

@@ -247,6 +247,14 @@ var screenLocation = {
     },
     removeListener: function(listener) {
         this.listeners.remove(listener);
+    },
+    showInvalidLatitudeAlert: function () {
+        this.latitudeField.focus();
+        alert('The latitude ' + this.getLat() + ' is not valid.');
+    },
+    showInvalidLongitudeAlert: function () {
+        this.longitudeField.focus();
+        alert('The longitude ' + this.getLng() + ' is not valid.');
     }
 };
 
@@ -433,6 +441,32 @@ Location.prototype.isSame = function (loc) {
     return same;
 };
 
+Location.prototype.validateLatitude = function () {
+    var lat;
+    if (this.decimalLatitude === null || this.decimalLatitude === '') {
+        return true;
+    }
+    try {
+        lat = parseFloat(this.decimalLatitude);
+    } catch (e) {
+        return false;
+    }
+    return (lat >= -90 && lat <= 90);
+};
+
+Location.prototype.validateLongitude = function () {
+    var lon;
+    if (this.decimalLongitude === null || this.decimalLongitude === '') {
+        return true;
+    }
+    try {
+        lon = parseFloat(this.decimalLongitude);
+    } catch (e) {
+        return false;
+    }
+    return (lon >= -180 && lon <= 180);
+};
+
 function hasValue(x) {
     return (x !== undefined) && (x !== null) && (x !== "") && (x !== [])
 }
@@ -492,6 +526,10 @@ var screenDate = {
     },
     removeListener: function(listener) {
         this.listeners.remove(listener);
+    },
+    showInvalidTimeAlert: function () {
+        this.timeField.focus();
+        alert('The time ' + this.getTime() + ' is not valid.');
     }
 };
 
@@ -622,6 +660,24 @@ DateTime.prototype.isSame = function (dat) {
     return !(dat === undefined || dat.date != this.date || dat.time != this.time);
 };
 
+DateTime.prototype.validateTime = function () {
+    // expects nn:nn as string or empty string or null
+    var hours, minutes;
+    if (this.time === null || this.time === '') {
+        return true;
+    }
+    if (this.time.length !== 5) {
+        return false;
+    }
+    try {
+        hours = parseInt(this.time.substr(0,2));
+        minutes = parseInt(this.time.substr(3,2));
+    } catch (e) {
+        return false;
+    }
+    return hours >= 0 && hours <=23 && minutes >= 0 && minutes <= 59
+};
+
 function numDecimalPlaces (x, dec_sep) {
     var tmp = x.toString(),
         sep = dec_sep || '.';
@@ -640,4 +696,3 @@ function limit (num, places) {
     }
     return num;
 }
-
