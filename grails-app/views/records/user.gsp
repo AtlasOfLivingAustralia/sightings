@@ -59,15 +59,15 @@
                 <div class="what">
                     <span class="scientificName">${rec.scientificName}</span><br/>
                     <span class="commonName">${rec.commonName}</span><br/>
-                    <g:if test="${rec.individualCount > 1}">
+                    <g:if test="${rec.individualCount && rec.individualCount.toInteger() > 1}">
                         <span class="individualCount">${rec.individualCount}
-                            ${rec.individualCount && rec.individualCount.toInteger() >1 ? 'individuals' : 'individual'}  recorded
+                            ${rec.individualCount && rec.individualCount.toInteger() > 1 ? 'individuals' : 'individual'}
+                            recorded
                         </span><br>
                     </g:if>
                     <g:if test="${rec.identificationVerificationStatus != 'Confident'}">
                         <span>Identification ${rec.identificationVerificationStatus}</span><br>
                     </g:if>
-                    %{--<span class="id">${rec.id}</span>--}%
                 </div>
 
                 <div class="when">
@@ -87,7 +87,9 @@
                         <span class="locality">${rec.locality}</span><br>
                         <span class="lat">Lat: ${rec.decimalLatitude}</span><br>
                         <span class="lng">Lng: ${rec.decimalLongitude}</span><br>
-                        <span class="source">Coord source: ${rec.georeferenceProtocol}</span><br>
+                        <g:if test="${rec.georeferenceProtocol}">
+                            <span class="source">Coord source: ${rec.georeferenceProtocol}</span><br>
+                        </g:if>
                         <g:if test="${rec.georeferenceProtocol == 'GPS device'}">
                             <span>Geodetic datum: ${rec.geodeticDatum}</span><br>
                         </g:if>
