@@ -6,7 +6,7 @@ class RecordsController {
     def authService
     //def username = 'mark.woolston@csiro.au' // until CAS is integrated
 
-    def recent() {
+    def recentImages() {
         def userId = authService.userId()
         log.debug("userId : " + userId)
         log.debug("username : " + authService.username())
@@ -20,6 +20,31 @@ class RecordsController {
             opts += (opts ? "&" : "?") + "order=" + params.order
         }
         //println opts
+        // get records for current user
+        def records = webService.getJson(grailsApplication.config.ala.fielddata + "images/" + opts)
+        if (records.error) {
+            // TODO: handle service errors
+            println records.error
+        }
+        records = records.records
+        //println records
+        render( view: 'user', model:[records: records, userId:authService.userId(), sightingsOwner:"Recent", showUser:true])
+    }
+
+
+    def recent() {
+        def userId = authService.userId()
+        log.debug("userId : " + userId)
+        log.debug("username : " + authService.username())
+
+        // handle sort options
+        def opts = ""
+        if (params.sort) {
+            opts += "?sort=" + params.sort
+        }
+        if (params.order) {
+            opts += (opts ? "&" : "?") + "order=" + params.order
+        }
         // get records for current user
         def records = webService.getJson(grailsApplication.config.ala.recordsServerURL + opts)
         if (records.error) {

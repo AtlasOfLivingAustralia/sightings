@@ -19,6 +19,9 @@ eventWebXmlEnd = {   String filename ->
   content = content.replace("@security.cas.uriExclusionFilterPattern@", ConfigurationHolder.config.security.cas.uriExclusionFilterPattern)
   println "Injecting CAS uri exclusion filter pattern = ${ConfigurationHolder.config.security.cas.uriExclusionFilterPattern}"
 
+  content = content.replace("@security.cas.authenticateOnlyIfLoggedInPattern@", ConfigurationHolder.config.security.cas.authenticateOnlyIfLoggedInPattern)
+  println "Injecting CAS authenticateOnlyIfLoggedInPattern filter pattern = ${ConfigurationHolder.config.security.cas.authenticateOnlyIfLoggedInPattern}"
+
   content = content.replace("@security.cas.loginUrl@", ConfigurationHolder.config.security.cas.loginUrl)
   println "Injecting CAS login URL = ${ConfigurationHolder.config.security.cas.loginUrl}"
 

@@ -4,6 +4,8 @@ class UrlMappings {
 
         "/recent"(controller: "records"){ action = [GET:"recent"] }
         "/recent/"(controller: "records"){ action = [GET:"recent"] }
+        "/recentImages"(controller: "records"){ action = [GET:"recentImages"] }
+        "/recentImages/"(controller: "records"){ action = [GET:"recentImages"] }
         "/mine"(controller: "records"){ action = [GET:"user"] }
         "/mine/"(controller: "records"){ action = [GET:"user"] }
         "/spotter/$userId"(controller: "records"){ action = [GET:"userById"] }
