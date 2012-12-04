@@ -4,10 +4,6 @@ var Bookmarks = {
     $lat: $('#latitude'),
     $lng: $('#longitude'),
     $location: $('#location'),
-    /*$coordinateSource: $('#coordinateSource'),
-    $datum: $('#datum'),
-    $physicalMap: $('#physicalMapScale'),
-    $otherSource: $('#otherSource'),*/
     $locationBookmarks: $('#locationBookmarks'),
     $dialogBookmarksList: $('#bookmarksList'),
     $dlg: $('#manageBookmarksDialog'),
@@ -156,11 +152,11 @@ var Bookmarks = {
     // pops up a dialog to confirm deletion of a bookmark
     requestDelete: function (data) {
         Dialogs.confirm('Are you sure you want to delete the bookmark "' + data.locality + '"?',
-                'Confirm delete', {label: 'Delete', handler: this.delete, context: this, params: [data.id]});
+                'Confirm delete', {label: 'Delete', handler: this.deleteBookmark, context: this, params: [data.id]});
     },
 
     // deletes a bookmark
-    delete: function (id) {
+    deleteBookmark: function (id) {
         var that = this;
         $.ajax({
             url: serverUrl + "/proxy/deleteLocationBookmark?id=" + id,
