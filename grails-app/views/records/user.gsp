@@ -29,7 +29,7 @@
         <h1>${sightingsOwner} sightings</h1>
         <p>This is a simple list of the sightings you have submitted. You can filter, sort and map your
         sightings using the Atlas's
-        <a href="${grailsApplication.config.biocache.baseURL}occurrences/search?q=data_resource_uid:dr364&fq=user_id:robyn.lawrence@csiro.au">occurrence explorer</a>.</p>
+        <a href="${grailsApplication.config.biocache.baseURL}occurrences/search?q=data_resource_uid:dr364">occurrence explorer</a>.</p>
     </div>
     <section id="sortControls">
         <div class="what">Identification</div>
@@ -76,7 +76,10 @@
                             ${rec.eventTime != JSONObject.NULL ? rec.eventTime : ''}</b></span><br/>
                     </g:if>
                     <g:if test="${showUser}">
-                        <span class="submitted-by">Recorded by: <b>${rec.userDisplayName}</b></span><br/>
+                        <span class="submitted-by">Recorded by:
+                            <g:link mapping="spotter" params="[userId:rec.userId]">${rec.userDisplayName}</g:link>
+                        </span>
+                        <br/>
                     </g:if>
                     <span class="last-updated">Edited: <si:formatDate date="${rec.lastUpdated}"/></span><br/>
                     <span class="created">Created: <si:formatDate date="${rec.dateCreated}"/></span>

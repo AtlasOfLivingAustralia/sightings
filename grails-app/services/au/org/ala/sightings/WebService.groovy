@@ -2,6 +2,7 @@ package au.org.ala.sightings
 
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
+import groovy.json.JsonSlurper
 
 class WebService {
 

@@ -118,11 +118,10 @@ environments {
         //grails.hostname = "192.168.0.18"
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
-        ala.fielddata = "http://${grails.hostname}:8086/fielddata/"
-	    ala.locationBookmarkServerURL = ala.fielddata + "location/"
-        ala.recordsServerURL = ala.fielddata + "record/"
-        //ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
-        //ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
+	    //ala.locationBookmarkServerURL = ala.fielddata + "location/"
+        //ala.recordsServerURL = ala.fielddata + "record/"
+        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
+        ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
     }
     production {
         grails.logging.jul.usebridge = false

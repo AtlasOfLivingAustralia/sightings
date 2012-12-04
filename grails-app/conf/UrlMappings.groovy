@@ -8,7 +8,7 @@ class UrlMappings {
         "/recentImages/"(controller: "records"){ action = [GET:"recentImages"] }
         "/mine"(controller: "records"){ action = [GET:"user"] }
         "/mine/"(controller: "records"){ action = [GET:"user"] }
-        "/spotter/$userId"(controller: "records"){ action = [GET:"userById"] }
+        name spotter: "/spotter/$userId"(controller: "records"){ action = [GET:"userById"] }
 
 		"/$controller/$action?/$id?"{
 			constraints {
