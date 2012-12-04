@@ -92,6 +92,7 @@ class RecordsController {
 
         // handle sort options
         def opts = ""
+
         if (params.sort) {
             opts += "?sort=" + params.sort
         }
