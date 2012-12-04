@@ -21,7 +21,7 @@ class RecordsController {
         }
         //println opts
         // get records for current user
-        def records = webService.getJson(grailsApplication.config.ala.fielddata + "images/" + opts)
+        def records = webService.getJson(grailsApplication.config.ala.fielddata + "record/images" + opts)
         if (records.error) {
             // TODO: handle service errors
             println records.error
