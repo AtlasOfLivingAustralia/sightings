@@ -122,7 +122,7 @@
                 <span id="physicalMapScaleField" class="ui-helper-hidden"><label for="physicalMapScale">Enter the scale of the map</label>
                 <g:select name="physicalMapScale" from="${physicalMapScales}" value="${physicalMapScale}"/></span>
                 <span id="otherSourceField" class="ui-helper-hidden"><label for="otherSource">Enter the source</label>
-                <g:textField name="otherSource" value="${otherSource}"/>
+                <g:textField name="otherSource" value="${otherSource}"/></span>
 
             </div>
             <button id="main-map-link">Locate on a map</button>
