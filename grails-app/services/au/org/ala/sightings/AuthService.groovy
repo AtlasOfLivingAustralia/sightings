@@ -12,6 +12,11 @@ class AuthService {
 
   def serviceMethod() {}
 
+  private def userEmailMap = [:]
+  private def userIdMap = [:]
+
+  private def lastRefresh
+
   def getLoggedInUserId(request){
       //def userName = AuthenticationCookieUtils.getUserName(request)
       //translate to userId...
@@ -46,11 +51,6 @@ class AuthService {
             RequestContextHolder.requestAttributes?.isUserInRole(role) // || isAdmin()
   }
 
-  private def userEmailMap = [:]
-  private def userIdMap = [:]
-
-  private def lastRefresh
-
   def userDisplayNameForEmail(email) {
       def map = getUserEmailMap().get(email)
       map("firstname") + " " + map("lastname")
@@ -64,7 +64,7 @@ class AuthService {
   def getUserEmailMap() {
     def now = new Date()
     if(!lastRefresh ||  DateUtils.addMinutes(lastRefresh, 10) < now){
-       refreshMaps(now)
+            refreshMaps(now)
     }
     this.userEmailMap
   }
@@ -72,7 +72,7 @@ class AuthService {
   def getUserIdMap() {
     def now = new Date()
     if(!lastRefresh ||  DateUtils.addMinutes(lastRefresh, 10) < now){
-       refreshMaps(now)
+           refreshMaps(now)
     }
     this.userIdMap
   }
@@ -85,7 +85,7 @@ class AuthService {
         log.info "Refreshing user lists....."
         if (userListJson && !userListJson.error) {
             userListJson.resp.each {
-                println("Adding: " + it.email +" -> " + it.id)
+                //println("Adding: " + it.email +" -> " + it.id)
                 replacementEmailMap.put(it.email.toLowerCase(),  it);
                 replacementIdMap.put(it.id.toString(),  it);
             }
@@ -95,8 +95,12 @@ class AuthService {
         this.userEmailMap = replacementEmailMap
         this.userIdMap = replacementIdMap
         lastRefresh = now
-    } catch (Exception e) {
+    } catch (Throwable e) {
         log.error "Cache refresh error" + e.message
+        e.printStackTrace(System.out)
+     } catch (Error e) {
+        log.error "Cache refresh error" + e.message
+        e.printStackTrace(System.out)
     }
   }
 }
