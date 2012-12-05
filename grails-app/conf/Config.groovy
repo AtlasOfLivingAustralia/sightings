@@ -42,6 +42,8 @@ bie.baseURL = "http://bie.ala.org.au/"
 biocache.baseURL = "http://biocache.ala.org.au/"
 bie.searchPath = "/search"
 grails.project.groupId = au.org.ala // change this to alter the default package name and Maven publishing destination
+userDetails.url ="http://auth.ala.org.au/userdetails/userDetails/getUserListWithIds"
+userDetails.emails.url = "http://auth.ala.org.au/userdetails/userDetails/getUserListFull"
 
 /******************************************************************************\
  *  APP CONFIG
@@ -118,10 +120,10 @@ environments {
         //grails.hostname = "192.168.0.18"
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
-//	    ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata/location/"
-//        ala.recordsServerURL = "http://${grails.hostname}:8086/fielddata/record/"
-        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
-        ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
+	    ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata/location/"
+        ala.recordsServerURL = "http://${grails.hostname}:8086/fielddata/record/"
+//        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
+//        ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
     }
     production {
         grails.logging.jul.usebridge = false

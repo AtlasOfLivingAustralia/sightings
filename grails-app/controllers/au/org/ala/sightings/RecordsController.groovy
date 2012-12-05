@@ -33,9 +33,9 @@ class RecordsController {
 
 
     def recent() {
-        def userId = authService.userId()
-        log.debug("userId : " + userId)
-        log.debug("username : " + authService.username())
+
+        def userId = authService.getLoggedInUserId(request)
+        println("Logged in user:" + userId)
 
         // handle sort options
         def opts = ""
@@ -53,7 +53,7 @@ class RecordsController {
         }
         records = records.records
         //println records
-        render( view: 'user', model:[records: records, userId:authService.userId(), sightingsOwner:"Recent", showUser:true])
+        render( view: 'user', model:[records: records, userId:userId, sightingsOwner:"Recent", showUser:true])
     }
 
     def user() {
@@ -90,6 +90,8 @@ class RecordsController {
 
     def userById() {
 
+        def sightingsOwner = authService.userDisplayNameForId(params.userId)
+
         // handle sort options
         def opts = ""
 
@@ -114,7 +116,7 @@ class RecordsController {
             records = records.records
         }
         //println records
-        render( view: 'user', model:[records: records])
+        render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner])
     }
 
     /**

@@ -106,6 +106,7 @@
                 </div>
 
                 <div class="actions">
+                    <!--Record UserID: ${rec.userId}, UserId: ${userId} -->
                     <g:if test="${isAdmin || rec.userId == userId }">
                         <button type="button" class="delete">Remove</button>
                         <button type="button" class="edit">Edit</button><br/>
