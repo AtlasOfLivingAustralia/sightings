@@ -118,10 +118,10 @@ environments {
         //grails.hostname = "192.168.0.18"
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
-	    ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata/location/"
-        ala.recordsServerURL = "http://${grails.hostname}:8086/fielddata/record/"
-        //ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
-        //ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
+//	    ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata/location/"
+//        ala.recordsServerURL = "http://${grails.hostname}:8086/fielddata/record/"
+        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
+        ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
     }
     production {
         grails.logging.jul.usebridge = false
@@ -129,9 +129,10 @@ environments {
         serverName = "http://${grails.hostname}"
         contextPath = ""
         grails.serverURL = "http://${grails.hostname}"
-        upload.images.url = "http://${grails.hostname}/images/"
+        upload.images.url = "http://${grails.hostname}/uploaded-media/"
         ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
         ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
+        upload.images.path = '/data/sightings/uploaded-media'
     }
 }
 
