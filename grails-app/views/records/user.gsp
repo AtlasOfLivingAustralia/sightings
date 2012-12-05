@@ -27,8 +27,17 @@
 <div class="inner">
     <div class="page-header">
         <h1>${sightingsOwner} sightings</h1>
-        <p>This is a simple list of the sightings you have submitted. You can filter, sort and map your
-        sightings using the Atlas's
+        <p>
+            <g:if test="${usersSightings}">
+               This is a simple list of the sightings you have submitted.
+            </g:if>
+            <g:elseif test="${otherUsersSightings}">
+                This is a simple list of the sightings this user has submitted.
+            </g:elseif>
+            <g:else test="${recentSightings}">
+                This is a simple list of the sightings submitted recently by users.
+            </g:else>
+             You can filter, sort and map sightings using the Atlas's
         <a href="${grailsApplication.config.biocache.baseURL}occurrences/search?q=data_resource_uid:dr364">occurrence explorer</a>.</p>
     </div>
     <section id="sortControls">

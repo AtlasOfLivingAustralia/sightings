@@ -53,7 +53,7 @@ class RecordsController {
         }
         records = records.records
         //println records
-        render( view: 'user', model:[records: records, userId:userId, sightingsOwner:"Recent", showUser:true])
+        render( view: 'user', model:[records: records, userId:userId, sightingsOwner:"Recent", showUser:true, recentSightings:true])
     }
 
     def user() {
@@ -85,7 +85,7 @@ class RecordsController {
             records = records.records
         }
         //println records
-        [records: records, userId:authService.userId(), sightingsOwner:"My"]
+        [records: records, userId:authService.userId(), sightingsOwner:"My", usersSightings:true]
     }
 
     def userById() {
@@ -116,7 +116,7 @@ class RecordsController {
             records = records.records
         }
         //println records
-        render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner])
+        render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner, otherUsersSightings:true])
     }
 
     /**
