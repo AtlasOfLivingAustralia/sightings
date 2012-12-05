@@ -64,7 +64,7 @@ class AuthService {
   def getUserEmailMap() {
     def now = new Date()
     if(!lastRefresh ||  DateUtils.addMinutes(lastRefresh, 10) < now){
-       refreshMaps()
+       refreshMaps(now)
     }
     this.userEmailMap
   }
