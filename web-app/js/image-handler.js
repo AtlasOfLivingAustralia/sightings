@@ -272,10 +272,16 @@ $(function() {
             if (list.length === 0) {
                 return {};
             }
+            var imageLicence = null;
+            if (list.length > 0) {
+                //get the imageLicence
+                imageLicence = $('#imageLicence').val();
+            }
+
             /*if (list.length === 1) {
                 return {associatedMedia: list[0]};
             }*/
-            return {associatedMedia: list.join(',')};
+            return {associatedMedia: list.join(','), imageLicence: imageLicence};
         },
         isAuto: function () {
             return $('#autoUse').is(':checked');

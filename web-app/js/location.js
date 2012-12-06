@@ -44,12 +44,14 @@ var screenLocation = {
     longitudeField: null,
     autoLookup: true,
     usingReverseGeocodedLocality: false,
+    coordinateUncertaintyInMetersField:null,
     geocoder: null,
     listeners: [],
     init: function () {
         var that = this, lat, lng;
         this.latitudeField = $('#latitude');
         this.longitudeField = $('#longitude');
+        this.coordinateUncertaintyInMetersField = $('#coordinateUncertaintyInMeters');
         this.geocoder = new google.maps.Geocoder();
 
         // catch changes in lat and lon
@@ -148,6 +150,7 @@ var screenLocation = {
         var l = {
             decimalLatitude: this.getLat(),
             decimalLongitude: this.getLng(),
+            coordinateUncertaintyInMeters: this.getCoordinateUncertaintyInMeters(),
             verbatimLatitude: $('#verbatimLatitude').val(),
             verbatimLongitude: $('#verbatimLongitude').val(),
             locality: this.getLocality(),
@@ -189,6 +192,9 @@ var screenLocation = {
     },
     getLng: function () {
         return $('#longitude').val();
+    },
+    getCoordinateUncertaintyInMeters: function () {
+        return $('#coordinateUncertaintyInMeters').val();
     },
     setLat: function (num, noNotify) {
         this.latitudeField.val(num);//limit(num));
@@ -261,12 +267,13 @@ var screenLocation = {
 function Location () {
     this.decimalLatitude = null;
     this.decimalLongitude = null;
+    this.coordinateUncertaintyInMeters = null;
     this.verbatimLatitude = "";
     this.verbatimLongitude = "";
     this.locality = "";
     this.usingReverseGeocodedLocality = "false";
     this.georeferenceProtocol = "";
-    this.geodeticDatum = "";
+    this.geodeticDatum = "WGS84";  //setting a default of WGS84
     this.physicalMapScale = "";
     this.otherSource = "";
 }
@@ -339,7 +346,6 @@ Location.prototype.set = function (data) {
             this.decimalLongitude = this.verbatimLongitude;
         }
         // reverse geocode locality if blank
-
     }
     return this;
 };
@@ -347,6 +353,7 @@ Location.prototype.set = function (data) {
 Location.prototype.loadFromScreen = function () {
     this.decimalLatitude = screenLocation.getLat();
     this.decimalLongitude = screenLocation.getLng();
+    this.coordinateUncertaintyInMeters = screenLocation.getCoordinateUncertaintyInMeters();
     this.verbatimLatitude = $('#verbatimLatitude').val();
     this.verbatimLongitude = $('#verbatimLongitude').val();
     this.locality = screenLocation.getLocality();

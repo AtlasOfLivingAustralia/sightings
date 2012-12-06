@@ -100,7 +100,9 @@
         <div class="left" id="coordinate-container">
             <span>Enter coordinates (decimal degrees) if you already have them.</span><br/>
             <label for="latitude">Latitude</label><g:textField name="latitude" size="17"/>
+            &nbsp;&nbsp;
             <label for="longitude">Longitude</label><g:textField name="longitude" size="17"/><br/>
+            <label for="coordinateUncertaintyInMeters">Accuracy (metres)</label><g:textField name="coordinateUncertaintyInMeters" size="17"/><br/>
             <g:hiddenField name="verbatimLatitude"/>
             <g:hiddenField name="verbatimLongitude"/>
             <label for="georeferenceProtocol">What is the source of these coordinates?</label>
@@ -197,6 +199,11 @@
         <!-- The table listing the files available for upload/download -->
         <table id="filesTable" class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
     </g:form>
+    <br/>
+
+    <label for="imageLicence">Licence:</label>
+    <g:select name="imageLicence" id="imageLicence" from="['Creative Commons Attribution', 'Creative Commons Attribution-Noncommercial', 'Creative Commons Attribution-Share Alike', 'Creative Commons Attribution-Noncommercial-Share Alike']"/>
+
     </section>
     <!-- NOTES -->
     <div class="heading ui-corner-left"><h2>Notes</h2><r:img uri="/images/notes.png"/></div>

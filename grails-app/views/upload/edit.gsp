@@ -107,8 +107,11 @@
             <span>Enter coordinates (decimal degrees) if you already have them.</span><br/>
             <label for="latitude">Latitude</label><g:textField name="latitude" size="17"
                     value="${decimalLatitude != JSONObject.NULL ? decimalLatitude : ''}"/>
+            &nbsp;&nbsp;
             <label for="longitude">Longitude</label><g:textField name="longitude" size="17"
                     value="${decimalLongitude != JSONObject.NULL ? decimalLongitude : ''}"/><br/>
+            <label for="coordinateUncertaintyInMeters">Accuracy (metres)</label>
+                <g:textField name="coordinateUncertaintyInMeters" size="17" value="${coordinateUncertaintyInMeters != JSONObject.NULL ? coordinateUncertaintyInMeters : ''}"/><br/>
             <g:hiddenField name="verbatimLatitude" value="${verbatimLatitude}"/>
             <g:hiddenField name="verbatimLongitude" value="${verbatimLongitude}"/>
             <label for="georeferenceProtocol">What is the source of these coordinates?</label>
@@ -220,6 +223,9 @@
             </g:each>
         </ul>
     </section>
+
+    <label for="imageLicence">Licence:</label>
+    <g:select id="imageLicence" name="imageLicence" value="${imageLicence}" from="['Creative Commons Attribution', 'Creative Commons Attribution-Noncommercial', 'Creative Commons Attribution-Share Alike', 'Creative Commons Attribution-Noncommercial-Share Alike']"/>
     </section>
     <!-- NOTES -->
     <div class="heading ui-corner-left"><h2>Notes</h2><r:img uri="/images/notes.png"/></div>
