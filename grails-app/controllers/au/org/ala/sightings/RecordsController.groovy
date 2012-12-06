@@ -7,9 +7,7 @@ class RecordsController {
     //def username = 'mark.woolston@csiro.au' // until CAS is integrated
 
     def recentImages() {
-        def userId = authService.userId()
-        log.debug("userId : " + userId)
-        log.debug("username : " + authService.username())
+        def userId = authService.getLoggedInUserId(request)
 
         // handle sort options
         def opts = ""
@@ -28,7 +26,7 @@ class RecordsController {
         }
         records = records.records
         //println records
-        render( view: 'user', model:[records: records, userId:authService.userId(), sightingsOwner:"Recent", showUser:true])
+        render( view: 'user', model:[records: records, userId:userId, sightingsOwner:"Recent", showUser:true,  recentSightings:true])
     }
 
 
