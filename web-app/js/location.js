@@ -170,6 +170,9 @@ var screenLocation = {
         if (props.georeferenceProtocol === 'GPS device') {
             props.geodeticDatum = $('#geodeticDatum').val();
         }
+        if(props.decimalLatitude && props.decimalLongitude && !props.geodeticDatum){
+            props.geodeticDatum = 'WGS84';
+        }
         if (props.georeferenceProtocol === 'other') {
             props.otherSource = other;
         }
