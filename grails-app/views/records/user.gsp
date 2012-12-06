@@ -70,7 +70,7 @@
                     <span class="commonName">${rec.commonName}</span><br/>
                     <g:if test="${rec.individualCount && rec.individualCount.toInteger() > 1}">
                         <span class="individualCount">${rec.individualCount}
-                            ${rec.individualCount && rec.individualCount.toInteger() > 1 ? 'individuals' : 'individual'}
+                            ${rec.individualCount && rec.individualCount.isNumber()  && rec.individualCount.toInteger() > 1 ? 'individuals' : 'individual'}
                             recorded
                         </span><br>
                     </g:if>
