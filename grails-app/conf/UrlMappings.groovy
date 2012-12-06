@@ -10,6 +10,10 @@ class UrlMappings {
         "/mine/"(controller: "records"){ action = [GET:"user"] }
         name spotter: "/spotter/$userId"(controller: "records"){ action = [GET:"userById"] }
 
+		"/"(controller: 'upload', action:"index")
+        "/$id"(controller: 'upload', action:"index")
+
+
 		"/$controller/$action?/$id?"{
 			constraints {
 				// apply constraints here
@@ -19,7 +23,6 @@ class UrlMappings {
         // pass dummy location bookmarks url
 	//	"/$controller/$action?/location/user/$userid?"{ }
 
-		"/"(controller: 'upload', action:"index")
 		"500"(view:'/error')
 	}
 }
