@@ -69,8 +69,9 @@
                     <span class="scientificName">${rec.scientificName}</span><br/>
                     <span class="commonName">${rec.commonName}</span><br/>
                     <g:if test="${rec.individualCount && rec.individualCount.isNumber() && rec.individualCount.toInteger() > 1}">
-                        <span class="individualCount">${rec.individualCount}
-                            ${rec.individualCount && rec.individualCount.isNumber()  && rec.individualCount.toInteger() > 1 ? 'individuals' : 'individual'}
+                        <span class="individualCount">
+                            ${rec.individualCount}
+                            ${rec.individualCount && rec.individualCount.isNumber()  && rec.individualCount.toInteger() == 1 ? 'individual' : 'individuals'}
                             recorded
                         </span><br>
                     </g:if>
