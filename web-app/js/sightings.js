@@ -164,7 +164,7 @@ var submitHandler = {
                 if (data.error !== null) {
                     alert(data.error.error);
                 } else {
-                    document.location.href = serverUrl + "/records/user";
+                    document.location.href = serverUrl + "/mine";
                 }
             }
         });
