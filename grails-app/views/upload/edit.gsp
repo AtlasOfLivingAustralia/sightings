@@ -41,7 +41,9 @@
         <p class="hint">Hint: If you are submitting images, select them first and we will try to pre-load the date
         and location fields from the image metadata.</p>
         <button type="button" id="submit">Update record</button>
-        <g:link controller="records" action="user" style="">Show my sightings</g:link>
+        <g:link mapping="mine" class="showMySightings">Show my sightings</g:link>
+        |
+        <g:link mapping="recent" class="showRecentSightings">Show recent sightings</g:link>
     </div>
     <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
