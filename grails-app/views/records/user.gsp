@@ -100,8 +100,8 @@
                         </span>
                         <br/>
                     </g:if>
-                    <span class="last-updated">Edited: <si:formatDate date="${rec.lastUpdated}"/></span><br/>
-                    <span class="created">Created: <si:formatDate date="${rec.dateCreated}"/></span>
+                    <!--<span class="last-updated">Edited: <prettytime:display date="${new Date().parse( "yyyy-MM-dd'T'HH:mm:ss'Z'", rec.lastUpdated)}" /></span><br/>-->
+                    <span class="created">Added: <prettytime:display date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ss'Z'", rec.dateCreated)}" /></span>
                 </div>
 
                 <div class="where">
