@@ -33,7 +33,7 @@ class RecordsController {
     def recent() {
 
         def userId = authService.getLoggedInUserId(request)
-        println("Logged in user:" + userId)
+        log.debug("Logged in user:" + userId)
 
         // handle sort options
         def opts = ""
@@ -125,7 +125,7 @@ class RecordsController {
     def realuser() {
         def resp = webService.getJson(grailsApplication.config.biocache.baseURL +
                 "ws/occurrences/search.json?q=data_resource_uid:dr364&fq=user_id:${params.user}")
-        println resp
+        log.debug resp
         def records = resp.occurrences.collect {
             [scientificName: it.scientificName,
              commonName: it.vernacularName,
@@ -141,7 +141,7 @@ class RecordsController {
     }
 
     def delete() {
-        println "deleting " + params.id
+        log.info "deleting " + params.id
         if (grailsApplication.config.mock.records.service) {
             ProxyController.deleteRecord(params.id)
         } else {
