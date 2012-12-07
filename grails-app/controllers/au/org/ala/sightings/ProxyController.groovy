@@ -12,6 +12,7 @@ class ProxyController {
 
     def webService
     def authService
+
     static mockRecords = []
 
     /**
@@ -143,7 +144,7 @@ class ProxyController {
         if (target) {
             mockRecords - target
         }
-        log.debug "record ${id} deleted"
+        log.debug("record ${id} deleted")
     }
 
     def reloadConfig = {
