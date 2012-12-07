@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>View my sighting | Atlas of Living Australia</title>
+    <title>${sightingsOwner}<g:if test="${otherUsersSightings}">'s</g:if> sightings | Atlas of Living Australia</title>
     <meta name="layout" content="ala"/>
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
