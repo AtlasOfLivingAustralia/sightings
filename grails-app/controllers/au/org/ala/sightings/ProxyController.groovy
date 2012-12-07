@@ -144,7 +144,7 @@ class ProxyController {
         if (target) {
             mockRecords - target
         }
-        log.debug("record deleted" + id)
+
     }
 
     def reloadConfig = {
