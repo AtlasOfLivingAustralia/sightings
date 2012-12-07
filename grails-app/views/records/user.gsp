@@ -100,7 +100,6 @@
                         </span>
                         <br/>
                     </g:if>
-                    <!--<span class="last-updated">Edited: <prettytime:display date="${new Date().parse( "yyyy-MM-dd'T'HH:mm:ss'Z'", rec.lastUpdated)}" /></span><br/>-->
                     <span class="created">Added: <prettytime:display date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ss'Z'", rec.dateCreated)}" /></span>
                 </div>
 
