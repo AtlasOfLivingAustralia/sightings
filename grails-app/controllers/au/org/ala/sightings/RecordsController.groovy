@@ -114,7 +114,7 @@ class RecordsController {
             records = records.records
         }
         //println records
-        render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner, otherUsersSightings:true])
+        render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner, userId: params.userId, otherUsersSightings:true])
     }
 
     /**
