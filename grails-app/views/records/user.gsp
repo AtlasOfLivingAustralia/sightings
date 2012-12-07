@@ -122,7 +122,7 @@
 
                 <div class="actions">
                     <!--Record UserID: ${rec.userId}, UserId: ${userId} -->
-                    <g:if test="${isAdmin || rec.userId == userId }">
+                    <g:if test="${isAdmin || (rec.userId == userId) && !otherUsersSightings)}">
                         <button type="button" class="delete">Remove</button>
                         <button type="button" class="edit">Edit</button><br/>
                     </g:if>
