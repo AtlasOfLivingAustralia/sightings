@@ -93,8 +93,8 @@ class ImageController {
     def demo() {}
 
     def upload = {
-        println "-------------------------------upload action"
-        params.each { println it }
+        log.debug "-------------------------------upload action"
+        params.each { log.debug it }
         def result = []
         if (request.respondsTo('getFile')) {
             MultipartFile file = request.getFile('files')
@@ -119,10 +119,10 @@ class ImageController {
                 File tnFile = new File(colDir, thumbFilename)
                 try {
                     def success = ImageIO.write(tn, ext, tnFile)
-                    println "Thumbnailing: " + success
+                    log.debug "Thumbnailing: " + success
                 } catch(IOException e) {
                     e.printStackTrace()
-                    println "Write error for " + tnFile.getPath() + ": " + e.getMessage()
+                    log.error "Write error for " + tnFile.getPath() + ": " + e.getMessage()
                 }
 
                 def md = [
@@ -144,14 +144,14 @@ class ImageController {
                 result = [md]
             }
         }
-        println result
+        log.debug result
         response.addHeader('Content-Type','text/plain')
         def json = result as JSON
         render json.toString()
     }
 
     def delete = {
-        println "deleted " + params.filename
+        log.debug "deleted " + params.filename
         render 'Deleted'
     }
 }

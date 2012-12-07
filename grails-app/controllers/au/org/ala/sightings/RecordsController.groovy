@@ -29,7 +29,6 @@ class RecordsController {
         render( view: 'user', model:[records: records, userId:userId, sightingsOwner:"Recent", showUser:true,  recentSightings:true])
     }
 
-
     def recent() {
 
         def userId = authService.getLoggedInUserId(request)
@@ -117,28 +116,28 @@ class RecordsController {
         render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner, userId: params.userId, otherUsersSightings:true])
     }
 
-    /**
-     * Get real records from the biocache so we can view them in this context.
-     * This is just a sanity check used during development.
-     * @param username the email/username of the collector
-     */
-    def realuser() {
-        def resp = webService.getJson(grailsApplication.config.biocache.baseURL +
-                "ws/occurrences/search.json?q=data_resource_uid:dr364&fq=user_id:${params.user}")
-        log.debug resp
-        def records = resp.occurrences.collect {
-            [scientificName: it.scientificName,
-             commonName: it.vernacularName,
-             eventDate: "2012-09-01T00:00:00Z",// it.eventDate,
-             guid: it.occurrenceID,
-             decimalLatitude: it.decimalLatitude,
-             decimalLongitude: it.decimalLongitude,
-             coordinateUncertaintyInMeters: it.coordinateUncertaintyInMeters
-             ]
-        }
-
-        render( view: 'user', model: [records: records] )
-    }
+//    /**
+//     * Get real records from the biocache so we can view them in this context.
+//     * This is just a sanity check used during development.
+//     * @param username the email/username of the collector
+//     */
+//    def realuser() {
+//        def resp = webService.getJson(grailsApplication.config.biocache.baseURL +
+//                "ws/occurrences/search.json?q=data_resource_uid:dr364&fq=user_id:${params.user}")
+//        log.debug resp
+//        def records = resp.occurrences.collect {
+//            [scientificName: it.scientificName,
+//             commonName: it.vernacularName,
+//             eventDate: "2012-09-01T00:00:00Z",// it.eventDate,
+//             guid: it.occurrenceID,
+//             decimalLatitude: it.decimalLatitude,
+//             decimalLongitude: it.decimalLongitude,
+//             coordinateUncertaintyInMeters: it.coordinateUncertaintyInMeters
+//             ]
+//        }
+//
+//        render( view: 'user', model: [records: records] )
+//    }
 
     def delete() {
         log.info "deleting " + params.id

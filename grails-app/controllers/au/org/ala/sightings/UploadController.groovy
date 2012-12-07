@@ -13,7 +13,7 @@ class UploadController {
         def model = [physicalMapScales: scales]
         if (id && id.startsWith("urn:lsid")) {
             // TODO bie lookup ?
-            println "id is a lsid"
+            log.debug "id is a lsid"
             model['guid'] = id
 
         } else if (id) {
@@ -37,7 +37,7 @@ class UploadController {
         if (id) {
             def resp = webService.getJson(
                     grailsApplication.config.ala.recordsServerURL + id)
-            println resp.record
+            log.debug resp.record
             model += resp.record
             model += [recordId: id]
         }

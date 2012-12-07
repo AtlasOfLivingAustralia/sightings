@@ -27,7 +27,7 @@ class ProxyController {
 
     /******* bookmarks ***************/
     def submitLocationBookmark = {
-        params.each { println it }
+        params.each { log.debug it }
         def serviceParams = [userId:authService.userId()]
         params.each {
             if (!(it in ['action','controller'])) {
@@ -37,21 +37,21 @@ class ProxyController {
 
         serviceParams.put "userId", authService.userId()
 
-        println serviceParams
+        log.debug serviceParams
         def result = webService.doPost(ConfigurationHolder.config.ala.locationBookmarkServerURL, (serviceParams as JSON).toString())
 
         if (result.error) {
-            println "Error: " + result.error
+            log.error "Error: " + result.error
             render result.error as JSON
         } else {
-            println result.resp
+            log.error result.resp
             render result.resp as JSON
         }
     }
 
     def deleteAllLocationBookmarks = {
         def url = ConfigurationHolder.config.ala.locationBookmarkServerURL + "user/" + authService.userId()
-        println("Delete all bookmarks for: " + url)
+        log.debug("Delete all bookmarks for: " + url)
         def responseCode = webService.doDelete(url)
         def resp = [code: responseCode.toString()]
         render resp as JSON
@@ -84,7 +84,7 @@ class ProxyController {
     def submitRecord() {
         def serviceParams = [userId:authService.userId()]
 
-        def paramstofix = params
+//        def paramstofix = params
 
         // media
         def media = []
@@ -102,7 +102,7 @@ class ProxyController {
 
         // remaining parameters
         params.each {
-            println((it.key as String) + ": " + it.value)
+            log.debug((it.key as String) + ": " + it.value)
             if (!(it.key in ['action','controller','associatedMedia','id'])) {
                 serviceParams.put it.key as String, it.value as String
             }
@@ -113,7 +113,7 @@ class ProxyController {
         def result
 
         if (grailsApplication.config.mock.records.service) {
-            println "mocking"
+            log.debug "mocking"
             def key = (body + new Date().toGMTString()).encodeAsMD5()
             serviceParams.id = key
             serviceParams.images = []
@@ -125,7 +125,7 @@ class ProxyController {
             result = webService.doPost(grailsApplication.config.ala.recordsServerURL, body)
         }
 
-        println "result = " + result
+        log.debug "result = " + result
         render result as JSON
     }
 
@@ -143,7 +143,7 @@ class ProxyController {
         if (target) {
             mockRecords - target
         }
-        println "record ${id} deleted"
+        log.debug "record ${id} deleted"
     }
 
     def reloadConfig = {
@@ -182,7 +182,7 @@ class ProxyController {
             render res + "</ul>"
         }
         catch (GroovyRuntimeException gre) {
-            println "Unable to reload configuration. Please correct problem and try again: " + gre.getMessage()
+            log.error "Unable to reload configuration. Please correct problem and try again: " + gre.getMessage()
             render "Unable to reload configuration - " + gre.getMessage()
         }
         finally {
