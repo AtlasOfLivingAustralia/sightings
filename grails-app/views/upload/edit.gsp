@@ -146,7 +146,7 @@
                     <button type="button" id="zoomPin">Zoom into pin</button>
                     <button type="button" id="showWorld">Show world</button>
                     %{--<button type="button" id="discardPin">Discard pin</button>--}%
-                    <div id="markers" style="position:absolute; top:370px; left:680px; width:200px; height:100px;">
+                    <div id="markers" style="position:absolute; top:370px; left:750px; width:200px; height:100px;">
                         <div id="m1" class="drag" style="position:absolute; left:0; width:32px; height:32px;">
                             <img src="http://maps.gstatic.com/mapfiles/ms/icons/red-dot.png" width="32" height="32" alt="" />
                         </div>
