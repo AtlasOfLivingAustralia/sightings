@@ -58,7 +58,10 @@ class AuthService {
 
   def userDisplayNameForId(userId) {
       def map = getUserIdMap().get(userId)
-      map.get("firstName") + " " + map.get("lastName")
+      if(map)
+        map.get("firstName") + " " + map.get("lastName")
+      else
+        userId
   }
 
   def getUserEmailMap() {

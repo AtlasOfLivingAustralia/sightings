@@ -25,8 +25,12 @@
 
 <body>
 <div class="inner">
+    <div class="rightfloat">
+        <a href="${grailsApplication.config.grails.serverURL}" class="button orange" title="Record a sighting">Record a sighting</a>
+    </div>
     <div class="page-header">
         <h1>${sightingsOwner}<g:if test="${otherUsersSightings}">'s</g:if> sightings</h1>
+
         <p>
             <g:if test="${usersSightings}">
                This is a simple list of the sightings you have submitted.

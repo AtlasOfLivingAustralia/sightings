@@ -36,12 +36,16 @@ class RecordsController {
 
         // handle sort options
         def opts = ""
+        def pageSize = params.pageSize?:50
         if (params.sort) {
             opts += "?sort=" + params.sort
         }
         if (params.order) {
             opts += (opts ? "&" : "?") + "order=" + params.order
         }
+
+        opts += (opts ? "&" : "?") + "pageSize=" + pageSize
+
         // get records for current user
         def records = webService.getJson(grailsApplication.config.ala.recordsServerURL + opts)
         if (records.error) {
@@ -61,12 +65,16 @@ class RecordsController {
 
         // handle sort options
         def opts = ""
+        def pageSize = params.pageSize?:50
         if (params.sort) {
             opts += "?sort=" + params.sort
         }
         if (params.order) {
             opts += (opts ? "&" : "?") + "order=" + params.order
         }
+
+        opts += (opts ? "&" : "?") + "pageSize=" + pageSize
+
         //println opts
         // get records for current user
         def records
@@ -91,13 +99,16 @@ class RecordsController {
 
         // handle sort options
         def opts = ""
-
+        def pageSize = params.pageSize?:50
         if (params.sort) {
             opts += "?sort=" + params.sort
         }
         if (params.order) {
             opts += (opts ? "&" : "?") + "order=" + params.order
         }
+
+        opts += (opts ? "&" : "?") + "pageSize=" + pageSize
+
         //println opts
         // get records for current user
         def records
@@ -115,29 +126,6 @@ class RecordsController {
         //println records
         render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner, userId: params.userId, otherUsersSightings:true])
     }
-
-//    /**
-//     * Get real records from the biocache so we can view them in this context.
-//     * This is just a sanity check used during development.
-//     * @param username the email/username of the collector
-//     */
-//    def realuser() {
-//        def resp = webService.getJson(grailsApplication.config.biocache.baseURL +
-//                "ws/occurrences/search.json?q=data_resource_uid:dr364&fq=user_id:${params.user}")
-//        log.debug resp
-//        def records = resp.occurrences.collect {
-//            [scientificName: it.scientificName,
-//             commonName: it.vernacularName,
-//             eventDate: "2012-09-01T00:00:00Z",// it.eventDate,
-//             guid: it.occurrenceID,
-//             decimalLatitude: it.decimalLatitude,
-//             decimalLongitude: it.decimalLongitude,
-//             coordinateUncertaintyInMeters: it.coordinateUncertaintyInMeters
-//             ]
-//        }
-//
-//        render( view: 'user', model: [records: records] )
-//    }
 
     def delete() {
         log.info "deleting " + params.id
