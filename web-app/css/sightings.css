@@ -503,4 +503,5 @@ div.sort label {
 
 .largeImage { margin-top:20px; float:left; }
 .additionalInformation2Col { margin-top:20px; float:right; vertical-align: top; width:300px;}
-.additionalInformation { margin-top:20px; float:left}
+.additionalInformation { margin-top:20px; float:left;}
+#mySightings .record :hover { cursor: hand; }

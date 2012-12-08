@@ -254,13 +254,13 @@
                    if(hasImages){
                     text += '<div class="largeImage"><img src="' + data.record.images[0].large +'"/></div>';
                    }
-                   if(data.record.locality){
-                    if(hasImages) text += '<div class="additionalInformation2Col">';
-                    else text += '<div class="additionalInformation">';
-                    var mapImage1 = 'http://maps.googleapis.com/maps/api/staticmap?center='+data.record.decimalLatitude+','+data.record.decimalLongitude+'&zoom=10&size=250x250\
-&markers=size:large%7Ccolor:ref%7C'+data.record.decimalLatitude+','+data.record.decimalLongitude+'&sensor=false&maptype=hybrid';
-                    var mapImage2 = 'http://maps.googleapis.com/maps/api/staticmap?center='+data.record.decimalLatitude+','+data.record.decimalLongitude+'&zoom=6&size=250x250\
-&markers=size:large%7Ccolor:ref%7C'+data.record.decimalLatitude+','+data.record.decimalLongitude+'&sensor=false&maptype=hybrid';
+                   if(data.record.decimalLatitude && data.record.decimalLongitude){
+                    if(hasImages)
+                        text += '<div class="additionalInformation2Col">';
+                    else
+                        text += '<div class="additionalInformation">';
+                    var mapImage1 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 10);
+                    var mapImage2 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 6);
                     text += '<img id="mapImage-'+ recordId +'"class="zoomedInMap" src="'+ mapImage2 + '" style="background:url(' + mapImage1 + ')"/>';
                     text += '<br/>';
                     text += '<span class="additionLabel">Locality:</span> ' + data.record.locality +'<br/>';
@@ -270,12 +270,17 @@
                    $('#mapImage-' + recordId).cross();
                 },
                 error: function(data){
-                    console.log("Error retrieving record details: " + data);
-                    console.log( data);
+                    //console.log("Error retrieving record details: " + data);
+                    //console.log( data);
                 }
             });
         });
     });
+
+    function getStaticMap(lat, lon, level){
+      return 'http://maps.googleapis.com/maps/api/staticmap?center='+lat+','+lon+'&zoom='+level+'&size=250x250\
+&markers=size:large%7Ccolor:ref%7C'+lat+','+lon+'&sensor=false&maptype=hybrid';
+    }
 </r:script>
 <r:layoutResources/>
 </body>
