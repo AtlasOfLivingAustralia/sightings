@@ -69,11 +69,7 @@
     <section id="mySightings">
         <g:each in="${records}" var="rec">
             <section class="record" id="${rec.id}">
-                %{--<div class="media">
-                        <g:if test="${rec.images}">
-                            <img src="${rec.images[0].thumb}"/>
-                        </g:if>
-                    </div>--}%
+
                 <div class="what">
                     <span class="scientificName">${rec.scientificName}</span><br/>
                     <span class="commonName">${rec.commonName}</span><br/>
@@ -132,15 +128,16 @@
 
                     <g:if test="${rec.images && rec.images?.size() > 0}">
                         <g:each in="${rec.images[0..-1]}" var="img">
-                            <a href="${img.large}">
-                                <img src="${img.thumb}"/>
-                            </a>
+                            <img src="${img.thumb}"/>
                         </g:each>
                     </g:if>
                 </div>
 
                 <div class="extraMedia">
                 </div>
+                <div class="expandedView">
+                </div>
+
             </section>
         </g:each>
     </section>
@@ -148,6 +145,73 @@
         <a href="${grailsApplication.config.grails.serverURL}/">Add another sighting</a>
     </section>
 </div>
+<script type="text/javascript">
+    // wrap as a jQuery plugin and pass jQuery in to our anoymous function
+    (function ($) {
+        $.fn.cross = function (options) {
+            return this.each(function (i) {
+                // cache the copy of jQuery(this) - the start image
+                var $$ = $(this);
+
+                // get the target from the backgroundImage + regexp
+                var target = $$.css('backgroundImage').replace(/^url|[\(\)'"]/g, '');
+
+                // nice long chain: wrap img element in span
+                $$.wrap('<span style="position: relative;"></span>')
+                    // change selector to parent - i.e. newly created span
+                    .parent()
+                    // prepend a new image inside the span
+                    .prepend('<img>')
+                    // change the selector to the newly created image
+                    .find(':first-child')
+                    // set the image to the target
+                    .attr('src', target);
+
+                // the CSS styling of the start image needs to be handled
+                // differently for different browsers
+                if ($.browser.msie || $.browser.mozilla) {
+                    $$.css({
+                        'position' : 'absolute',
+                        'left' : 0,
+                        'background' : '',
+                        'top' : this.offsetTop
+                    });
+                } else if ($.browser.opera && $.browser.version < 9.5) {
+                    // Browser sniffing is bad - however opera < 9.5 has a render bug
+                    // so this is required to get around it we can't apply the 'top' : 0
+                    // separately because Mozilla strips the style set originally somehow...
+                    $$.css({
+                        'position' : 'absolute',
+                        'left' : 0,
+                        'background' : '',
+                        'top' : "0"
+                    });
+                } else { // Safari
+                    $$.css({
+                        'position' : 'absolute',
+                        'left' : 0,
+                        'background' : ''
+                    });
+                }
+
+                // similar effect as single image technique, except using .animate
+                // which will handle the fading up from the right opacity for us
+                $$.hover(function () {
+                    $$.stop().animate({
+                        opacity: 0
+                    }, 250);
+                }, function () {
+                    $$.stop().animate({
+                        opacity: 1
+                    }, 250);
+                });
+            });
+        };
+    })(jQuery);
+
+</script>
+
+
 <r:script>
     $(function() {
         // set sort widget from url
@@ -176,6 +240,40 @@
         $('.edit').click(function () {
             var id = $(this).parents('section').attr('id');
             document.location.href = "${grailsApplication.config.grails.serverURL}/upload/edit/" + id;
+        });
+
+        $('.record').click(function () {
+            var recordId = $(this).attr("id");
+            $.ajax({
+                url: "http://fielddata.ala.org.au/record/" + $(this).attr("id"),
+                method: 'GET',
+                dataType: 'jsonp',
+                success: function (data) {
+                   var text = '';
+                   var hasImages = (data.record.images && data.record.images.length>0);
+                   if(hasImages){
+                    text += '<div class="largeImage"><img src="' + data.record.images[0].large +'"/></div>';
+                   }
+                   if(data.record.locality){
+                    if(hasImages) text += '<div class="additionalInformation2Col">';
+                    else text += '<div class="additionalInformation">';
+                    var mapImage1 = 'http://maps.googleapis.com/maps/api/staticmap?center='+data.record.decimalLatitude+','+data.record.decimalLongitude+'&zoom=10&size=250x250\
+&markers=size:large%7Ccolor:ref%7C'+data.record.decimalLatitude+','+data.record.decimalLongitude+'&sensor=false&maptype=hybrid';
+                    var mapImage2 = 'http://maps.googleapis.com/maps/api/staticmap?center='+data.record.decimalLatitude+','+data.record.decimalLongitude+'&zoom=6&size=250x250\
+&markers=size:large%7Ccolor:ref%7C'+data.record.decimalLatitude+','+data.record.decimalLongitude+'&sensor=false&maptype=hybrid';
+                    text += '<img id="mapImage-'+ recordId +'"class="zoomedInMap" src="'+ mapImage2 + '" style="background:url(' + mapImage1 + ')"/>';
+                    text += '<br/>';
+                    text += '<span class="additionLabel">Locality:</span> ' + data.record.locality +'<br/>';
+                    text += '</div>';
+                   }
+                   $('#' + recordId).find(".expandedView").html(text);
+                   $('#mapImage-' + recordId).cross();
+                },
+                error: function(data){
+                    console.log("Error retrieving record details: " + data);
+                    console.log( data);
+                }
+            });
         });
     });
 </r:script>
