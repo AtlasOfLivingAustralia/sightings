@@ -4,30 +4,6 @@ class RecordsController {
 
     def webService
     def authService
-    //def username = 'mark.woolston@csiro.au' // until CAS is integrated
-
-    def recentImages() {
-        def userId = authService.getLoggedInUserId(request)
-
-        // handle sort options
-        def opts = ""
-        if (params.sort) {
-            opts += "?sort=" + params.sort
-        }
-        if (params.order) {
-            opts += (opts ? "&" : "?") + "order=" + params.order
-        }
-        //println opts
-        // get records for current user
-        def records = webService.getJson(grailsApplication.config.ala.recordsServerURL + "images" + opts)
-        if (records.error) {
-            // TODO: handle service errors
-            println records.error
-        }
-        records = records.records
-        //println records
-        render( view: 'user', model:[records: records, userId:userId, sightingsOwner:"Recent", showUser:true,  recentSightings:true])
-    }
 
     def recent() {
 
@@ -52,9 +28,10 @@ class RecordsController {
             // TODO: handle service errors
             println records.error
         }
+
         records = records.records
         //println records
-        render( view: 'user', model:[records: records, userId:userId, sightingsOwner:"Recent", showUser:true, recentSightings:true])
+        render( view: 'user', model:[records: records, userId:userId, isAdmin:authService.userInRole("ROLE_ADMIN") , sightingsOwner:"Recent", showUser:true, recentSightings:true])
     }
 
     def user() {
@@ -124,7 +101,7 @@ class RecordsController {
             records = records.records
         }
         //println records
-        render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner, userId: params.userId, otherUsersSightings:true])
+        render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner, userId: params.userId, isAdmin:authService.userInRole("ROLE_ADMIN"), otherUsersSightings:true])
     }
 
     def delete() {

@@ -12,6 +12,7 @@
         var serverUrl = "${grailsApplication.config.grails.serverURL}",
             bieUrl = "${grailsApplication.config.bie.baseURL}",
             biocacheUrl = "${grailsApplication.config.biocache.baseURL}",
+            isAdmin = ${isAdmin},
             userId = "${userId}",
             recordsServerUrl = serverUrl + "/proxy/submitRecord/",
             bookmarkServerUrl = "${grailsApplication.config.ala.locationBookmarkServerURL}";
@@ -122,8 +123,8 @@
                 <div class="actions">
                     <!--Record UserID: ${rec.userId}, UserId: ${userId} -->
                     <g:if test="${isAdmin || (rec.userId == userId && !otherUsersSightings)}">
-                        <button type="button" class="delete">Remove</button>
-                        <button type="button" class="edit">Edit</button><br/>
+                        <button type="button" class="delete">Remove  <g:if test="${isAdmin}">[ADMIN USER]</g:if></button>
+                        <button type="button" class="edit">Edit <g:if test="${isAdmin}">[ADMIN USER]</g:if></button><br/>
                     </g:if>
 
                     <g:if test="${rec.images && rec.images?.size() > 0}">
@@ -244,36 +245,65 @@
 
         $('.record').click(function () {
             var recordId = $(this).attr("id");
-            $.ajax({
-                url: "http://fielddata.ala.org.au/record/" + $(this).attr("id"),
-                method: 'GET',
-                dataType: 'jsonp',
-                success: function (data) {
-                   var text = '';
-                   var hasImages = (data.record.images && data.record.images.length>0);
-                   if(hasImages){
-                    text += '<div class="largeImage"><img src="' + data.record.images[0].large +'"/></div>';
-                   }
-                   if(data.record.decimalLatitude && data.record.decimalLongitude){
-                    if(hasImages)
-                        text += '<div class="additionalInformation2Col">';
-                    else
-                        text += '<div class="additionalInformation">';
-                    var mapImage1 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 10);
-                    var mapImage2 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 6);
-                    text += '<img id="mapImage-'+ recordId +'"class="zoomedInMap" src="'+ mapImage2 + '" style="background:url(' + mapImage1 + ')"/>';
-                    text += '<br/>';
-                    text += '<span class="additionLabel">Locality:</span> ' + data.record.locality +'<br/>';
-                    text += '</div>';
-                   }
-                   $('#' + recordId).find(".expandedView").html(text);
-                   $('#mapImage-' + recordId).cross();
-                },
-                error: function(data){
-                    //console.log("Error retrieving record details: " + data);
-                    //console.log( data);
-                }
-            });
+
+            console.log("Selected record: " + recordId);
+            console.log("Has class detailsLoaded: " + $('#' + recordId).find(".expandedView").hasClass("detailsLoaded"));
+            if($('#' + recordId).find(".expandedView").hasClass("detailsLoaded")){
+              console.log("Already loaded: " + recordId);
+              if($('#' + recordId).find(".expandedView").is(":visible")){
+                $('#' + recordId).find(".expandedView").hide('slow');
+              } else {
+                $('#' + recordId).find(".expandedView").show('slow');
+              }
+            } else {
+
+              console.log("Loading: " + recordId);
+                $.ajax({
+                    url: "http://fielddata.ala.org.au/record/" + $(this).attr("id"),
+                    method: 'GET',
+                    dataType: 'jsonp',
+                    success: function (data) {
+
+                       var text = '';
+                       var hasImages = (data.record.images && data.record.images.length>0);
+                       if(hasImages){
+                        text += '<div class="largeImage"><img src="' + data.record.images[0].large +'"/></div>';
+                       }
+                       if(data.record.decimalLatitude && data.record.decimalLongitude){
+                        if(hasImages)
+                            text += '<div class="additionalInformation2Col">';
+                        else
+                            text += '<div class="additionalInformation">';
+                        var mapImage1 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 10);
+                        var mapImage2 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 6);
+                        text += '<img id="mapImage-'+ recordId +'-hidden" style="display:none;" src="'+ mapImage1 + '"/>';
+                        //text += '<img id="mapImage-'+ recordId +'"class="zoomedInMap" src="'+ mapImage2 + '" style="background:url(' + mapImage1 + ')"/>';
+                        text += '<img id="mapImage-'+ recordId +'"class="zoomedInMap" src="'+ mapImage2 + '"/>';
+                        text += '<br/>';
+                        //if(hasImages)text += '<div class="sideInfo">';
+
+                        if(data.record.locality)
+                            text += '<span class="additionLabel">Locality:</span> ' + data.record.locality +'<br/>';
+                        if(data.record.scientificName)
+                            text += '<span class="additionLabel">Scientific name:</span> ' + data.record.scientificName +'<br/>';
+                        if(data.record.commonName)
+                            text += '<span class="additionLabel">Common name:</span> ' + data.record.commonName +'<br/>';
+                        if(data.record.family)
+                            text += '<span class="additionLabel">Family:</span> ' + data.record.family +'<br/>';
+
+                        text += '</div>';
+                       }
+                       $('#' + recordId).find(".expandedView").html(text);
+                       //$('#mapImage-' + recordId).cross();
+
+                       $('#' + recordId).find(".expandedView").addClass("detailsLoaded");
+                    },
+                    error: function(data){
+                        //console.log("Error retrieving record details: " + data);
+                        //console.log( data);
+                    }
+                });
+            }
         });
     });
 

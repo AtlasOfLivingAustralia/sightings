@@ -42,9 +42,15 @@ class UploadController {
             model += [recordId: id]
         }
 
-        model['userId'] = authService.userId()
-        model['userName'] = authService.username()
-        model
+        def isAdmin = authService.userInRole("ROLE_ADMIN")
+        def userId = authService.userId()
+        if (!isAdmin && userId != model['userId']){
+            response.sendError(403)
+        } else {
+            model["isAdmin"] = isAdmin
+            model["adminUser"] = userId
+            model
+        }
     }
 
     def demo() {}

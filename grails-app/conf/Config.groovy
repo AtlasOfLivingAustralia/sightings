@@ -28,7 +28,7 @@ println "(*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 
 appName = 'sightings'
-security.cas.uriFilterPattern = '/,/urn.*,/upload/edit/.*,/records/user,/mine,/mine/,/upload/index/.*,/proxy/submitLocationBookmark,/proxy/deleteAllLocationBookmarks,/proxy/deleteLocationBookmark,/proxy/deleteLocationBookmark/.*'
+security.cas.uriFilterPattern = '/,/urn.*,/upload/edit/.*,/records/user,/mine,/mine/,/upload/index/.*,/proxy/submitLocationBookmark,/proxy/deleteAllLocationBookmarks,/proxy/deleteLocationBookmark,/proxy/deleteLocationBookmark/.*,/recent/admin, /spotter/admin/.*'
 security.cas.authenticateOnlyIfLoggedInPattern = '/recent,/recent,/recentImages,/recentImages/'
 headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 security.cas.casServerName = 'https://auth.ala.org.au'
@@ -120,10 +120,10 @@ environments {
         //grails.hostname = "192.168.0.18"
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
-	    ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata/location/"
-        ala.recordsServerURL = "http://${grails.hostname}:8086/fielddata/record/"
-//        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
-//        ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
+	    //ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata/location/"
+        //ala.recordsServerURL = "http://${grails.hostname}:8086/fielddata/record/"
+        ala.locationBookmarkServerURL = "http://fielddata.ala.org.au/location/"
+        ala.recordsServerURL = "http://fielddata.ala.org.au/record/"
     }
     production {
         grails.logging.jul.usebridge = false

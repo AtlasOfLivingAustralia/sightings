@@ -12,7 +12,6 @@
         var serverUrl = "${ConfigurationHolder.config.grails.serverURL}",
             bieUrl = "${ConfigurationHolder.config.bie.baseURL}",
             userId = "${userId}",
-            userName = "${userName}",
             guid = "${guid}",
             recordsServerUrl = "${createLink(controller: 'proxy', action: 'submitRecord')}",
             bookmarkServerUrl = "${ConfigurationHolder.config.ala.locationBookmarkServerURL}",

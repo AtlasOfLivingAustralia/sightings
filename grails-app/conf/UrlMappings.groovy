@@ -2,12 +2,12 @@ class UrlMappings {
 
 	static mappings = {
 
+        //admin urls which force CAS
+        name adminRecent: "/recent/admin"(controller: "records"){ action = [GET:"recent"] }
+        name adminSpotter: "/spotter/admin/$userId"(controller: "records"){ action = [GET:"userById"] }
+
         name recent: "/recent"(controller: "records"){ action = [GET:"recent"] }
-        "/recent/"(controller: "records"){ action = [GET:"recent"] }
-        "/recentImages"(controller: "records"){ action = [GET:"recentImages"] }
-        "/recentImages/"(controller: "records"){ action = [GET:"recentImages"] }
         name mine: "/mine"(controller: "records"){ action = [GET:"user"] }
-        "/mine/"(controller: "records"){ action = [GET:"user"] }
         name spotter: "/spotter/$userId"(controller: "records"){ action = [GET:"userById"] }
 
 		"/"(controller: 'upload', action:"index")
