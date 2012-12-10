@@ -142,76 +142,7 @@
             </section>
         </g:each>
     </section>
-    <section style="padding-bottom:20px;margin-left:10px;">
-        <a href="${grailsApplication.config.grails.serverURL}/">Add another sighting</a>
-    </section>
 </div>
-<script type="text/javascript">
-    // wrap as a jQuery plugin and pass jQuery in to our anoymous function
-    (function ($) {
-        $.fn.cross = function (options) {
-            return this.each(function (i) {
-                // cache the copy of jQuery(this) - the start image
-                var $$ = $(this);
-
-                // get the target from the backgroundImage + regexp
-                var target = $$.css('backgroundImage').replace(/^url|[\(\)'"]/g, '');
-
-                // nice long chain: wrap img element in span
-                $$.wrap('<span style="position: relative;"></span>')
-                    // change selector to parent - i.e. newly created span
-                    .parent()
-                    // prepend a new image inside the span
-                    .prepend('<img>')
-                    // change the selector to the newly created image
-                    .find(':first-child')
-                    // set the image to the target
-                    .attr('src', target);
-
-                // the CSS styling of the start image needs to be handled
-                // differently for different browsers
-                if ($.browser.msie || $.browser.mozilla) {
-                    $$.css({
-                        'position' : 'absolute',
-                        'left' : 0,
-                        'background' : '',
-                        'top' : this.offsetTop
-                    });
-                } else if ($.browser.opera && $.browser.version < 9.5) {
-                    // Browser sniffing is bad - however opera < 9.5 has a render bug
-                    // so this is required to get around it we can't apply the 'top' : 0
-                    // separately because Mozilla strips the style set originally somehow...
-                    $$.css({
-                        'position' : 'absolute',
-                        'left' : 0,
-                        'background' : '',
-                        'top' : "0"
-                    });
-                } else { // Safari
-                    $$.css({
-                        'position' : 'absolute',
-                        'left' : 0,
-                        'background' : ''
-                    });
-                }
-
-                // similar effect as single image technique, except using .animate
-                // which will handle the fading up from the right opacity for us
-                $$.hover(function () {
-                    $$.stop().animate({
-                        opacity: 0
-                    }, 250);
-                }, function () {
-                    $$.stop().animate({
-                        opacity: 1
-                    }, 250);
-                });
-            });
-        };
-    })(jQuery);
-
-</script>
-
 
 <r:script>
     $(function() {
@@ -246,18 +177,17 @@
         $('.record').click(function () {
             var recordId = $(this).attr("id");
 
-            console.log("Selected record: " + recordId);
-            console.log("Has class detailsLoaded: " + $('#' + recordId).find(".expandedView").hasClass("detailsLoaded"));
+            //console.log("Selected record: " + recordId);
+            //console.log("Has class detailsLoaded: " + $('#' + recordId).find(".expandedView").hasClass("detailsLoaded"));
             if($('#' + recordId).find(".expandedView").hasClass("detailsLoaded")){
-              console.log("Already loaded: " + recordId);
+              //console.log("Already loaded: " + recordId);
               if($('#' + recordId).find(".expandedView").is(":visible")){
                 $('#' + recordId).find(".expandedView").hide('slow');
               } else {
                 $('#' + recordId).find(".expandedView").show('slow');
               }
             } else {
-
-              console.log("Loading: " + recordId);
+              //console.log("Loading: " + recordId);
                 $.ajax({
                     url: "http://fielddata.ala.org.au/record/" + $(this).attr("id"),
                     method: 'GET',
@@ -274,11 +204,21 @@
                             text += '<div class="additionalInformation2Col">';
                         else
                             text += '<div class="additionalInformation">';
-                        var mapImage1 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 10);
-                        var mapImage2 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 6);
-                        text += '<img id="mapImage-'+ recordId +'-hidden" style="display:none;" src="'+ mapImage1 + '"/>';
-                        //text += '<img id="mapImage-'+ recordId +'"class="zoomedInMap" src="'+ mapImage2 + '" style="background:url(' + mapImage1 + ')"/>';
-                        text += '<img id="mapImage-'+ recordId +'"class="zoomedInMap" src="'+ mapImage2 + '"/>';
+
+                        var mapImage1 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 6);
+                        var mapImage2 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 10);
+
+                       // console.log("Image URL 1: " + mapImage1);
+                       //console.log("Image URL 2: " + mapImage2);
+
+                        text += '<div style="display:none;">' +
+                         '<img id="mapImage-'+ recordId +'-zoomedOut" src="'+ mapImage1 + '"/>' +
+                         '<img id="mapImage-'+ recordId +'-zoomedIn" src="'+ mapImage2 + '"/>' +
+                         '</div>';
+
+                        text += '<img id="mapImage-'+ recordId +'" src="'+ mapImage1 +'"/>';
+
+
                         text += '<br/>';
                         //if(hasImages)text += '<div class="sideInfo">';
 
@@ -294,9 +234,28 @@
                         text += '</div>';
                        }
                        $('#' + recordId).find(".expandedView").html(text);
-                       //$('#mapImage-' + recordId).cross();
+
+                       $('#mapImage-' + recordId).hover(
+                            function () {
+                                    //$('#mapImage-'+ recordId).fadeOut(200);
+                                    $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(200); });
+                                    $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedIn').attr("src"));
+                            },
+                            function () {
+                                    //$('#mapImage-'+ recordId).fadeOut(200);
+                                    $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(200); });
+                                    $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedOut').attr("src"));
+                            }
+                       );
 
                        $('#' + recordId).find(".expandedView").addClass("detailsLoaded");
+
+                        $('#mapImage-'+ recordId).attr('src', mapImage2);
+                        $('#mapImage-'+ recordId).attr('src', mapImage1);
+
+
+                      //  console.log("Image URL 1 (loaded): " + $('#mapImage-'+ recordId).attr('src'));
+                        //console.log("Image URL 2 (loaded): " + $('#mapImage-'+ recordId).attr('src'));
                     },
                     error: function(data){
                         //console.log("Error retrieving record details: " + data);
@@ -308,9 +267,9 @@
     });
 
     function getStaticMap(lat, lon, level){
-      return 'http://maps.googleapis.com/maps/api/staticmap?center='+lat+','+lon+'&zoom='+level+'&size=250x250\
-&markers=size:large%7Ccolor:ref%7C'+lat+','+lon+'&sensor=false&maptype=hybrid';
+      return 'http://maps.googleapis.com/maps/api/staticmap?center='+lat+','+lon+'&zoom='+level+'&size=250x250&markers=size:large%7Ccolor:ref%7C'+lat+','+lon+'&sensor=false&maptype=hybrid';
     }
+
 </r:script>
 <r:layoutResources/>
 </body>
