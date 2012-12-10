@@ -57,7 +57,7 @@
             <span class="commonName" id="commonName">${commonName}</span>
             <div style="padding-top:10px;">
                 <div style="float:left;padding-right:20px;"><label for="count">Number seen</label>
-                    <g:textField name="count" class="smartspinner"/></div>
+                    <g:textField name="count" class="smartspinner" value="${individualCount}"/></div>
                 <div style="float:left;"><label for="identificationVerificationStatus">Confidence in identification</label>
                     <g:select from="['Confident','Uncertain']" name="identificationVerificationStatus" value="${confidence}"/></div>
             </div>

@@ -12,9 +12,10 @@
         var serverUrl = "${grailsApplication.config.grails.serverURL}",
             bieUrl = "${grailsApplication.config.bie.baseURL}",
             biocacheUrl = "${grailsApplication.config.biocache.baseURL}",
-            isAdmin = ${isAdmin},
+            isAdmin = ${isAdmin?:false},
             userId = "${userId}",
             recordsServerUrl = serverUrl + "/proxy/submitRecord/",
+            fielddataUrl = "${grailsApplication.config.ala.recordsServerURL}",
             bookmarkServerUrl = "${grailsApplication.config.ala.locationBookmarkServerURL}";
     </r:script>
     <r:require module="jQueryUI"/>
@@ -81,7 +82,7 @@
                             recorded
                         </span><br>
                     </g:if>
-                    <g:if test="${rec.identificationVerificationStatus != 'Confident'}">
+                    <g:if test="${rec.identificationVerificationStatus && rec.identificationVerificationStatus != 'Confident'}">
                         <span>Identification ${rec.identificationVerificationStatus}</span><br>
                     </g:if>
                 </div>
@@ -189,7 +190,7 @@
             } else {
               //console.log("Loading: " + recordId);
                 $.ajax({
-                    url: "http://fielddata.ala.org.au/record/" + $(this).attr("id"),
+                    url: fielddataUrl + $(this).attr("id"),
                     method: 'GET',
                     dataType: 'jsonp',
                     success: function (data) {
@@ -237,14 +238,16 @@
 
                        $('#mapImage-' + recordId).hover(
                             function () {
-                                    //$('#mapImage-'+ recordId).fadeOut(200);
-                                    $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(200); });
-                                    $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedIn').attr("src"));
+                                    $('#mapImage-'+ recordId).fadeOut(200, function() {
+                                        $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(300); });
+                                        $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedIn').attr("src"));
+                                    });
                             },
                             function () {
-                                    //$('#mapImage-'+ recordId).fadeOut(200);
-                                    $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(200); });
-                                    $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedOut').attr("src"));
+                                    $('#mapImage-'+ recordId).fadeOut(200, function() {
+                                        $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(300); });
+                                        $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedOut').attr("src"));
+                                    });
                             }
                        );
 
