@@ -20,6 +20,10 @@ class WebService {
             def error = [error: "Failed calling web service. ${e.getClass()} ${e.getMessage()} URL= ${url}."]
             println error.error
             return error as JSON
+        } finally {
+            if (conn != null){
+                conn.disconnect()
+            }
         }
     }
 
@@ -42,6 +46,10 @@ class WebService {
             def error = [error: "Failed to get json from web service. ${e.getClass()} ${e.getMessage()} URL= ${url}."]
             println error.error
             return error
+        } finally {
+            if (conn != null){
+                conn.disconnect()
+            }
         }
     }
 
@@ -71,6 +79,10 @@ class WebService {
             def error = [error: "Failed calling web service. ${e.getClass()} ${e.getMessage()} ${e} URL= ${url}."]
             println error.error
             return [error: error]
+        } finally {
+            if (conn != null){
+                conn.disconnect()
+            }
         }
     }
 
@@ -96,12 +108,25 @@ class WebService {
             def error = [error: "Failed calling web service. ${e.getClass()} ${e.getMessage()} ${e} URL= ${url}."]
             println error.error
             return [error: error]
+        } finally {
+            if (conn != null){
+                conn.disconnect()
+            }
         }
     }
 
     def doDelete(String url) {
         def conn = new URL(url).openConnection()
-        conn.setRequestMethod("DELETE")
-        return conn.getResponseCode()
+        try {
+            conn.setRequestMethod("DELETE")
+            return conn.getResponseCode()
+        } catch(Exception e){
+            println error.error
+            return 500
+        } finally {
+            if (conn != null){
+                conn.disconnect()
+            }
+        }
     }
 }
