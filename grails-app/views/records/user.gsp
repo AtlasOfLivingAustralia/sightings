@@ -32,7 +32,6 @@
     </div>
     <div class="page-header">
         <h1>${sightingsOwner}<g:if test="${otherUsersSightings}">'s</g:if> sightings</h1>
-
         <p>
             <g:if test="${usersSightings}">
                This is a simple list of the sightings you have submitted.
@@ -73,7 +72,17 @@
             <section class="record" id="${rec.id}">
 
                 <div class="what">
-                    <span class="scientificName">${rec.scientificName}</span><br/>
+                    <g:if test="${rec.taxonConceptID}">
+                        <span class="scientificName">
+                            <a href="http://bie.ala.org.au/species/${rec.taxonConceptID}">${rec.scientificName}</a>
+                        </span>
+                    </g:if>
+                    <g:else>
+                        <span class="scientificName">
+                           ${rec.scientificName}
+                        </span>
+                    </g:else>
+                    <br/>
                     <span class="commonName">${rec.commonName}</span><br/>
                     <g:if test="${rec.individualCount && rec.individualCount.isNumber() && rec.individualCount.toInteger() > 1}">
                         <span class="individualCount">

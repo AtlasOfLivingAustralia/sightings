@@ -28,7 +28,7 @@ println "(*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 
 appName = 'sightings'
-security.cas.uriFilterPattern = '/,/urn.*,/upload/edit/.*,/records/user,/mine,/mine/,/upload/index/.*,/proxy/submitLocationBookmark,/proxy/deleteAllLocationBookmarks,/proxy/deleteLocationBookmark,/proxy/deleteLocationBookmark/.*,/recent/admin, /spotter/admin/.*'
+security.cas.uriFilterPattern = '/,/urn.*,/upload/edit/.*,/records/user,/mine,/mine.*,/mine/.*,/upload/index/.*,/proxy/submitLocationBookmark,/proxy/deleteAllLocationBookmarks,/proxy/deleteLocationBookmark,/proxy/deleteLocationBookmark/.*,/recent/admin, /spotter/admin/.*'
 security.cas.authenticateOnlyIfLoggedInPattern = '/recent,/recent,/recentImages,/recentImages/'
 headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 security.cas.casServerName = 'https://auth.ala.org.au'
@@ -146,10 +146,19 @@ log4j = {
     // appender:
     //
     appenders {
-        console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    }
-    appenders {
-        rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat6/sightings-stacktrace.log"
+        environments{
+            development {
+                console name: "stdout", layout: pattern(conversionPattern: "%d [%c{1}]  %m%n"), threshold: org.apache.log4j.Level.DEBUG
+            }
+            production {
+                rollingFile name: "sightingsLog",
+                        maxFileSize: 104857600,
+                        file: "/var/log/tomcat6/sightings.log",
+                        threshold: org.apache.log4j.Level.DEBUG,
+                        layout: pattern(conversionPattern: "%d [%c{1}]  %m%n")
+                rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat6/sightings-stacktrace.log"
+            }
+        }
     }
 
    // all 'org.codehaus.groovy.grails.web.mapping'

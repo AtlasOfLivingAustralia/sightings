@@ -8,6 +8,7 @@ class UrlMappings {
 
         name recent: "/recent"(controller: "records"){ action = [GET:"recent"] }
         name mine: "/mine"(controller: "records"){ action = [GET:"user"] }
+        name mine: "/mine;$jsessionidparam=$jsessionid"(controller: "records"){ action = [GET:"user"] }
         name spotter: "/spotter/$userId"(controller: "records"){ action = [GET:"userById"] }
 
 		"/"(controller: 'upload', action:"index")
