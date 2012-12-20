@@ -349,6 +349,7 @@ var mainMap = {
     listeners: [],
     // create the map
     init: function (containerId) {
+
         var options = {
             scrollwheel: false,
             streetViewControl: false,
@@ -421,6 +422,13 @@ var mainMap = {
             $('#discardPin').click(function () {
                 that.removeMarker();
             });
+
+            //initialise the maps if we have a lat/lon
+            var currentLocation = new Location().loadFromScreen();
+            if (currentLocation.isValid()) {
+                 mainMap.setMarker(currentLocation.decimalLatitude, currentLocation.decimalLongitude);
+                 smallMap.setLatAndLng(currentLocation.decimalLatitude, currentLocation.decimalLongitude);
+            }
 
             drag_area = document.getElementById('markers');
             drag_area.onmousedown = initDrag;
