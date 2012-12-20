@@ -27,27 +27,40 @@
 
 <body>
 <div class="inner">
+    <g:set var="occurrenceExplorerLink">
+        <g:if test="${usersSightings}">${grailsApplication.config.biocache.baseURL}occurrences/search?q=*:*&fq=data_resource_uid:dr364&fq=alau_user_id:${userId}</g:if>
+        <g:elseif test="${otherUsersSightings}">${grailsApplication.config.biocache.baseURL}occurrences/search?q=*:*&fq=data_resource_uid:dr3644&fq=alau_user_id:${userId}</g:elseif>
+        <g:else test="${recentSightings}">${grailsApplication.config.biocache.baseURL}occurrences/search?q=*:*&fq=data_resource_uid:dr364</g:else>
+    </g:set>
+
     <div class="rightfloat">
+        <span class="sightingLinks" style="padding-right: 20px;">
+        <g:link mapping="mine" class="showMySightings">Show my sightings</g:link>
+        |
+        <g:link mapping="recent" class="showRecentSightings">Show recent sightings</g:link>
+        |
+        <a href="${occurrenceExplorerLink}">Occurrence explorer</a>
+        </span>
         <a href="${grailsApplication.config.grails.serverURL}" class="button orange" title="Record a sighting">Record a sighting</a>
     </div>
     <div class="page-header">
         <h1>${sightingsOwner}<g:if test="${otherUsersSightings}">'s</g:if> sightings</h1>
         <p>
+
             <g:if test="${usersSightings}">
                This is a simple list of the sightings you have submitted.
                You can filter, sort and map sightings using the Atlas's
-               <a href="${grailsApplication.config.biocache.baseURL}occurrences/search?q=data_resource_uid:dr364&fq=alau_user_id:${userId}">occurrence explorer</a>.</p>
-
+               <a href="${occurrenceExplorerLink}">occurrence explorer</a>.</p>
             </g:if>
             <g:elseif test="${otherUsersSightings}">
                 This is a simple list of the sightings ${sightingsOwner} has submitted.
                  You can filter, sort and map sightings using the Atlas's
-                 <a href="${grailsApplication.config.biocache.baseURL}occurrences/search?q=data_resource_uid:dr364&fq=alau_user_id:${userId}">occurrence explorer</a>.</p>
+                 <a href="${occurrenceExplorerLink}">occurrence explorer</a>.</p>
             </g:elseif>
             <g:else test="${recentSightings}">
                 This is a simple list of the sightings submitted recently by users.
                  You can filter, sort and map sightings using the Atlas's
-                 <a href="${grailsApplication.config.biocache.baseURL}occurrences/search?q=data_resource_uid:dr364">occurrence explorer</a>.</p>
+                 <a href="${occurrenceExplorerLink}">occurrence explorer</a>.</p>
             </g:else>
     </div>
     <section id="sortControls">
