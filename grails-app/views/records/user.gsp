@@ -20,7 +20,7 @@
             recordsServerUrl = serverUrl + "/proxy/submitRecord/",
             fielddataUrl = "${grailsApplication.config.ala.recordsServerURL}",
             bookmarkServerUrl = "${grailsApplication.config.ala.locationBookmarkServerURL}",
-            SIGHTINGS_PAGESIZE = 50;
+            SIGHTINGS_PAGESIZE = 50,
             SIGHTINGS_PAGING = 50;
     </r:script>
     <r:require module="jQueryUI"/>
