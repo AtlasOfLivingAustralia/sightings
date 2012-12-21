@@ -4,12 +4,12 @@ class UrlMappings {
 
         //admin urls which force CAS
         name adminRecent: "/recent/admin"(controller: "records"){ action = [GET:"recent"] }
-        name adminSpotter: "/spotter/admin/$userId"(controller: "records"){ action = [GET:"userById"] }
+        name adminSpotter: "/spotter/admin/$spotterId"(controller: "records"){ action = [GET:"userById"] }
 
         name recent: "/recent"(controller: "records"){ action = [GET:"recent"] }
         name mine: "/mine"(controller: "records"){ action = [GET:"user"] }
         name mine: "/mine;$jsessionidparam=$jsessionid"(controller: "records"){ action = [GET:"user"] }
-        name spotter: "/spotter/$userId"(controller: "records"){ action = [GET:"userById"] }
+        name spotter: "/spotter/$spotterId"(controller: "records"){ action = [GET:"userById"] }
 
 		"/"(controller: 'upload', action:"index")
         "/$id"(controller: 'upload', action:"index")

@@ -13,10 +13,15 @@
             bieUrl = "${grailsApplication.config.bie.baseURL}",
             biocacheUrl = "${grailsApplication.config.biocache.baseURL}",
             isAdmin = ${isAdmin?:false},
-            userId = "${userId}",
+            userId = "${userId}", //via CAS
+            loggedInUser = "${loggedInUser}",  //via cookie
+            spotterId = "${spotterId}",
+            usersSightings = ${usersSightings?:false},
             recordsServerUrl = serverUrl + "/proxy/submitRecord/",
             fielddataUrl = "${grailsApplication.config.ala.recordsServerURL}",
-            bookmarkServerUrl = "${grailsApplication.config.ala.locationBookmarkServerURL}";
+            bookmarkServerUrl = "${grailsApplication.config.ala.locationBookmarkServerURL}",
+            SIGHTINGS_PAGESIZE = 50;
+            SIGHTINGS_PAGING = 50;
     </r:script>
     <r:require module="jQueryUI"/>
     <r:require module="jQueryCookie"/>
@@ -35,9 +40,19 @@
 
     <div class="rightfloat">
         <span class="sightingLinks" style="padding-right: 20px;">
-        <g:link mapping="mine" class="showMySightings">Show my sightings</g:link>
+            <g:if test="${!usersSightings}">
+                <g:link mapping="mine" class="showMySightings">Show my sightings</g:link>
+            </g:if>
+            <g:else>
+                Show my sightings
+            </g:else>
         |
-        <g:link mapping="recent" class="showRecentSightings">Show recent sightings</g:link>
+        <g:if test="${!recentSightings}">
+            <g:link mapping="recent" class="showRecentSightings">Show recent sightings</g:link>
+        </g:if>
+        <g:else>
+            Recent sightings
+        </g:else>
         |
         <a href="${occurrenceExplorerLink}">Occurrence explorer</a>
         </span>
@@ -46,22 +61,21 @@
     <div class="page-header">
         <h1>${sightingsOwner}<g:if test="${otherUsersSightings}">'s</g:if> sightings</h1>
         <p>
-
-            <g:if test="${usersSightings}">
-               This is a simple list of the sightings you have submitted.
-               You can filter, sort and map sightings using the Atlas's
-               <a href="${occurrenceExplorerLink}">occurrence explorer</a>.</p>
-            </g:if>
-            <g:elseif test="${otherUsersSightings}">
-                This is a simple list of the sightings ${sightingsOwner} has submitted.
-                 You can filter, sort and map sightings using the Atlas's
-                 <a href="${occurrenceExplorerLink}">occurrence explorer</a>.</p>
-            </g:elseif>
-            <g:else test="${recentSightings}">
-                This is a simple list of the sightings submitted recently by users.
-                 You can filter, sort and map sightings using the Atlas's
-                 <a href="${occurrenceExplorerLink}">occurrence explorer</a>.</p>
-            </g:else>
+        <g:if test="${usersSightings}">
+           This is a simple list of the sightings you have submitted.
+           You can filter, sort and map sightings using the Atlas's
+           <a href="${occurrenceExplorerLink}">occurrence explorer</a>.</p>
+        </g:if>
+        <g:elseif test="${otherUsersSightings}">
+            This is a simple list of the sightings ${sightingsOwner} has submitted.
+             You can filter, sort and map sightings using the Atlas's
+             <a href="${occurrenceExplorerLink}">occurrence explorer</a>.</p>
+        </g:elseif>
+        <g:else test="${recentSightings}">
+            This is a simple list of the sightings submitted recently by users.
+             You can filter, sort and map sightings using the Atlas's
+             <a href="${occurrenceExplorerLink}">occurrence explorer</a>.</p>
+        </g:else>
     </div>
     <section id="sortControls">
         <div class="what">Identification</div>
@@ -81,99 +95,49 @@
         %{--<div class="notes">Remarks</div>--}%
     </section>
     <section id="mySightings">
-        <g:each in="${records}" var="rec">
-            <section class="record" id="${rec.id}">
-
-                <div class="what">
-                    <g:if test="${rec.taxonConceptID}">
-                        <span class="scientificName">
-                            <a href="http://bie.ala.org.au/species/${rec.taxonConceptID}">${rec.scientificName}</a>
-                        </span>
-                    </g:if>
-                    <g:else>
-                        <span class="scientificName">
-                           ${rec.scientificName}
-                        </span>
-                    </g:else>
-                    <br/>
-                    <span class="commonName">${rec.commonName}</span><br/>
-                    <g:if test="${rec.individualCount && rec.individualCount.isNumber() && rec.individualCount.toInteger() > 1}">
-                        <span class="individualCount">
-                            ${rec.individualCount}
-                            ${rec.individualCount && rec.individualCount.isNumber()  && rec.individualCount.toInteger() == 1 ? 'individual' : 'individuals'}
-                            recorded
-                        </span><br>
-                    </g:if>
-                    <g:if test="${rec.identificationVerificationStatus && rec.identificationVerificationStatus != 'Confident'}">
-                        <span>Identification ${rec.identificationVerificationStatus}</span><br>
-                    </g:if>
-                </div>
-
-                <div class="when">
-                    <g:if test="${rec.eventDate && rec.eventDate != JSONObject.NULL}">
-                        <span class="event-date">Observation: <b>${rec.eventDate}
-                            ${rec.eventTime != JSONObject.NULL ? rec.eventTime : ''}</b></span><br/>
-                    </g:if>
-                    <g:if test="${showUser}">
-                        <span class="submitted-by">Recorded by:
-                            <g:link mapping="spotter" params="[userId:rec.userId]">${rec.userDisplayName}</g:link>
-                        </span>
-                        <br/>
-                    </g:if>
-                    <span class="created">Added: <prettytime:display date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ss'Z'", rec.dateCreated)}" /></span>
-                </div>
-
-                <div class="where">
-                    <g:if test="${rec.decimalLatitude != JSONObject.NULL && rec.decimalLatitude != 'null'}">
-                        <span class="locality">${rec.locality}</span><br>
-                        <span class="lat">Lat: ${rec.decimalLatitude}</span><br>
-                        <span class="lng">Lng: ${rec.decimalLongitude}</span><br>
-                        <g:if test="${rec.georeferenceProtocol}">
-                            <span class="source">Coord source: ${rec.georeferenceProtocol}</span><br>
-                        </g:if>
-                        <g:if test="${rec.georeferenceProtocol == 'GPS device'}">
-                            <span>Geodetic datum: ${rec.geodeticDatum}</span><br>
-                        </g:if>
-                        <g:if test="${rec.georeferenceProtocol == 'physical map'}">
-                            <span>Physical map scale: ${rec.physicalMapScale}</span><br>
-                        </g:if>
-                        <g:if test="${rec.georeferenceProtocol == 'other'}">
-                            <span>Other protocol: ${rec.otherSource}</span><br>
-                        </g:if>
-                    </g:if>
-                </div>
-
-                <div class="actions">
-                    <!--Record UserID: ${rec.userId}, UserId: ${userId} -->
-                    <g:if test="${isAdmin || (rec.userId == userId && !otherUsersSightings)}">
-                        <button type="button" class="delete">Remove  <g:if test="${isAdmin}">[ADMIN USER]</g:if></button>
-                        <button type="button" class="edit">Edit <g:if test="${isAdmin}">[ADMIN USER]</g:if></button><br/>
-                    </g:if>
-
-                    <g:if test="${rec.images && rec.images?.size() > 0}">
-                        <g:each in="${rec.images[0..-1]}" var="img">
-                            <img src="${img.thumb}"/>
-                        </g:each>
-                    </g:if>
-                </div>
-
-                <div class="extraMedia">
-                </div>
-                <div class="expandedView">
-                </div>
-
-            </section>
-        </g:each>
+        <g:include view="/records/recordRow.gsp" model="[records:records,showUser:showUser]"/>
     </section>
+    <g:if test="${records?.size()==50}">
+        <g:submitButton name="Load more" id="loadMoreRecords"/>
+    </g:if>
 </div>
 
 <r:script>
+
     $(function() {
+
         // set sort widget from url
         var params = $.deparam.querystring();
         if (params.sort) {
             $('#sortBy').val(params.sort);
         }
+
+        $('#loadMoreRecords').click(function(){
+
+            var url = serverUrl + "/records/ajax?pageSize=" + SIGHTINGS_PAGESIZE + "&start=" + SIGHTINGS_PAGING;
+
+            if(spotterId != ''){
+                url = url + "&spotterId=" + spotterId;
+            }
+
+            if(loggedInUser != ''){
+                url = url + "&loggedInUser=" + loggedInUser;
+            }
+
+            $.ajax({
+              url: url,
+              success: function(data) {
+                $('#mySightings').append(data);
+                $('.record').click(function () {
+                    var recordId = $(this).attr("id");
+                    loadRecordRow(recordId);
+                });
+               SIGHTINGS_PAGING = SIGHTINGS_PAGING + SIGHTINGS_PAGESIZE;
+              },
+              dataType: "html"
+            });
+        });
+
         // handle sort change
         $('#sortBy').change(function () {
             document.location.href = $.param.querystring(document.location.href, {sort: $(this).val()});
@@ -199,97 +163,93 @@
 
         $('.record').click(function () {
             var recordId = $(this).attr("id");
-
-            //console.log("Selected record: " + recordId);
-            //console.log("Has class detailsLoaded: " + $('#' + recordId).find(".expandedView").hasClass("detailsLoaded"));
-            if($('#' + recordId).find(".expandedView").hasClass("detailsLoaded")){
-              //console.log("Already loaded: " + recordId);
-              if($('#' + recordId).find(".expandedView").is(":visible")){
-                $('#' + recordId).find(".expandedView").hide('slow');
-              } else {
-                $('#' + recordId).find(".expandedView").show('slow');
-              }
-            } else {
-              //console.log("Loading: " + recordId);
-                $.ajax({
-                    url: fielddataUrl + $(this).attr("id"),
-                    method: 'GET',
-                    dataType: 'jsonp',
-                    success: function (data) {
-
-                       var text = '';
-                       var hasImages = (data.record.images && data.record.images.length>0);
-                       if(hasImages){
-                        text += '<div class="largeImage"><img src="' + data.record.images[0].large +'"/></div>';
-                       }
-                       if(data.record.decimalLatitude && data.record.decimalLongitude){
-                        if(hasImages)
-                            text += '<div class="additionalInformation2Col">';
-                        else
-                            text += '<div class="additionalInformation">';
-
-                        var mapImage1 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 6);
-                        var mapImage2 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 10);
-
-                       // console.log("Image URL 1: " + mapImage1);
-                       //console.log("Image URL 2: " + mapImage2);
-
-                        text += '<div style="display:none;">' +
-                         '<img id="mapImage-'+ recordId +'-zoomedOut" src="'+ mapImage1 + '"/>' +
-                         '<img id="mapImage-'+ recordId +'-zoomedIn" src="'+ mapImage2 + '"/>' +
-                         '</div>';
-
-                        text += '<img id="mapImage-'+ recordId +'" src="'+ mapImage1 +'"/>';
-
-
-                        text += '<br/>';
-                        //if(hasImages)text += '<div class="sideInfo">';
-
-                        if(data.record.locality)
-                            text += '<span class="additionLabel">Locality:</span> ' + data.record.locality +'<br/>';
-                        if(data.record.scientificName)
-                            text += '<span class="additionLabel">Scientific name:</span> ' + data.record.scientificName +'<br/>';
-                        if(data.record.commonName)
-                            text += '<span class="additionLabel">Common name:</span> ' + data.record.commonName +'<br/>';
-                        if(data.record.family)
-                            text += '<span class="additionLabel">Family:</span> ' + data.record.family +'<br/>';
-
-                        text += '</div>';
-                       }
-                       $('#' + recordId).find(".expandedView").html(text);
-
-                       $('#mapImage-' + recordId).hover(
-                            function () {
-                                    $('#mapImage-'+ recordId).fadeOut(200, function() {
-                                        $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(300); });
-                                        $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedIn').attr("src"));
-                                    });
-                            },
-                            function () {
-                                    $('#mapImage-'+ recordId).fadeOut(200, function() {
-                                        $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(300); });
-                                        $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedOut').attr("src"));
-                                    });
-                            }
-                       );
-
-                       $('#' + recordId).find(".expandedView").addClass("detailsLoaded");
-
-                        $('#mapImage-'+ recordId).attr('src', mapImage2);
-                        $('#mapImage-'+ recordId).attr('src', mapImage1);
-
-
-                      //  console.log("Image URL 1 (loaded): " + $('#mapImage-'+ recordId).attr('src'));
-                        //console.log("Image URL 2 (loaded): " + $('#mapImage-'+ recordId).attr('src'));
-                    },
-                    error: function(data){
-                        //console.log("Error retrieving record details: " + data);
-                        //console.log( data);
-                    }
-                });
-            }
+            loadRecordRow(recordId);
         });
     });
+
+    function loadRecordRow(recordId){
+        //console.log("Selected record: " + recordId);
+        //console.log("Has class detailsLoaded: " + $('#' + recordId).find(".expandedView").hasClass("detailsLoaded"));
+        if($('#' + recordId).find(".expandedView").hasClass("detailsLoaded")){
+          //console.log("Already loaded: " + recordId);
+          if($('#' + recordId).find(".expandedView").is(":visible")){
+            $('#' + recordId).find(".expandedView").hide('slow');
+          } else {
+            $('#' + recordId).find(".expandedView").show('slow');
+          }
+        } else {
+          //console.log("Loading: " + recordId);
+            $.ajax({
+                url: fielddataUrl + recordId,
+                method: 'GET',
+                dataType: 'jsonp',
+                success: function (data) {
+
+                   var text = '';
+                   var hasImages = (data.record.images && data.record.images.length>0);
+                   if(hasImages){
+                    text += '<div class="largeImage"><img src="' + data.record.images[0].large +'"/></div>';
+                   }
+                   if(data.record.decimalLatitude && data.record.decimalLongitude){
+                    if(hasImages)
+                        text += '<div class="additionalInformation2Col">';
+                    else
+                        text += '<div class="additionalInformation">';
+
+                    var mapImage1 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 6);
+                    var mapImage2 = getStaticMap(data.record.decimalLatitude, data.record.decimalLongitude, 10);
+
+                   // console.log("Image URL 1: " + mapImage1);
+                   //console.log("Image URL 2: " + mapImage2);
+
+                    text += '<div style="display:none;">' +
+                     '<img id="mapImage-'+ recordId +'-zoomedOut" src="'+ mapImage1 + '"/>' +
+                     '<img id="mapImage-'+ recordId +'-zoomedIn" src="'+ mapImage2 + '"/>' +
+                     '</div>';
+
+                    text += '<img id="mapImage-'+ recordId +'" src="'+ mapImage1 +'"/>';
+                    text += '<br/>';
+                    //if(hasImages)text += '<div class="sideInfo">';
+
+                    if(data.record.locality)
+                        text += '<span class="additionLabel">Locality:</span> ' + data.record.locality +'<br/>';
+                    if(data.record.scientificName)
+                        text += '<span class="additionLabel">Scientific name:</span> ' + data.record.scientificName +'<br/>';
+                    if(data.record.commonName)
+                        text += '<span class="additionLabel">Common name:</span> ' + data.record.commonName +'<br/>';
+                    if(data.record.family)
+                        text += '<span class="additionLabel">Family:</span> ' + data.record.family +'<br/>';
+
+                    text += '</div>';
+                   }
+                   $('#' + recordId).find(".expandedView").html(text);
+
+                   $('#mapImage-' + recordId).hover(
+                        function () {
+                                $('#mapImage-'+ recordId).fadeOut(200, function() {
+                                    $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(300); });
+                                    $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedIn').attr("src"));
+                                });
+                        },
+                        function () {
+                                $('#mapImage-'+ recordId).fadeOut(200, function() {
+                                    $('#mapImage-'+ recordId).load(function() { $('#mapImage-'+ recordId).fadeIn(300); });
+                                    $('#mapImage-'+ recordId).attr("src", $('#mapImage-'+ recordId + '-zoomedOut').attr("src"));
+                                });
+                        }
+                   );
+
+                   $('#' + recordId).find(".expandedView").addClass("detailsLoaded");
+                   $('#mapImage-'+ recordId).attr('src', mapImage2);
+                   $('#mapImage-'+ recordId).attr('src', mapImage1);
+                },
+                error: function(data){
+                    //console.log("Error retrieving record details: " + data);
+                    //console.log( data);
+                }
+            });
+        }
+    }
 
     function getStaticMap(lat, lon, level){
       return 'http://maps.googleapis.com/maps/api/staticmap?center='+lat+','+lon+'&zoom='+level+'&size=250x250&markers=size:large%7Ccolor:ref%7C'+lat+','+lon+'&sensor=false&maptype=hybrid';

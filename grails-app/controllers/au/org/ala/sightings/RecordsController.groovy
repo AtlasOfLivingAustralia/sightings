@@ -5,6 +5,8 @@ class RecordsController {
     def webService
     def authService
 
+    def DEFAULT_PAGE_SIZE = 50
+
     def recent() {
 
         def userId = authService.getLoggedInUserId(request)
@@ -12,7 +14,7 @@ class RecordsController {
 
         // handle sort options
         def opts = ""
-        def pageSize = params.pageSize?:50
+        def pageSize = params.pageSize?:DEFAULT_PAGE_SIZE
         if (params.sort) {
             opts += "?sort=" + params.sort
         }
@@ -31,7 +33,53 @@ class RecordsController {
 
         records = records.records
         //println records
-        render( view: 'user', model:[records: records, userId:userId, isAdmin:authService.userInRole("ROLE_ADMIN") , sightingsOwner:"Recent", showUser:true, recentSightings:true])
+        render( view: 'user', model:[records: records, userId:userId, isAdmin:authService.userInRole("ROLE_ADMIN"), sightingsOwner:"Recent", showUser:true, recentSightings:true])
+    }
+
+    def ajax() {
+        // handle sort options
+        def opts = ""
+        def pageSize = params.pageSize?:DEFAULT_PAGE_SIZE
+        def start = params.start?:0
+
+        //is there a logged in user?
+        def loggedInUser = params.loggedInUser
+
+        //are we looking at a particular user's sightings
+        def spotterId = params.spotterId
+
+        //if logged in user == userId then some is looking at their own sightings
+        def showUser = (loggedInUser == spotterId)
+
+        if (params.sort) {
+            opts += "?sort=" + params.sort
+        }
+        if (params.order) {
+            opts += (opts ? "&" : "?") + "order=" + params.order
+        }
+
+        opts += (opts ? "&" : "?") + "pageSize=" + pageSize + "&start=" + start
+
+        //println opts
+        // get records for current user
+        def records = null
+
+        if(spotterId){
+            //get the records for this user only
+            records = webService.getJson(grailsApplication.config.ala.recordsServerURL +
+                "user/" + spotterId + opts)
+        } else {
+            records = webService.getJson(grailsApplication.config.ala.recordsServerURL + opts)
+        }
+
+        if (records.error) {
+            // TODO: handle service errors
+            println records.error
+        }
+        records = records.records
+
+        render( view:"recordRow", model: [records: records, showUser: showUser, spotterId: spotterId,
+                loggedInUser: loggedInUser, otherUsersSightings: spotterId != loggedInUser])
     }
 
     def user() {
@@ -42,7 +90,7 @@ class RecordsController {
 
         // handle sort options
         def opts = ""
-        def pageSize = params.pageSize?:50
+        def pageSize = params.pageSize?:DEFAULT_PAGE_SIZE
         if (params.sort) {
             opts += "?sort=" + params.sort
         }
@@ -67,16 +115,16 @@ class RecordsController {
             records = records.records
         }
         //println records
-        [records: records, userId:authService.userId(), sightingsOwner:"My", usersSightings:true]
+        [records: records, userId:authService.userId(), spotterId: userId, loggedInUser:userId,  sightingsOwner:"My", usersSightings:true]
     }
 
     def userById() {
-
-        def sightingsOwner = authService.userDisplayNameForId(params.userId)
+        def sightingsOwner = authService.userDisplayNameForId(params.spotterId)
+        def loggedInUser = authService.getLoggedInUserId(request)
 
         // handle sort options
         def opts = ""
-        def pageSize = params.pageSize?:50
+        def pageSize = params.pageSize?:DEFAULT_PAGE_SIZE
         if (params.sort) {
             opts += "?sort=" + params.sort
         }
@@ -93,7 +141,7 @@ class RecordsController {
             records = ProxyController.getRecords()
         } else {
             records = webService.getJson(grailsApplication.config.ala.recordsServerURL +
-            "user/" + params.userId + opts)
+            "user/" + params.spotterId + opts)
             if (records.error) {
                 // TODO: handle service errors
                 println records.error
@@ -101,7 +149,14 @@ class RecordsController {
             records = records.records
         }
         //println records
-        render( view: 'user', model:[records: records, sightingsOwner: sightingsOwner, userId: params.userId, isAdmin:authService.userInRole("ROLE_ADMIN"), otherUsersSightings:true])
+        render( view: 'user', model:[records: records,
+                sightingsOwner: sightingsOwner,
+                userId: loggedInUser,
+                loggedInUser: loggedInUser,
+                spotterId: params.spotterId,
+                isAdmin: authService.userInRole("ROLE_ADMIN"),
+                otherUsersSightings: params.spotterId != loggedInUser]
+        )
     }
 
     def delete() {
