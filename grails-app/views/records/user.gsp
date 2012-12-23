@@ -34,7 +34,7 @@
 <div class="inner">
     <g:set var="occurrenceExplorerLink">
         <g:if test="${usersSightings}">${grailsApplication.config.biocache.baseURL}occurrences/search?q=*:*&fq=data_resource_uid:dr364&fq=alau_user_id:${userId}</g:if>
-        <g:elseif test="${otherUsersSightings}">${grailsApplication.config.biocache.baseURL}occurrences/search?q=*:*&fq=data_resource_uid:dr3644&fq=alau_user_id:${userId}</g:elseif>
+        <g:elseif test="${otherUsersSightings}">${grailsApplication.config.biocache.baseURL}occurrences/search?q=*:*&fq=data_resource_uid:dr364&fq=alau_user_id:${spotterId}</g:elseif>
         <g:else test="${recentSightings}">${grailsApplication.config.biocache.baseURL}occurrences/search?q=*:*&fq=data_resource_uid:dr364</g:else>
     </g:set>
 
