@@ -41,14 +41,14 @@
     <div class="rightfloat">
         <span class="sightingLinks" style="padding-right: 20px;">
             <g:if test="${!usersSightings}">
-                <g:link mapping="mine" class="showMySightings">Show my sightings</g:link>
+                <g:link mapping="mine" class="showMySightings">My sightings</g:link>
             </g:if>
             <g:else>
-                Show my sightings
+                My sightings
             </g:else>
         |
         <g:if test="${!recentSightings}">
-            <g:link mapping="recent" class="showRecentSightings">Show recent sightings</g:link>
+            <g:link mapping="recent" class="showRecentSightings">Recent sightings</g:link>
         </g:if>
         <g:else>
             Recent sightings
