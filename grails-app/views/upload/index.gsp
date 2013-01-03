@@ -33,10 +33,15 @@
         <h1>Report a sighting</h1>
         <p class="hint">Hint: If you are submitting images, select them first and we will try to pre-load the date
         and location fields from the image metadata.</p>
+
+        <div style="float:right;padding-right: 45px;">
+           <span style="text-align: right;">
+                <g:link mapping="mine" class="showMySightings">My sightings</g:link>
+                |
+                <g:link mapping="recent" class="showRecentSightings">Recent sightings</g:link>
+           </span>
         <button type="button" id="submit">Submit record</button>
-        <g:link mapping="mine" class="showMySightings">Show my sightings</g:link>
-        |
-        <g:link mapping="recent" class="showRecentSightings">Show recent sightings</g:link>
+        </div>
     </div>
     <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
