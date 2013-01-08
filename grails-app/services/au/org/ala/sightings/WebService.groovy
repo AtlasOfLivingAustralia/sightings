@@ -58,6 +58,7 @@ class WebService {
         def conn = new URL(url).openConnection()
         try {
             conn.setDoOutput(true)
+            conn.setRequestMethod("POST")
             conn.setRequestProperty("Content-Type", "application/json");
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream())
             wr.write(postBody)
@@ -88,8 +89,9 @@ class WebService {
 
     def doPost(String url) {
         //println "WebService:" + postBody
-        def conn = new URL(url).openConnection()
+        HttpURLConnection conn = (HttpURLConnection)(new URL(url).openConnection())
         try {
+            conn.setRequestMethod("POST")
             conn.setDoOutput(false)
             conn.setRequestProperty("Content-Type", "application/json");
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
