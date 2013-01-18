@@ -147,7 +147,8 @@ var submitHandler = {
             screenLocation.getAll(),
             imageList.getAll(),
             taxon.getAll(),
-            {userId: userId}
+            {userId: userId},
+            {submissionMethod: "website"}
         );
         if ($('#occurrenceRemarks').val()) {
             payload.occurrenceRemarks = $('#occurrenceRemarks').val();
