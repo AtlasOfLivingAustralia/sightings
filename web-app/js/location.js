@@ -20,7 +20,6 @@
  * User: markew
  * Date: 16/07/12
  */
-/* Manages locations --------------------------------------------------------------- */
 $(function() {
     $('#time').mask("99:99");
     $("#date").datepicker({
@@ -37,8 +36,10 @@ $(function() {
             new DateTime().setFromStoredFormat(eventDate, eventTime).putToScreen();
         }
     }
+    //$('#fields').validationEngine();
 });
 
+/* Manages locations --------------------------------------------------------------- */
 var screenLocation = {
     latitudeField: null,
     longitudeField: null,
@@ -257,13 +258,33 @@ var screenLocation = {
     removeListener: function(listener) {
         this.listeners.remove(listener);
     },
-    showInvalidLatitudeAlert: function () {
+    showInvalidLatitudeAlert: function (status) {
+        var text;
+        switch (status) {
+            case 0: // shouldn't be here
+                return;
+            case 1: // generic error
+                text = 'The latitude ' + this.getLat() + ' is not valid.'; break;
+            case 2: // DMS format
+                text = 'The latitude appears to be in degree, minutes, seconds format.' +
+                    ' Please use decimal degrees.';
+        }
         this.latitudeField.focus();
-        alert('The latitude ' + this.getLat() + ' is not valid.');
+        alert(text);
     },
-    showInvalidLongitudeAlert: function () {
+    showInvalidLongitudeAlert: function (status) {
+        var text;
+        switch (status) {
+            case 0: // shouldn't be here
+                return;
+            case 1: // generic error
+                text = 'The longitude ' + this.getLng() + ' is not valid.'; break;
+            case 2: // DMS format
+                text = 'The longitude appears to be in degree, minutes, seconds format.' +
+                    ' Please use decimal degrees.';
+        }
         this.longitudeField.focus();
-        alert('The longitude ' + this.getLng() + ' is not valid.');
+        alert(text);
     }
 };
 
@@ -451,30 +472,42 @@ Location.prototype.isSame = function (loc) {
     return same;
 };
 
+// 0 = ok, 1 = invalid, 2 = DMS format
 Location.prototype.validateLatitude = function () {
     var lat;
+
     if (this.decimalLatitude === null || this.decimalLatitude === '') {
-        return true;
+        return 0;
     }
+    // check for DMS format
+    if (this.decimalLatitude.indexOf('"') > -1 || this.decimalLatitude.indexOf("'") > -1) {
+        return 2;
+    }
+    // check for non-numeric chars
     try {
         lat = parseFloat(this.decimalLatitude);
     } catch (e) {
-        return false;
+        return 1;
     }
-    return (lat >= -90 && lat <= 90);
+    return (lat >= -90 && lat <= 90) ? 0 : 1;
 };
 
 Location.prototype.validateLongitude = function () {
     var lon;
     if (this.decimalLongitude === null || this.decimalLongitude === '') {
-        return true;
+        return 0;
     }
+    // check for DMS format
+    if (this.decimalLongitude.indexOf('"') > -1 || this.decimalLongitude.indexOf("'") > -1) {
+        return 2;
+    }
+    // check for non-numeric chars
     try {
         lon = parseFloat(this.decimalLongitude);
     } catch (e) {
-        return false;
+        return 1;
     }
-    return (lon >= -180 && lon <= 180);
+    return (lon >= -180 && lon <= 180) ? 0 : 1;
 };
 
 function hasValue(x) {

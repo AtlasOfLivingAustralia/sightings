@@ -94,6 +94,11 @@ $(function() {
     });
 });
 
+function validateLatLng(field, rules, i, options) {
+    var v = field.val();
+
+}
+
 var submitHandler = {
     init: function () {
         var that = this;
@@ -107,6 +112,13 @@ var submitHandler = {
             }
             if (!screenLocation.isValid()) {
                 missing.push('Location');
+            }*/
+            /*if ($('#lsid').val() == '') {
+                if ($('#taxa').validationEngine('validate')) {
+                    return;
+            }
+            if ($('#latitude', '#longitude').validationEngine('validate')) {
+                return;
             }*/
             if ($('#lsid').val() == '') {
                 missing.push('Taxon');
@@ -126,20 +138,24 @@ var submitHandler = {
         alert("You must at least identify the species (or higher taxonomic group). " + msg);
     },
     submit: function () {
-        var payload;
+        var payload, loc, vlat, vlng;
+
         // check time is valid
         if (!new DateTime().loadFromScreen().validateTime()) {
             screenDate.showInvalidTimeAlert();
             return;
         }
         // check lat is valid
-        if (!new Location().loadFromScreen().validateLatitude()) {
-            screenLocation.showInvalidLatitudeAlert();
+        loc = new Location().loadFromScreen();
+        vlat = loc.validateLatitude();
+        if (vlat > 0) {
+            screenLocation.showInvalidLatitudeAlert(vlat);
             return;
         }
         // check lon is valid
-        if (!new Location().loadFromScreen().validateLongitude()) {
-            screenLocation.showInvalidLongitudeAlert();
+        vlng = loc.validateLongitude();
+        if (vlng > 0) {
+            screenLocation.showInvalidLongitudeAlert(vlng);
             return;
         }
         payload = $.extend({},
@@ -158,7 +174,7 @@ var submitHandler = {
         }
         $.ajax({
             url: recordsServerUrl,
-            method: 'POST',
+            type: 'POST',
             dataType: 'json',
             data: payload,
             success: function (data) {
