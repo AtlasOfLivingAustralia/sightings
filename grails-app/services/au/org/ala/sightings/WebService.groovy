@@ -54,7 +54,7 @@ class WebService {
     }
 
     def doPost(String url, String postBody) {
-        //println "WebService:" + postBody
+        log.debug "WebService: post body" + postBody
         def conn = new URL(url).openConnection()
         try {
             conn.setDoOutput(true)
