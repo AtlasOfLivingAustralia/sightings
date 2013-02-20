@@ -1,4 +1,3 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -6,15 +5,15 @@
     <meta name="layout" content="ala" />
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-    <script src="http://maps.google.com/maps/api/js?v=3.5&sensor=false"></script>
+    <script src="//maps.google.com/maps/api/js?key=AIzaSyDBSZ8E9ZCWUULo8Us31Zxhm9u3AWLuHGw&sensor=false&libraries=drawing"></script>
     <!-- App specific styles -->
     <r:script disposition="head">
-        var serverUrl = "${ConfigurationHolder.config.grails.serverURL}",
-            bieUrl = "${ConfigurationHolder.config.bie.baseURL}",
+        var serverUrl = "${grailsApplication.config.grails.serverURL}",
+            bieUrl = "${grailsApplication.config.bie.baseURL}",
             userId = "${userId}",
             guid = "${guid}",
             recordsServerUrl = "${createLink(controller: 'proxy', action: 'submitRecord')}",
-            bookmarkServerUrl = "${ConfigurationHolder.config.ala.locationBookmarkServerURL}",
+            bookmarkServerUrl = "${grailsApplication.config.ala.locationBookmarkServerURL}",
             deleteImageUrl = "${resource(dir:'images/ala',file:'delete.png')}";
     </r:script>
     <r:require module="application"/>
@@ -369,6 +368,10 @@
     </tr>
     {% } %}
 </script>
+<r:script>
+    // init maps after page load - doing this on the jQuery ready event caused Firefox to never complete loading
+    $(window).load(initMaps);
+</r:script>
 <r:layoutResources/>
 </body>
 </html>

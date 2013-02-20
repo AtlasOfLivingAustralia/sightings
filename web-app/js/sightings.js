@@ -45,25 +45,11 @@ $(function() {
     // activate submit button
     submitHandler.init();
 
-    // create small map
-    smallMap.init('small-map');
-
-    // create main map
-    mainMap.init('main-map');
-
-    // catch changes in main map pin
-    mainMap.addListener({handler: function(mouseEvent, event) {
-        // update lat & lon on screen
-        screenLocation.setLat(mouseEvent.latLng.lat(),true);
-        screenLocation.setLng(mouseEvent.latLng.lng(),true);
-        // change georeferenceProtocol (coord source) to google maps
-        screenLocation.setSource("Google maps");
-        // clear any verbatim lat & lon that have been set from other sources eg image exif
-        screenLocation.clearVerbatimLatLon();
-    }});
+    // moved map initialisation from here to $(window).load to fix Firefox issue
 
     $('#main-map-link').click(function () {
         mainMap.toggle();
+        return false;
     });
 
     // location bookmarks
@@ -97,6 +83,25 @@ $(function() {
 function validateLatLng(field, rules, i, options) {
     var v = field.val();
 
+}
+
+function initMaps() {
+    // create small map
+    smallMap.init('small-map');
+
+    // create main map
+    mainMap.init('main-map');
+
+    // catch changes in main map pin
+    mainMap.addListener({handler: function(mouseEvent, event) {
+        // update lat & lon on screen
+        screenLocation.setLat(mouseEvent.latLng.lat(),true);
+        screenLocation.setLng(mouseEvent.latLng.lng(),true);
+        // change georeferenceProtocol (coord source) to google maps
+        screenLocation.setSource("Google maps");
+        // clear any verbatim lat & lon that have been set from other sources eg image exif
+        screenLocation.clearVerbatimLatLon();
+    }});
 }
 
 var submitHandler = {
@@ -395,10 +400,15 @@ var mainMap = {
 
             // hide map after it is drawn
             google.maps.event.addListener(this.map, 'idle', function () {
+                //window.stop();
                 if (that.firstShow) {
-                    that.toggle();
+                    //that.toggle();
+                    $('#main-map-container').slideUp('fast');
                     that.firstShow = false;
                 }
+            });
+
+            google.maps.event.addListener(this.map, 'idle', function() {
             });
 
             // listen for drag events
@@ -503,16 +513,21 @@ var mainMap = {
         this.map.fitBounds(this.initialBounds);
     },
     toggle: function () {
-        var $container = $('#main-map-container');
-        $container.slideToggle('slow');
+        var $container = $('#main-map-container'),
+            that = this;
+        $container.slideToggle('slow', function() {
+            google.maps.event.trigger(that.map, 'resize');
+        });
     },
     show: function () {
-        var $container = $('#main-map-container');
-        $container.slideDown('slow');
+        var $container = $('#main-map-container'),
+            that = this;
+        $container.slideDown('slow', function () {google.maps.event.trigger(that.map, 'resize')});
     },
     hide: function () {
-        var $container = $('#main-map-container');
-        $container.slideUp('slow');
+        var $container = $('#main-map-container'),
+            that = this;
+        $container.slideUp('slow', function () {google.maps.event.trigger(that.map, 'resize')});
     },
     addListener: function(listener) {
         this.listeners.push(listener);
