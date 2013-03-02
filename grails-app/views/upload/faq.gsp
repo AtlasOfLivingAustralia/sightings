@@ -8,7 +8,7 @@
     <r:script disposition="head">
         var serverUrl = "${grailsApplication.config.grails.serverURL}";
     </r:script>
-    <r:require modules="application,details"/>
+    <r:require modules="application"/>
     <r:layoutResources/>
 </head>
 <body>
@@ -19,10 +19,10 @@
         <p class="hint">Click any topic to view. If you are having difficulties and can't find an answer here please
         email us at <a href="mailto:support@ala.org.au?subject=Problem submitting a record">support@ala.org.au</a>.</p>
         <div style="float:right;padding-right: 45px;">
-            %{--<span style="text-align: right;">
+            <span style="text-align: right;">
                 <button type="button" id="expand">Expand all</button>
                 <button type="button" id="close">Close all</button>
-            </span>--}%
+            </span>
             <span style="text-align: right;">
                 <g:link mapping="mine" class="showMySightings">My sightings</g:link>
                 |
@@ -31,15 +31,15 @@
         </div>
     </div>
     <section id="faq" style="clear:both;">
-        <details>
-            <summary>Do I have to fill in all these fields?</summary>
+        <section>
+            <h2>Do I have to fill in all these fields?</h2><div>
             <p>No. The only requirement is that you identify the lifeform you are reporting. The minimal useful information is either:</p>
             <ol><li>Identification plus an image; or</li>
             <li>Identification plus a date and location.</li></ol>
             <p>We encourage you to enter as much information as you are sure about. Each extra piece of data makes your record more useful for analysis. For example, telling us how you determined the location coordinates allows us to interpret the coordinates more accurately.</p>
-        </details>
-        <details>
-            <summary>What if I'm not sure about the species?</summary>
+        </div></section>
+        <section>
+            <h2>What if I'm not sure about the species?</h2><div>
             <p>First try to confirm the species by searching the Atlas for the names you have and comparing your
             organism to the images in the Atlas. Or use other tools such as field guides, online identification
             keys or even Google to try to confirm the identification.</p>
@@ -48,9 +48,9 @@
             even a common group name such as 'snails'.</p>
             <p>If you are still not certain about what you have entered, then change the 'Confidence in
             identification' option to 'Uncertain'.</p>
-        </details>
-        <details>
-            <summary>How can I find the coordinates for the location of my sighting?</summary>
+        </div></section>
+        <section>
+            <h2>How can I find the coordinates for the location of my sighting?</h2><div>
             <p>There are a number of easy ways to do this:</p>
             <ul>
                 <li>If you have an image and your camera or phone embeds geographical information, add your image
@@ -66,29 +66,29 @@
                 <li>Read the coordinates from a GPS device.</li>
                 <li>Read the coordinates from a paper map.</li>
             </ul>
-        </details>
-        <details>
-            <summary>What types of images can I upload?</summary>
+        </div></section>
+        <section>
+            <h2>What types of images can I upload?</h2><div>
             <p>We prefer you to upload jpeg files (.jpg or .jpeg) but you can also upload .png, .bmp and .gif files.</p>
-        </details>
-        <details>
-            <summary>Can I add multiple images for a single submission?</summary>
+        </div></section>
+        <section>
+            <h2>Can I add multiple images for a single submission?</h2><div>
             <p>Yes. They should of course all relate to the same observation.</p>
             <p>To add another image just click the 'Add more images' button. Or you can select multiple images in the
             file dialog and bring them all in at once.</p>
             <p>Tip: You can also add images by dragging them from your file system into the 'Media' box.</p>
-        </details>
-        <details>
-            <summary>Can I upload video and sound files?</summary>
+        </div></section>
+        <section>
+            <h2>Can I upload video and sound files?</h2><div>
             <p>This tool does not currently support uploading sound or video but the Atlas can ingest both. We will add
             this capability soon. If you have sound or video that you think is significant, please contact us via
             <a href="mailto:info@ala.org.au">info@ala.org.au</a> and we will discuss a means of loading your files.</p>
-        </details>
-        <details>
-            <summary>What should I put in the location description?</summary>
+        </div></section>
+        <section>
+            <h2>What should I put in the location description?</h2><div>
             <p>This should be a text description of the geographic location. Examples are a street address, the name of
             a town or river mouth. If you have ecological details such as 'in a tree' or 'in leaf litter', it is best to
-            record these in the notes section.</p>
+            record these in the notes details.</p>
             <p>Tip: If you have entered location coordinates, you can click the left double arrow to lookup the location
             name from Google. You can then edit this description if you want.<r:img dir="images/faq" file="reverse-lookup.png"/>
             </p>
@@ -97,9 +97,9 @@
             <p>If you have entered your own description, you can prevent it being overwritten by clicking on the lock
             symbol <r:img dir="images/faq" file="lock-open.png" class="inline"/>. It will appear like this
             <r:img dir="images/faq" file="lock-closed.png" class="inline"/> when the text is locked.</p>
-        </details>
-        <details>
-            <summary>How do you get the date and location from my image?</summary>
+        </div></section>
+        <section>
+            <h2>How do you get the date and location from my image?</h2><div>
             <p>Information such as the type of camera, the date and location can be embedded in an image. This is
             usually done by the camera or phone but can be embedded by image processing software as well.</p>
             <p>If your image contains an embedded date or location we try to extract that information when you add the
@@ -116,9 +116,9 @@
             <p>If you want to share this information with us (to make your submission easier and faster), make sure you
             include embedded metadata when you export images. We do not store any information apart from date and
             location coordinates.</p>
-        </details>
-        <details>
-            <summary>What are the different licenses I can choose for my images?</summary>
+        </div></section>
+        <section>
+            <h2>What are the different licenses I can choose for my images?</h2><div>
             <p>We encourage the use of Creative Commons licensing to protect the usage of your images. Some general
             information is available <a target="_blank" class="external" href="http://creativecommons.org/licenses/">here</a>. We offer the choice of
             four license types:</p>
@@ -133,48 +133,19 @@
             necessary. The use of this condition can restrict re-use by non-commercial and community based entities,
             not because they are making a profit but because some of their activities can be legally considered
             "commercial purposes" and they may need costly legal advice to make sure.</p>
-        </details>
+        </div></section>
     </section>
 </div>
 <r:script>
-    var isDetailsSupported = (function(doc) {
-        var el = doc.createElement('details'),
-                fake,
-                root,
-                diff;
-        if (!('open' in el)) {
-            return false;
-        }
-        root = doc.body || (function() {
-            var de = doc.documentElement;
-            fake = true;
-            return de.insertBefore(doc.createElement('body'), de.firstElementChild || de.firstChild);
-        }());
-        el.innerHTML = '<summary>a</summary>b';
-        el.style.display = 'block';
-        root.appendChild(el);
-        diff = el.offsetHeight;
-        el.open = true;
-        diff = diff != el.offsetHeight;
-        root.removeChild(el);
-        if (fake) {
-            root.parentNode.removeChild(root);
-        }
-        return diff;
-    }(document));
-
-    if (!isDetailsSupported) {
-        document.documentElement.className += ' no-details';
-    }
-
-    // Polyfill all details elements
-    $('details').details();
-
+    $('#faq h2').click(function () {
+        var d = $(this).parent().find('div');
+        d.toggle();
+    });
     $('#expand').click(function () {
-        $('details').details('true');
+        $('#faq > section > div').show();
     });
     $('#close').click(function () {
-        $('details').details('false');
+        $('#faq > section > div').hide();
     });
 </r:script>
 <r:layoutResources/>
