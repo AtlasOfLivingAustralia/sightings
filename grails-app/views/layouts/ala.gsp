@@ -16,8 +16,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}wp-content/themes/ala2011/css/search.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}wp-content/themes/ala2011/css/skin.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}wp-content/themes/ala2011/css/sf.css" />
-    %{--<g:javascript library="js/jquery-1.7.1.min"/>--}%
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 
     <g:layoutHead />
     <script type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}wp-content/themes/ala2011/scripts/html5.js"></script>
@@ -112,7 +111,7 @@
 </script>
 <script type="text/javascript">
     // show warning if using IE6
-    if ($.browser.msie && $.browser.version.slice(0,1) == '6') {
+    if ($.browser && $.browser.msie && $.browser.version.slice(0,1) == '6') {
         $('#header').prepend($('<div style="text-align:center;color:red;">WARNING: This page is not compatible with IE6.' +
                 ' Many functions will still work but layout and image transparency will be disrupted.</div>'));
     }
