@@ -14,6 +14,12 @@ $(function() {
         taxonStack.pop();
     });
 
+    // setup validation early
+    $('#forValidationOnly').validationEngine('attach', {
+        scroll: false,
+        binded: true
+    });
+
     // wire coordinate source
     $('#georeferenceProtocol').change(function () {
         // hide all
@@ -40,6 +46,11 @@ $(function() {
     $( "#datumOpener" ).click(function() {
         $( "#datumDialog" ).dialog( "open" );
         return false;
+    });
+
+    // wire link in error dialog
+    $("#showFullError").click(function () {
+        $('#fullError').show();
     });
 
     // activate submit button
@@ -81,8 +92,27 @@ $(function() {
 });
 
 function validateLatLng(field, rules, i, options) {
-    var v = field.val();
-
+    var v = field.val(), lat, lng, num;
+    if (v === null || v === '') {
+        return undefined;
+    }
+    // check for DMS format
+    if (degMinSecs.isDegMinSec(v, (field.attr('id') === 'latitude' ? 'lat' : 'lng'))) {
+        lat = $('#latitude').val();
+        lng = $('#longitude').val();
+        // only show dialog if both values entered OR submitting
+        if (lat === '' || lng === '') {
+            return undefined;
+        } else {
+            degMinSecs.showConvertFromDMSDialog(lat, lng);
+            return "Not a decimal number.";
+        }
+    }
+    // check for non-numeric chars
+    if (!$.isNumeric(v)) {
+        return "Not a decimal number";
+    }
+    return undefined;
 }
 
 function initMaps() {
@@ -140,17 +170,32 @@ var submitHandler = {
         // TODO: just alert for now - and only report missing taxon
         //var msg = missing.length === 2 ? "Both are missing." : missing[0] + " is missing.";
         var msg = missing[0] + " is missing.";
-        alert("You must at least identify the species (or higher taxonomic group). " + msg);
+        alert("You must identify what you saw. If you don't know the species, you can enter a genus or family. " +
+              "You can type common group names like 'frogs' or 'orchids' into the box and pick a group from the list.");
     },
     submit: function () {
         var payload, loc, vlat, vlng;
 
-        // check time is valid
-        if (!new DateTime().loadFromScreen().validateTime()) {
+        // check time is valid - superceded by validationEngine
+        /*if (!new DateTime().loadFromScreen().validateTime()) {
             screenDate.showInvalidTimeAlert();
             return;
+        }*/
+
+        // validation
+        var success = $('#forValidationOnly').validationEngine('validate');
+        if (!success) {
+            return;
         }
-        // check lat is valid
+        // validate fields
+        /*if ($('#latitude').validationEngine('validate')) {
+            return;
+        }
+        if ($('#longitude').validationEngine('validate')) {
+            return;
+        }*/
+
+        /*// check lat is valid
         loc = new Location().loadFromScreen();
         vlat = loc.validateLatitude();
         if (vlat > 0) {
@@ -162,7 +207,8 @@ var submitHandler = {
         if (vlng > 0) {
             screenLocation.showInvalidLongitudeAlert(vlng);
             return;
-        }
+        }*/
+
         payload = $.extend({},
             screenDate.getAll(),
             screenLocation.getAll(),
@@ -177,6 +223,9 @@ var submitHandler = {
         if (typeof recordId !== 'undefined') {
             payload.id = recordId;
         }
+        if (simulateError === 'submit') {
+            payload.simulateError = 'submit';
+        }
         $.ajax({
             url: recordsServerUrl,
             type: 'POST',
@@ -184,7 +233,12 @@ var submitHandler = {
             data: payload,
             success: function (data) {
                 if (data.error !== null) {
-                    alert(data.error.error);
+                    // inject error message into dialog
+                    $("#fullError").html(data.error.error);
+                    // make sure the full error is initially hidden
+                    $("#fullError").hide();
+                    // show dialog
+                    $('#serverError').dialog({width: 600});
                 } else {
                     document.location.href = serverUrl + "/mine";
                 }
