@@ -13,7 +13,7 @@ class UrlMappings {
 
 		"/"(controller: 'upload', action:"index")
         "/$id"(controller: 'upload', action:"index")
-
+        "/simulateSubmitError/$id?" (controller: 'upload', action: 'simulateSubmitError')
 
 		"/$controller/$action?/$id?"{
 			constraints {
