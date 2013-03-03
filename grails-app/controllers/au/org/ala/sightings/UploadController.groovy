@@ -53,12 +53,33 @@ class UploadController {
         }
     }
 
+    def faq() {}
+
     def demo() {}
 
     def media() {
         def model = [physicalMapScales: scales]
         model
     }
+
+    /**
+     * Shows the submit form in a way that will throw a simulated server error on submit.
+     * Used for testing the submit error dialog.
+     */
+    def simulateSubmitError(String id) {
+        def model = [physicalMapScales: scales]
+        if (id) {
+            // treat this as a demo index
+            model += getDemoSpecies(id)
+        }
+        // else no taxon is selected
+
+        model['userId'] = authService.userId()
+        model['userName'] = authService.username()
+        model['simulateError'] = 'submit';
+        render view: 'index', model: model
+    }
+
 
     private Map getDemoSpecies(id) {
         switch (id) {
