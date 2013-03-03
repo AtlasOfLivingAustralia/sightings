@@ -1,11 +1,13 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <title>Report a sighting | Atlas of Living Australia</title>
     <meta name="layout" content="ala" />
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" type="text/css" media="screen" />
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <script src="//maps.google.com/maps/api/js?key=AIzaSyDBSZ8E9ZCWUULo8Us31Zxhm9u3AWLuHGw&sensor=false&libraries=drawing"></script>
+    <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
     <!-- App specific styles -->
     <r:script disposition="head">
         var serverUrl = "${grailsApplication.config.grails.serverURL}",
@@ -15,15 +17,17 @@
             recordsServerUrl = "${createLink(controller: 'proxy', action: 'submitRecord')}",
             bookmarkServerUrl = "${grailsApplication.config.ala.locationBookmarkServerURL}",
             deleteImageUrl = "${resource(dir:'images/ala',file:'delete.png')}";
+            simulateError = "${simulateError}";
     </r:script>
     <r:require module="application"/>
     <r:require module="upload"/>
     <r:require module="jQueryImageUpload"/>
-    <r:require module="jQueryUI"/>
+    %{--<r:require module="jQueryUI"/>--}%
     <r:require module="jQueryCookie"/>
     <r:require module="jQueryTimeEntry"/>
     <r:require module="exif"/>
     <r:require module="maskedInput"/>
+    <r:require module="jqueryValidationEngine"/>
     <r:layoutResources/>
 </head>
 <body>
@@ -31,7 +35,7 @@
     <div class="page-header">
         <h1>Report a sighting</h1>
         <p class="hint">Hint: If you are submitting images, select them first and we will try to pre-load the date
-        and location fields from the image metadata.</p>
+        and location fields from the image metadata. See the <g:link action="faq">FAQ</g:link> for help.</p>
 
         <div style="float:right;padding-right: 45px;">
            <span style="text-align: right;">
@@ -42,6 +46,7 @@
         <button type="button" id="submit">Submit record</button>
         </div>
     </div>
+    <form id="forValidationOnly">
     <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
     <section class="sightings-block ui-corner-all">
@@ -71,13 +76,15 @@
     <div class="heading ui-corner-left"><h2>When</h2><r:img uri="/images/when.png"/></div>
     <section class="sightings-block ui-corner-all">
         <div class="left" style="margin-top: 10px;width:40%;">
-            <p><label for="date">Date</label> <input type="text" id="date"></p>
+            <p><label for="date">Date</label> <input type="text" id="date" class="datepicker"
+            data-validation-engine="validate[custom[ddMMyyyy]]"></p>
             <p>Click in the date field to pick from a calendar or just type in the date in
-            dd-mm-yyy format.</p>
+            dd-mm-yyyy format.</p>
         </div>
         <div class="left" style="margin-top: 10px;margin-left:30px;width:54%;">
             <p><label for="time">Time</label>
-            <input type="text" id="time" size="5"/></p>
+            <input type="text" id="time" size="5"
+                   data-validation-engine="validate[custom[time]]"/></p>
             <p>Type in the time (hh:mm 24hr clock) or leave blank if you wish.</p>
         </div>
     </section>
@@ -104,9 +111,13 @@
         </div>
         <div class="left" id="coordinate-container">
             <span>Enter coordinates (decimal degrees) if you already have them.</span><br/>
-            <label for="latitude">Latitude</label><g:textField name="latitude" size="17"/>
+            <label for="latitude">Latitude</label><g:textField name="latitude" size="17"
+                data-validation-engine="validate[funcCall[validateLatLng],condRequired[longitude]]"
+                data-errormessage-value-missing="Latitude is required if you enter a longitude."/>
             &nbsp;&nbsp;
-            <label for="longitude">Longitude</label><g:textField name="longitude" size="17"/><br/>
+            <label for="longitude">Longitude</label><g:textField name="longitude" size="17"
+                data-validation-engine="validate[funcCall[validateLatLng],condRequired[latitude]]"
+                data-errormessage-value-missing="Longitude is required if you enter a latitude."/><br/>
             <label for="coordinateUncertaintyInMeters">Accuracy (metres)</label><g:textField name="coordinateUncertaintyInMeters" size="17"/><br/>
             <g:hiddenField name="verbatimLatitude"/>
             <g:hiddenField name="verbatimLongitude"/>
@@ -148,6 +159,7 @@
             </div>
         </section>
     </section>
+    </form>
     <!-- MEDIA -->
     <div class="heading ui-corner-left"><h2>Media</h2><r:img uri="/images/media.png"/></div>
     <section class="sightings-block ui-corner-all">
@@ -250,6 +262,46 @@
     <p>For coordinates to be correctly interpreted we must also know the spatial reference system
     under which they were collected. Many GPS devices (as well as Google maps) use WGS84. The Australian standard GDA94 is
     virtually identical. Coordinates collected under other standards must be transformed to achieve the best accuracy.</p>
+</div>
+<div id="dmsConvertDialog" title="Use decimal degrees" class="ui-helper-hidden">
+    <p>Coordinates must be entered as decimal degrees, eg -35.7629.</p>
+    <p>The values you have entered look like they may be in <strong>degrees, minutes and seconds</strong>. The following
+    table shows how we have interpreted them. You can correct the values. The decimal equivalents will be updated
+    automatically.</p>
+    <table>
+        <thead><tr><td></td><td>Entered</td><td>Degrees</td><td>Minutes</td><td>Seconds</td></tr></thead>
+        <tr>
+            <td>Lat:</td>
+            <td id="enteredLat"></td>
+            <td><input type="text" id="degreesLat"/></td>
+            <td><input type="text" id="minutesLat"/></td>
+            <td><input type="text" id="secondsLat"/></td>
+        </tr>
+        <tr>
+            <td>Lng:</td>
+            <td id="enteredLng"></td>
+            <td><input type="text" id="degreesLng"/></td>
+            <td><input type="text" id="minutesLng"/></td>
+            <td><input type="text" id="secondsLng"/></td>
+        </tr>
+    </table>
+    <p>The decimal equivalents are:</p>
+    <p>Lat: <strong><span id="decLat"></span></strong><br>Lng: <strong><span id="decLng"></span></strong></p>
+    <p>Do you want to use these converted values?</p>
+</div>
+<div id="serverError" title="Oops!" class="dialog ui-helper-hidden">
+    <p>We're sorry but there was a problem submitting your record.</p>
+    <p>The server may be temporarily unavailable or there may be an unexpected issue with the data or image you are
+    submitting. We have logged the failure and it will be investigated in due course.</p>
+    <p>Please try again if this
+    is the first time the problem has occurred. If you still cannot submit successfully we would really appreciate you
+    letting us know at <a href="mailto:support@ala.org.au?subject=Problem%20submitting%20a%20record">support@ala.org.au</a>.
+    Please tell us when you had the
+    problem (this makes it easier for us to find the incident in the logs) and what you were trying to do. A screenshot of the
+    page just before you submit is very useful, or just list the data that you had entered. If you uploaded any images
+    please attach these to the email. We are working hard to make this process robust so your help is valuable to us.</p>
+    <p><span class="link under" id="showFullError">Show the raw error</span> </p>
+    <p id="fullError" class="ui-helper-hidden"></p>
 </div>
 <div id="locationUpdateDialog" class="dialog ui-helper-hidden">
     <p>The image you just selected contains embedded location information that is different to the values already entered.</p>
