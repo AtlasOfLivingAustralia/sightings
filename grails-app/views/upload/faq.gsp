@@ -20,13 +20,15 @@
         email us at <a href="mailto:support@ala.org.au?subject=Problem submitting a record">support@ala.org.au</a>.</p>
         <div style="float:right;padding-right: 45px;">
             <span style="text-align: right;">
-                <button type="button" id="expand">Expand all</button>
-                <button type="button" id="close">Close all</button>
-            </span>
-            <span style="text-align: right;">
                 <g:link mapping="mine" class="showMySightings">My sightings</g:link>
                 |
                 <g:link mapping="recent" class="showRecentSightings">Recent sightings</g:link>
+                |
+                <g:link controller="upload" class="showRecentSightings">Record a sighting</g:link>
+            </span><br>
+            <span style="text-align: right;">
+                <button type="button" id="expand">Expand all</button>
+                <button type="button" id="close">Close all</button>
             </span>
         </div>
     </div>
