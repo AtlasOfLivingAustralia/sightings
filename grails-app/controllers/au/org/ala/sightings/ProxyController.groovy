@@ -120,6 +120,10 @@ class ProxyController {
             serviceParams.images = []
             mockRecords << serviceParams
             result = [error: null, resp: [id: key]]
+        } else if (params.simulateError == 'submit') {
+            log.error('Simulated submit error')
+            result = [error:[error: "This is a simulated error for testing the submit error dialog." +
+                    "(A user should never see this error. Please report it if you do.)"]]
         } else if (params.id) {
             result = webService.doPost(grailsApplication.config.ala.recordsServerURL + params.id, body)
         } else {
