@@ -33,6 +33,11 @@ modules = {
         resource url: 'css/bootstrap-ie6.min.css'
     }
 
+    /*jquery_cdn {
+        resource(disposition: "head", url:'js/jquery-1.9.1.min.js',
+                linkOverride:'<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>')
+    }*/
+
     jQueryImageUpload {
 //        dependsOn 'jQuery'
         defaultBundle false
@@ -117,4 +122,11 @@ modules = {
     maskedInput {
         resource url: 'js/jquery.maskedinput-1.3.min.js'
     }
+
+    jqueryValidationEngine {
+        resource url: 'js/jquery.validationEngine.js'
+        resource url: 'js/jquery.validationEngine-en.js'
+        resource url: 'css/validationEngine.jquery.css'
+    }
+
 }
