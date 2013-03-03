@@ -54,7 +54,7 @@ class WebService {
     }
 
     def doPost(String url, String postBody) {
-        log.debug "WebService: post body" + postBody
+        //println "WebService: post body" + postBody
         def conn = new URL(url).openConnection()
         try {
             conn.setDoOutput(true)
@@ -74,11 +74,11 @@ class WebService {
             return [error:  null, resp: JSON.parse(resp)]
         } catch (SocketTimeoutException e) {
             def error = [error: "Timed out calling web service. URL= \${url}."]
-            println error.error
+            log.error "${error.error} body is ${postBody}"
             return [error: error]
         } catch (Exception e) {
-            def error = [error: "Failed calling web service. ${e.getClass()} ${e.getMessage()} ${e} URL= ${url}."]
-            println error.error
+            def error = [error: "Failed calling web service. ${e.getClass()} ${e.getMessage()} URL= ${url}."]
+            log.error "${error.error} body is ${postBody}"
             return [error: error]
         } finally {
             if (conn != null){
