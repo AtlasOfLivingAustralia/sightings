@@ -18,6 +18,12 @@ td {
     float: left;
 }
 
+.link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #3a5c83;
+}
+
 #submit, #alt-submit {
     margin-left: 80px;
     font-size: 1.6em;
@@ -313,6 +319,23 @@ span.symbol {
     font-size: 1.6em;
 }
 
+#dmsConvertDialog p {
+    padding-bottom: 5px;
+}
+
+#dmsConvertDialog td {
+    border-bottom: none;
+}
+
+#dmsConvertDialog input {
+    width: 50px;
+}
+
+#dmsConvertDialog table {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
 /* bookmarks */
 #locationBookmarks {
     max-width: 295px;
@@ -505,3 +528,42 @@ div.sort label {
 .additionalInformation2Col { margin-top:20px; float:right; vertical-align: top; width:300px;}
 .additionalInformation { margin-top:20px; float:left;}
 .record :hover { cursor: hand; cursor: pointer; }
+
+/* faq */
+#faq {
+    clear: both;
+    margin: 20px;
+    padding-top: 10px;
+}
+
+#faq > section {
+    margin: 10px 0;
+}
+
+#faq > section > div {
+    display: none;
+}
+
+#faq h2 {
+    cursor: pointer;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+#faq p {
+    padding-bottom: 8px;
+}
+
+#faq ol, #faq ul {
+    margin-bottom: 8px;
+    padding-bottom: 0;
+}
+
+#faq img {
+    display: block;
+}
+
+#faq img.inline {
+    display: inline;
+    vertical-align: text-bottom;
+}
