@@ -288,6 +288,181 @@ var screenLocation = {
     }
 };
 
+var degMinSecs = {
+    // regex for matching dms latitude
+    latDMSregex: /((-)?(90[ :°°d]*00[ :\'\'m]*00(\.0+)?|([0-8][0-9](\.\d+)?)[ :°°d]*([0-5]?[0-9](\.\d+)?)[ :\'\'\'m]*([0-5]?[0-9](\.\d+)?))[ :\?\"\"s]*(N|n|S|s)?)/,
+    // regex for matching dms longitude
+    lngDMSregex: /((-)?(180[ :°°d]*00[ :\'\'m]*00(\.0+)?|(1[0-7][0-9](\.\d+)?|0[0-9][0-9](\.\d+)?)[ :°°d]*([0-5]?[0-9](\.\d+)?)[ :\'\'m]*([0-5]?[0-9](\.\d+)?))[ :\?\"s]*(E|e|W|w)?)/,
+    // checks a string to see if it may be in degree-minutes-seconds format
+    /*
+     valid formats are:
+     dd mm' ss.ss"
+     -35° 7' 23.80", +148° 58' 3.87"  - google maps
+     -36.0° 1.0' 58.8000000000045", 145.0° 59.0' 43.199899999920035"  - iPhone
+     dd° mm' ss.ss"
+     dd°mm'ss.ss" (no spaces)
+     dd mm ss.ss
+     param value - the value string
+     param which - either lat or lng, if neither specified, either will match
+     */
+    getFloatArray: function (value) {
+        var arr = [], i, bits = value.split(/[^\d.]/), f;
+        arr.push(value[0] === '-' ? '-' : '');
+        for (i = 0; i < bits.length && arr.length < 4; i++) {
+            if (bits[i] !== "") {
+                f = parseFloat(bits[i]);
+                if (!isNaN(f)) {
+                    arr.push(f);
+                }
+            }
+        }
+        return arr;
+    },
+    isDegMinSec: function (value, which) {
+        // first make sure it's not a valid decimal
+        if (this.isDecimal(value)) {
+            return false;
+        }
+        /*// check against regex
+        if (which === 'lat') {
+            return this.latDMSregex.test(value);
+        } else if (which === 'lng') {
+            return this.lngDMSregex.test(value);
+        } else {
+            return this.latDMSregex.test(value) || this.lngDMSregex.test(value);
+        }*/
+        return this.getFloatArray(value).length === 4;
+    },
+    isDecimal: function (x) {
+        return $.isNumeric(x);
+    },
+    degMinSecToDecDeg: function (value, which) {
+        var arr = this.getFloatArray(value);
+        /*var matches = value.match(which === 'lat' ? this.latDMSregex : this.lngDMSregex);
+        if (matches === null || matches.length < 7) { return null; }
+        var sign = matches[2],
+            unsignedDegrees = parseFloat(matches[5]),
+            degrees = sign === '-' ? -unsignedDegrees : unsignedDegrees,
+            minutes = parseFloat(matches[6]),
+            seconds = parseFloat(matches[7]);*/
+        if (arr.length < 4) { return null; }
+
+        return { decimalValue: this.toDecimalDegrees(arr.slice(1,4), arr[0]),
+            degrees: arr[0] === '-' ? -arr[1] : arr[1], minutes: arr[2], seconds: arr[3] };
+    },
+    toDecimalDegrees: function (num, ref) {
+        // expect num to be an array of length 3
+        if (num.length !== 3) { return 0 }
+        //console.log(num[0] + " " + num[1] + " " + num[2]);
+        var degrees = num[0],
+            minutes = num[1],
+            seconds = num[2],
+        // determine the num decimal places of minutes and seconds (so we don't artificially add 'accuracy')
+            minutesPlaces = numDecimalPlaces(minutes,'.'),
+            secondsPlaces = numDecimalPlaces(seconds,'.'),
+            apparentAccuracy;
+
+        /* roughly calculate the apparent accuracy based on:
+         1 second ~= .0003 degree so take 4 places as a min
+         add a decimal place for each decimal place in the seconds value
+         1 minute ~= .0166 degree so add start with 2 and add 1 place for each decimal place in minutes
+         take the greater of the two estimates
+         */
+        apparentAccuracy = Math.max(4 + secondsPlaces, 2 + minutesPlaces);
+        //console.log(apparentAccuracy);
+        degrees = degrees + minutes/60 + seconds/3600;
+        // limit result to the same apparent resolution as the input
+        degrees = degrees.toFixed(apparentAccuracy);
+        if (ref === 'S' || ref === 'W' || ref === '-') {
+            degrees = -degrees;
+        } else {
+            degrees = +degrees;
+        }
+        return degrees;
+    },
+    updateConversionFromDMSFields: function () {
+        var deg, min, sec, that = this;
+        $.each(['Lat', 'Lng'], function (i, obj) {
+            deg = $('#degrees'+obj).val();
+            min = $('#minutes'+obj).val();
+            sec = $('#seconds'+obj).val();
+            if (deg !== '' && min !== '') {
+                $('#dec'+obj).html(that.degMinSecToDecDeg(deg + ' ' + min + ' ' + sec, obj.toLowerCase()).decimalValue);
+            }
+        });
+    },
+    clearConvertFromDMSDialog: function () {
+        $('#dmsConvertDialog input').val('');
+        $('#decLat').html('');
+        $('#decLng').html('');
+    },
+    // called when either lat or long or both fail decimal validation and seem to be deg/min/secs
+    // each value is checked because we don't want to try to show decimals as DMS
+    showConvertFromDMSDialog: function (lat, lng) {
+        var decLat = this.isDegMinSec(lat, 'lat') ? this.degMinSecToDecDeg(lat, 'lat') : null,
+            decLng = this.isDegMinSec(lng, 'lng') ? this.degMinSecToDecDeg(lng, 'lng') : null,
+            that = this;
+        this.clearConvertFromDMSDialog();
+
+        // load values into the dialog
+        $('#enteredLat').html(lat);
+        $('#enteredLng').html(lng);
+        if (decLat !== null) {
+            $('#degreesLat').val(decLat.degrees);
+            $('#minutesLat').val(decLat.minutes);
+            $('#secondsLat').val(decLat.seconds);
+            $('#decLat').html(decLat.decimalValue);
+        }
+        if (decLng !== null) {
+            $('#degreesLng').val(decLng.degrees);
+            $('#minutesLng').val(decLng.minutes);
+            $('#secondsLng').val(decLng.seconds);
+            $('#decLng').html(decLng.decimalValue);
+        }
+
+        // show the dialog
+        $('#dmsConvertDialog').dialog({
+            width: 500,
+            modal: true,
+            buttons: {
+                "Use the decimal equivalents": function() {
+                    // write dialog calculated values to screen
+                    var lat = $('#decLat').html(),
+                        lng = $('#decLng').html();
+                    if (lat !== '') {
+                        screenLocation.setLat(lat);
+                        // clear validation warnings
+                        $('#latitude').validationEngine('hide');
+                    }
+                    if (lng !== '') {
+                        screenLocation.setLng(lng);
+                        // clear validation warnings
+                        $('#longitude').validationEngine('hide');
+                    }
+                    $( this ).dialog( "close" );
+                },
+                Cancel: function() {
+                    $( this ).dialog( "close" );
+                }
+            }
+        });
+
+        // handle edits to the fields
+        $('#dmsConvertDialog input').change(function () {
+            that.updateConversionFromDMSFields();
+        });
+    },
+    // only for EXIF format DMS coords where the components are in arrays
+    isDegMinSecAsArray: function (o) {
+        return $.isArray(o.lat) && $.isArray(o.lng);
+    },
+    // only for EXIF format DMS coords where the components are in arrays
+    degMinSecAsArrayToString: function (num, ref) {
+        var sign = (ref === 'S' || ref === 'W') ? "-" : "";
+        return sign + num[0] + " " + num[1] + " " + num[2];
+    }
+};
+
 function Location () {
     this.decimalLatitude = null;
     this.decimalLongitude = null;
@@ -306,50 +481,6 @@ Location.prototype.isValid = function () {
     return hasValue(this.decimalLatitude) && hasValue(this.decimalLongitude);
 };
 
-Location.prototype.isDecimalDegrees = function (x) {
-    return !(x === undefined || isNaN(x));
-};
-
-Location.prototype.isDegMinSec = function (o) {
-    return $.isArray(o.lat) && $.isArray(o.lng);
-};
-
-Location.prototype.degMinSecToString = function (num, ref) {
-    var sign = (ref === 'S' || ref === 'W') ? "-" : "";
-    return sign + num[0] + " " + num[1] + " " + num[2];
-};
-
-Location.prototype.toDecimalDegrees = function (num, ref) {
-    // expect num to be an array of length 3
-    if (num.length !== 3) { return 0 }
-    //console.log(num[0] + " " + num[1] + " " + num[2]);
-    var degrees = num[0],
-        minutes = num[1],
-        seconds = num[2],
-        // determine the num decimal places of minutes and seconds (so we don't artificially add 'accuracy')
-        minutesPlaces = numDecimalPlaces(minutes,'.'),
-        secondsPlaces = numDecimalPlaces(seconds,'.'),
-        apparentAccuracy;
-
-    /* roughly calculate the apparent accuracy based on:
-        1 second ~= .0003 degree so take 4 places as a min
-        add a decimal place for each decimal place in the seconds value
-        1 minute ~= .0166 degree so add start with 2 and add 1 place for each decimal place in minutes
-        take the greater of the two estimates
-     */
-    apparentAccuracy = Math.max(4 + secondsPlaces, 2 + minutesPlaces);
-    //console.log(apparentAccuracy);
-    degrees = degrees + minutes/60 + seconds/3600;
-    // limit result to the same apparent resolution as the input
-    degrees = degrees.toFixed(apparentAccuracy);
-    if (ref === 'S' || ref === 'W') {
-        degrees = -degrees;
-    } else {
-        degrees = +degrees;
-    }
-    return degrees;
-};
-
 Location.prototype.set = function (data) {
     var that = this;
     $.each(['locality','georeferenceProtocol','geodeticDatum','physicalMapScale','otherSource'], function (i,prop) {
@@ -358,11 +489,11 @@ Location.prototype.set = function (data) {
         }
     });
     if (data.latLng !== undefined) {
-        if (this.isDegMinSec(data.latLng)) {
-            this.verbatimLatitude = this.degMinSecToString(data.latLng.lat, data.latLng.latRef);
-            this.verbatimLongitude = this.degMinSecToString(data.latLng.lng, data.latLng.lngRef);
-            this.decimalLatitude = this.toDecimalDegrees(data.latLng.lat, data.latLng.latRef);
-            this.decimalLongitude = this.toDecimalDegrees(data.latLng.lng, data.latLng.lngRef);
+        if (degMinSecs.isDegMinSecAsArray(data.latLng)) {
+            this.verbatimLatitude = degMinSecs.degMinSecAsArrayToString(data.latLng.lat, data.latLng.latRef);
+            this.verbatimLongitude = degMinSecs.degMinSecAsArrayToString(data.latLng.lng, data.latLng.lngRef);
+            this.decimalLatitude = degMinSecs.toDecimalDegrees(data.latLng.lat, data.latLng.latRef);
+            this.decimalLongitude = degMinSecs.toDecimalDegrees(data.latLng.lng, data.latLng.lngRef);
         } else {
             this.verbatimLatitude = data.latLng.lat;
             this.verbatimLongitude = data.latLng.lng;
