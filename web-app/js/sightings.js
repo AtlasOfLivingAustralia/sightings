@@ -91,26 +91,62 @@ $(function() {
     });
 });
 
+// This validation method is referenced in the validation-engine-data attribute of the lat and long fields.
+// Lat and Lng are interdependent. They must be both present or both empty (this is handled by the 'condRequired'
+//  rule). Importantly for this validation, we don't alert on detecting a DMS value if the other value hasn't been
+//  entered yet. This is so both DMS values can be alerted at the same time, allowing the user to accept the 2
+//  converted values in one action. However that means we need to check the other field for DMS even if the field
+//  we are validating is ok.
 function validateLatLng(field, rules, i, options) {
-    var v = field.val(), lat, lng, num;
+    var v = field.val(),
+        lat = $('#latitude').val(),
+        lng = $('#longitude').val(),
+        which = (field.attr('id') === 'latitude' ? 'lat' : 'lng'),
+        theOther = which === 'lat' ? 'lng' : 'lat',
+        theOtherValue = which === 'lat' ? lng : lat,
+        thisIsDms, theOtherIsDms,
+        theOtherField;
+
     if (v === null || v === '') {
+        // ok unless the other field is DMS????
         return undefined;
     }
+
     // check for DMS format
-    if (degMinSecs.isDegMinSec(v, (field.attr('id') === 'latitude' ? 'lat' : 'lng'))) {
-        lat = $('#latitude').val();
-        lng = $('#longitude').val();
+    thisIsDms = degMinSecs.isDegMinSec(v, which);
+    theOtherIsDms = degMinSecs.isDegMinSec(theOtherValue, theOther);
+    if ( thisIsDms || theOtherIsDms ) {
         // only show dialog if both values entered OR submitting
         if (lat === '' || lng === '') {
             return undefined;
         } else {
             degMinSecs.showConvertFromDMSDialog(lat, lng);
-            return "Not a decimal number.";
+            if (theOtherIsDms) {
+                // need to put the error message on the other field so can't just return the error
+                theOtherField = theOther === 'lat' ? $('#latitude') : $('#longitude');
+                theOtherField.validationEngine('showPrompt','Not a decimal number.','fail','topRight',true);
+            }
+            return thisIsDms ? "Not a decimal number." : undefined;
         }
     }
     // check for non-numeric chars
     if (!$.isNumeric(v)) {
         return "Not a decimal number";
+    }
+    // check valid range
+    var f = parseFloat(v);
+    if (which === 'lat' && (f > 90.0 || f < -90.0)) {
+        return "Latitude is outside allowed range: -90 to 90";
+    }
+    else if ((f > 180.0 || f < -180.0)) {
+        return "Longitude is outside allowed range: -180 to 180";
+    }
+    return undefined;
+}
+
+function validateOtherSource(field, rules, i, options) {
+    if ($('#georeferenceProtocol').val() === 'other' && field.val() == "") {
+        return "Cannot be empty if you have selected other source."
     }
     return undefined;
 }
@@ -140,22 +176,7 @@ var submitHandler = {
         // wire submit button
         $('#submit,#alt-submit').click(function () {
             var missing = [];
-            // check that we have the minimum data
-            // removed for now but maybe we should check that at least 1 of date, location, image is present
-            /*if (!screenDate.isValid()) {
-                missing.push('Date');
-            }
-            if (!screenLocation.isValid()) {
-                missing.push('Location');
-            }*/
-            /*if ($('#lsid').val() == '') {
-                if ($('#taxa').validationEngine('validate')) {
-                    return;
-            }
-            if ($('#latitude', '#longitude').validationEngine('validate')) {
-                return;
-            }*/
-            if ($('#lsid').val() == '') {
+            if ($('#lsid').val() == '' || $('#scientificName').html() == '') {
                 missing.push('Taxon');
             }
             if (missing.length > 0) {
@@ -187,28 +208,8 @@ var submitHandler = {
         if (!success) {
             return;
         }
-        // validate fields
-        /*if ($('#latitude').validationEngine('validate')) {
-            return;
-        }
-        if ($('#longitude').validationEngine('validate')) {
-            return;
-        }*/
 
-        /*// check lat is valid
-        loc = new Location().loadFromScreen();
-        vlat = loc.validateLatitude();
-        if (vlat > 0) {
-            screenLocation.showInvalidLatitudeAlert(vlat);
-            return;
-        }
-        // check lon is valid
-        vlng = loc.validateLongitude();
-        if (vlng > 0) {
-            screenLocation.showInvalidLongitudeAlert(vlng);
-            return;
-        }*/
-
+        // build submission body
         payload = $.extend({},
             screenDate.getAll(),
             screenLocation.getAll(),
@@ -226,6 +227,7 @@ var submitHandler = {
         if (simulateError === 'submit') {
             payload.simulateError = 'submit';
         }
+        // submit
         $.ajax({
             url: recordsServerUrl,
             type: 'POST',
@@ -260,9 +262,9 @@ var taxon = {
             this.scientificName = name;
             $("#scientificName").html(name);
         }
-        // and guid
+        // set guid even if it's blank - so we clear out any browser-restored values
+        $('#lsid').val(guid);
         if (guid) {
-            $('#lsid').val(guid);
             this.guid = guid;
             // lookup taxon details in bie
             $.ajax({
@@ -293,8 +295,10 @@ var taxon = {
     },
     putToScreen: function () {
         $('#scientificName').html(this.scientificName);
+        $('#scientificName').attr('href',this.bieUrl);
         $('#commonName').html(this.commonName);
         $('#taxonImage').attr('src', this.imageUrl);
+        $('#taxonImage').show();
         $('#taxonImage').parent('a').attr('href', this.bieUrl);
     },
     getAll: function () {
