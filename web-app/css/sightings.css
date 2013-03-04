@@ -65,6 +65,7 @@ section.sightings-block button {
     font-style: italic;
     font-size: 1.4em;
     font-weight: bold;
+    text-decoration: none !important;
 }
 
 section.sightings-block .commonName {
@@ -228,6 +229,11 @@ span.symbol {
     display: block;
 }
 
+#map-sidebar p {
+    width: 150px;
+    padding-top: 50px;
+}
+
 #coordinate-container {
     /*margin-left:-5px;*/
     padding-top: 10px;
@@ -317,6 +323,10 @@ span.symbol {
     font-family:"Arial Narrow", Arial, Helvetica,sans-serif;
     font-weight: normal;
     font-size: 1.6em;
+}
+
+.ui-front {
+    z-index: 1000;
 }
 
 #dmsConvertDialog p {
@@ -527,7 +537,7 @@ div.sort label {
 .largeImage { margin-top:20px; float:left; }
 .additionalInformation2Col { margin-top:20px; float:right; vertical-align: top; width:300px;}
 .additionalInformation { margin-top:20px; float:left;}
-.record :hover { cursor: hand; cursor: pointer; }
+.record :hover { cursor: pointer; }
 
 /* faq */
 #faq {
