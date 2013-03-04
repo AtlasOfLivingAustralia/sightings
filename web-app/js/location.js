@@ -363,12 +363,12 @@ var degMinSecs = {
             apparentAccuracy;
 
         /* roughly calculate the apparent accuracy based on:
-         1 second ~= .0003 degree so take 4 places as a min
+         1 second ~= .0003 degree so take 3 places as a min
          add a decimal place for each decimal place in the seconds value
-         1 minute ~= .0166 degree so add start with 2 and add 1 place for each decimal place in minutes
+         1 minute ~= .0166 degree so start with 2 and add 1 place for each decimal place in minutes
          take the greater of the two estimates
          */
-        apparentAccuracy = Math.max(4 + secondsPlaces, 2 + minutesPlaces);
+        apparentAccuracy = Math.max(3 + secondsPlaces, 2 + minutesPlaces);
         //console.log(apparentAccuracy);
         degrees = degrees + minutes/60 + seconds/3600;
         // limit result to the same apparent resolution as the input
