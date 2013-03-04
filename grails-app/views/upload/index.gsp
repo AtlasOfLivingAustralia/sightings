@@ -35,7 +35,7 @@
     <div class="page-header">
         <h1>Report a sighting</h1>
         <p class="hint">Hint: If you are submitting images, select them first and we will try to pre-load the date
-        and location fields from the image metadata. See the <g:link action="faq">FAQ</g:link> for help.</p>
+        and location fields from the image metadata. See the <g:link target="_blank" action="faq">FAQ</g:link> for help.</p>
 
         <div style="float:right;padding-right: 45px;">
            <span style="text-align: right;">
@@ -51,14 +51,15 @@
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
     <section class="sightings-block ui-corner-all">
         <a href="http://bie.ala.org.au/species/${guid}" target="_blank">
-            <img id="taxonImage" class="taxon-image ui-corner-all" src="${imageUrl}"/>
+            <img title="Click to show profile" id="taxonImage" class="taxon-image ui-corner-all" src="${imageUrl}" style="display:${imageUrl?'inline':'none'};"/>
         </a>
         <div class="left ${guid?'':'hidden'}" id="taxonBlock" style="width:53%;padding-top:15px;">
-            <span class="scientificName" id="scientificName"></span>
+            <a href="#" title="Click to show profile" class="scientificName" id="scientificName" target="_blank"></a>
             <span class="commonName" id="commonName">${commonName}</span>
             <div style="padding-top:10px;">
                 <div style="float:left;padding-right:20px;"><label for="count">Number seen</label>
-                    <g:textField name="count" class="smartspinner" value="1"/></div>
+                    <g:textField name="count" class="smartspinner" value="1" size="7"
+                          data-validation-engine="validate[custom[integer], min[1]]"/></div>
                 <div style="float:left;"><label for="identificationVerificationStatus">Confidence in identification</label>
                     <g:select from="['Confident','Uncertain']" name="identificationVerificationStatus" value="1"/></div>
             </div>
@@ -118,7 +119,9 @@
             <label for="longitude">Longitude</label><g:textField name="longitude" size="17"
                 data-validation-engine="validate[funcCall[validateLatLng],condRequired[latitude]]"
                 data-errormessage-value-missing="Longitude is required if you enter a latitude."/><br/>
-            <label for="coordinateUncertaintyInMeters">Accuracy (metres)</label><g:textField name="coordinateUncertaintyInMeters" size="17"/><br/>
+            <label for="coordinateUncertaintyInMeters">Accuracy (metres)</label><g:textField name="coordinateUncertaintyInMeters"
+                data-validation-engine="validate[custom[number], min[.001]]"
+                data-errormessage="Must be a positive number" size="17"/><br/>
             <g:hiddenField name="verbatimLatitude"/>
             <g:hiddenField name="verbatimLongitude"/>
             <label for="georeferenceProtocol">What is the source of these coordinates?</label>
@@ -131,10 +134,10 @@
                 <span id="physicalMapScaleField" class="ui-helper-hidden"><label for="physicalMapScale">Enter the scale of the map</label>
                 <g:select name="physicalMapScale" from="${physicalMapScales}"/></span>
                 <span id="otherSourceField" class="ui-helper-hidden"><label for="otherSource">Enter the source</label>
-                <g:textField name="otherSource"/></span>
+                <g:textField name="otherSource" data-validation-engine="validate[funcCall[validateOtherSource]]"/></span>
 
             </div>
-            <button id="main-map-link">Locate on a map</button>
+            <button type="button" id="main-map-link">Locate on a map</button>
         </div>
         <div class="right" id="small-map-container">
             %{--<span>Or click the map to locate.</span>--}%
@@ -150,11 +153,13 @@
                     <button type="button" id="zoomPin">Zoom into pin</button>
                     <button type="button" id="showWorld">Show world</button>
                     %{--<button type="button" id="discardPin">Discard pin</button>--}%
-                    <div id="markers" style="position:absolute; top:370px; left:750px; width:200px; height:100px;">
+                    <div id="markers" style="position:absolute; top:360px; left:750px; width:200px; height:100px;">
                         <div id="m1" class="drag" style="position:absolute; left:0; width:32px; height:32px;">
                             <img src="http://maps.gstatic.com/mapfiles/ms/icons/red-dot.png" width="32" height="32" alt="" />
                         </div>
                     </div>
+                    <p>Drag the pin onto the map in the rough area of your location. The map will zoom in so you can
+                    drag the pin to the exact location.</p>
                 </div>
             </div>
         </section>
