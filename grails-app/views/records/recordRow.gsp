@@ -68,14 +68,14 @@
 
         <g:if test="${rec.images && rec.images?.size() > 0}">
             <g:each in="${rec.images[0..-1]}" var="img">
-                <img src="${img.thumb}"/>
+                <img src="${img.thumb}" class="thumb"/>
             </g:each>
         </g:if>
     </div>
 
     <div class="extraMedia">
     </div>
-    <div class="expandedView">
+    <div class="expandedView" style="display:none;">
     </div>
 </section>
 </g:each>
