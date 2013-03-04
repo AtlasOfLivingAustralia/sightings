@@ -161,23 +161,49 @@
             document.location.href = "${grailsApplication.config.grails.serverURL}/upload/edit/" + id;
         });
 
-        $('.record').click(function () {
-            var recordId = $(this).attr("id");
-            loadRecordRow(recordId);
+        $('.record').click(function (event) {
+            var recordId = $(this).attr("id"),
+                // imgSrc holds the src url of a thumbnail if one was clicked
+                // checking for class=thumb makes sure we don't handle clicks of the large image as though they were thumbs
+                imgSrc = (event.target.tagName.toLowerCase() === 'img' &&
+                 $(event.target).hasClass('thumb')) ? event.target.src : undefined;
+            loadRecordRow(recordId, imgSrc);
         });
     });
 
-    function loadRecordRow(recordId){
+    function loadRecordRow(recordId, imgSrc){
         //console.log("Selected record: " + recordId);
         //console.log("Has class detailsLoaded: " + $('#' + recordId).find(".expandedView").hasClass("detailsLoaded"));
         if($('#' + recordId).find(".expandedView").hasClass("detailsLoaded")){
+          /* details already loaded */
           //console.log("Already loaded: " + recordId);
-          if($('#' + recordId).find(".expandedView").is(":visible")){
-            $('#' + recordId).find(".expandedView").hide('slow');
+          if (imgSrc === undefined) {
+            // just toggle
+            if($('#' + recordId).find(".expandedView").is(":visible")){
+              $('#' + recordId).find(".expandedView").hide('slow');
+            } else {
+              $('#' + recordId).find(".expandedView").show('slow');
+            }
           } else {
+            // when the click source was an img thumbnail we want to change the image.
+            // get the previously loaded list of images
+            var imageList = $('#' + recordId).data('imageList'),
+                imgUrl = imageList[0].large;
+            // iterate the images and find the one that was clicked
+            $.each(imageList, function(i, img) {
+             if(img.thumb === imgSrc) {
+              imgUrl = img.large; // grab the url of the corresponding large image
+             }
+            });
+            // change the large image
+            $('#' + recordId).find("div.largeImage > img").attr('src', imgUrl);
+          }
+          // show expanded view if it was hidden
+          if(!$('#' + recordId).find(".expandedView").is(":visible")){
             $('#' + recordId).find(".expandedView").show('slow');
           }
         } else {
+          /* details need to be loaded */
           //console.log("Loading: " + recordId);
             $.ajax({
                 url: fielddataUrl + recordId,
@@ -185,10 +211,22 @@
                 dataType: 'jsonp',
                 success: function (data) {
 
-                   var text = '';
+                   var text = '', imgUrl;
                    var hasImages = (data.record.images && data.record.images.length>0);
                    if(hasImages){
-                    text += '<div class="largeImage"><img src="' + data.record.images[0].large +'"/></div>';
+                    // save the image list for use in subsequent clicks
+                    $('#' + recordId).data({imageList: data.record.images});
+                    // default to first image
+                    imgUrl = data.record.images[0].large;
+                    if(imgSrc !== undefined) {
+                        // iterate the images and find the one that was clicked
+                        $.each(data.record.images, function(i, img) {
+                         if(img.thumb === imgSrc) {
+                          imgUrl = img.large;
+                         }
+                        });
+                    }
+                    text += '<div class="largeImage"><img src="' + imgUrl +'"/></div>';
                    }
                    if(data.record.decimalLatitude && data.record.decimalLongitude){
                     if(hasImages)
@@ -242,6 +280,8 @@
                    $('#' + recordId).find(".expandedView").addClass("detailsLoaded");
                    $('#mapImage-'+ recordId).attr('src', mapImage2);
                    $('#mapImage-'+ recordId).attr('src', mapImage1);
+
+                   $('#' + recordId).find(".expandedView").show('slow');
                 },
                 error: function(data){
                     //console.log("Error retrieving record details: " + data);
