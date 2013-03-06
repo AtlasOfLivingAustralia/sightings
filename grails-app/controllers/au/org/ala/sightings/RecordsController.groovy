@@ -85,8 +85,8 @@ class RecordsController {
     def user() {
 
         def userId = authService.userId()
-        log.debug("userId : " + userId)
-        log.debug("username : " + authService.username())
+        log.trace("userId : " + userId)
+        log.trace("username : " + authService.username())
 
         // handle sort options
         def opts = ""
@@ -160,12 +160,17 @@ class RecordsController {
     }
 
     def delete() {
-        log.info "deleting " + params.id
+        //log.debug "userId: " + authService.userId()
+        //log.debug "source: " + params.source
+        log.debug "deleting " + params.id
+        def respCode
         if (grailsApplication.config.mock.records.service) {
             ProxyController.deleteRecord(params.id)
         } else {
-            webService.doDelete(grailsApplication.config.ala.recordsServerURL + params.id)
+            respCode = webService.doDelete(grailsApplication.config.ala.recordsServerURL + params.id)
+            log.trace "response from delete = ${respCode}"
         }
+
         redirect(action: 'user')
     }
 }
