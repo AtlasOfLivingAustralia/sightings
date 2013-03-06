@@ -3,11 +3,11 @@
 <head>
     <title>Report a sighting | Atlas of Living Australia</title>
     <meta name="layout" content="ala" />
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/smoothness/jquery-ui.css" type="text/css" media="screen" />
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <script src="//maps.google.com/maps/api/js?key=AIzaSyDBSZ8E9ZCWUULo8Us31Zxhm9u3AWLuHGw&sensor=false&libraries=drawing"></script>
-    <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+    <script src="//code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
     <!-- App specific styles -->
     <r:script disposition="head">
         var serverUrl = "${grailsApplication.config.grails.serverURL}",
@@ -34,6 +34,9 @@
 <div class="inner">
     <div class="page-header">
         <h1>Report a sighting</h1>
+        <div id="auth-error"></div>
+        %{--<p><g:if test="${userId == ''}">User id missing!!</g:if>
+            <g:else>${userId}</g:else></p>--}%
         <p class="hint">Hint: If you are submitting images, select them first and we will try to pre-load the date
         and location fields from the image metadata. See the <g:link target="_blank" action="faq">FAQ</g:link> for help.</p>
 
@@ -428,6 +431,20 @@
 <r:script>
     // init maps after page load - doing this on the jQuery ready event caused Firefox to never complete loading
     $(window).load(initMaps);
+    logToServer('userId: ' + userId, 'debug');
+    // protect against sporadic CAS errors
+    if (userId == '' || userId == 'null') {
+        // we have a problem
+        logToServer('userId not available. url is ' + document.location.href, 'error');
+        // try redirecting to full path if we are at root (/)
+        if (document.location.href !== serverUrl + '/upload/index') {
+            document.location.href = serverUrl + '/upload/index';
+        }
+        // if still here we have a big problem
+        $('#auth-error').html("We seem to have failed to recognise your login. Submissions" +
+        " will fail in this state. Please try logging out and back in. If that fails please contact" +
+        " us at <a href='mailto:support.ala.org.au'>support.ala.org.au</a>.");
+    }
 </r:script>
 <r:layoutResources/>
 </body>
