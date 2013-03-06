@@ -5,6 +5,13 @@ var bookmarks = [
     {key:'desert', lat:-26.549223, lng:129.638672, source: 'GPS device', datum: 'WGS84'}
 ];
 
+function logToServer(message, level) {
+    $.ajax({
+        url: serverUrl + '/proxy/logMessage',
+        data: {message: message, level: level}
+    });
+}
+
 $(function() {
 
     // taxon
