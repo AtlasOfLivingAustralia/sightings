@@ -18,6 +18,12 @@ td {
     float: left;
 }
 
+#auth-error {
+    color: red;
+    width: 500px;
+    margin-bottom: 10px;
+}
+
 .link {
     cursor: pointer;
     text-decoration: underline;
