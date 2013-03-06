@@ -152,22 +152,22 @@ log4j = {
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n"),
                         threshold: org.apache.log4j.Level.DEBUG
                 rollingFile name: "sightingsLog",
-                        maxFileSize: 1024,
+                        maxFileSize: 104857600,
                         file: "/var/log/tomcat6/sightings.log",
                         threshold: org.apache.log4j.Level.INFO,
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
                 rollingFile name: "stacktrace",
-                        maxFileSize: 1024,
+                        maxFileSize: 104857600,
                         file: "/var/log/tomcat6/sightings-stacktrace.log"
             }
             production {
                 rollingFile name: "sightingsLog",
-                        maxFileSize: 1024,
+                        maxFileSize: 104857600,
                         file: "/var/log/tomcat6/sightings.log",
                         threshold: org.apache.log4j.Level.INFO,
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
                 rollingFile name: "stacktrace",
-                        maxFileSize: 1024,
+                        maxFileSize: 104857600,
                         file: "/var/log/tomcat6/sightings-stacktrace.log"
             }
         }
