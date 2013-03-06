@@ -28,8 +28,8 @@ println "(*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 
 appName = 'sightings'
-security.cas.uriFilterPattern = '/,/urn.*,/upload/edit/.*,/records/user,/mine,/mine.*,/mine/.*,/upload/index/.*,/proxy/submitLocationBookmark,/proxy/deleteAllLocationBookmarks,/proxy/deleteLocationBookmark,/proxy/deleteLocationBookmark/.*,/recent/admin, /spotter/admin/.*'
-security.cas.authenticateOnlyIfLoggedInPattern = '/recent,/recent,/recentImages,/recentImages/'
+security.cas.uriFilterPattern = '/,/urn.*,/upload/edit/.*,/records/user,/mine,/mine.*,/mine/.*,/upload/index/.*,/upload/index.*,/proxy/submitLocationBookmark,/proxy/deleteAllLocationBookmarks,/proxy/deleteLocationBookmark,/proxy/deleteLocationBookmark/.*,/recent/admin,/spotter/admin/.*,/record/delete/.*'
+security.cas.authenticateOnlyIfLoggedInPattern = '/recent,/recent/,/recentImages,/recentImages/'
 headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 security.cas.casServerName = 'https://auth.ala.org.au'
 security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*'
@@ -114,10 +114,10 @@ environments {
     development {
         grails.logging.jul.usebridge = true
         //grails.hostname = "localhost"
-        grails.hostname = "moyesyside.ala.org.au"
+        grails.hostname = "devt.ala.org.au"
         serverName = "http://${grails.hostname}:8085"
         contextPath = "/sightings"
-        //grails.hostname = "192.168.0.18"
+        //grails.hostname = "192.168.0.15"
         grails.serverURL = "http://${grails.hostname}:8085/sightings"
         upload.images.url = "http://${grails.hostname}/sightings/images/"
 //	      ala.locationBookmarkServerURL = "http://${grails.hostname}:8086/fielddata/location/"
@@ -148,20 +148,55 @@ log4j = {
     appenders {
         environments{
             development {
-                console name: "stdout", layout: pattern(conversionPattern: "%d [%c{1}]  %m%n"), threshold: org.apache.log4j.Level.DEBUG
+                console name: "stdout",
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n"),
+                        threshold: org.apache.log4j.Level.DEBUG
+                rollingFile name: "sightingsLog",
+                        maxFileSize: 1024,
+                        file: "/var/log/tomcat6/sightings.log",
+                        threshold: org.apache.log4j.Level.INFO,
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "stacktrace",
+                        maxFileSize: 1024,
+                        file: "/var/log/tomcat6/sightings-stacktrace.log"
             }
             production {
                 rollingFile name: "sightingsLog",
-                        maxFileSize: 104857600,
+                        maxFileSize: 1024,
                         file: "/var/log/tomcat6/sightings.log",
-                        threshold: org.apache.log4j.Level.DEBUG,
-                        layout: pattern(conversionPattern: "%d [%c{1}]  %m%n")
-                rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat6/sightings-stacktrace.log"
+                        threshold: org.apache.log4j.Level.INFO,
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "stacktrace",
+                        maxFileSize: 1024,
+                        file: "/var/log/tomcat6/sightings-stacktrace.log"
             }
         }
     }
 
-   // all 'org.codehaus.groovy.grails.web.mapping'
+    environments {
+        development {
+            all additivity: false, stdout: [
+                    'grails.app.controllers.au.org.ala.sightings',
+                    'grails.app.domain.au.org.ala.sightings',
+                    'grails.app.services.au.org.ala.sightings',
+                    'grails.app.taglib.au.org.ala.sightings',
+                    'grails.app.conf.au.org.ala.sightings',
+                    'grails.app.filters.au.org.ala.sightings'/*,
+                    'au.org.ala.cas.client'*/
+            ]
+        }
+    }
+
+    all additivity: false, sightingsLog: [
+            'grails.app.controllers.au.org.ala.sightings',
+            'grails.app.domain.au.org.ala.sightings',
+            'grails.app.services.au.org.ala.sightings',
+            'grails.app.taglib.au.org.ala.sightings',
+            'grails.app.conf.au.org.ala.sightings',
+            'grails.app.filters.au.org.ala.sightings'
+    ]
+
+    // all 'org.codehaus.groovy.grails.web.mapping'
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
            'org.codehaus.groovy.grails.web.pages', //  GSP
