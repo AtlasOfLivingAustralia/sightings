@@ -83,9 +83,11 @@ class ProxyController {
     /******* records ***************/
     // TODO: move to records controller
     def submitRecord() {
-        def serviceParams = [userId:authService.userId()]
-
-//        def paramstofix = params
+        def userId = authService.userId()
+        if (!userId) {
+            log.error('missing userId: ' + params)
+        }
+        def serviceParams = [userId:userId]
 
         // media
         def media = []
@@ -103,7 +105,7 @@ class ProxyController {
 
         // remaining parameters
         params.each {
-            log.debug((it.key as String) + ": " + it.value)
+            log.trace((it.key as String) + ": " + it.value)
             if (!(it.key in ['action','controller','associatedMedia','id'])) {
                 serviceParams.put it.key as String, it.value as String
             }
@@ -130,7 +132,7 @@ class ProxyController {
             result = webService.doPost(grailsApplication.config.ala.recordsServerURL, body)
         }
 
-        log.debug "result = " + result
+        log.trace "result = " + result
         render result as JSON
     }
 
@@ -149,6 +151,11 @@ class ProxyController {
             mockRecords - target
         }
 
+    }
+
+    def logMessage() {
+        def level = params.level ?: 'info'
+        log."$level"(params.message);
     }
 
     def reloadConfig = {
