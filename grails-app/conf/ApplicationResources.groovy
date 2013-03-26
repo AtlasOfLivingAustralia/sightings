@@ -15,7 +15,7 @@ modules = {
 
     upload {
         defaultBundle false
-        resource url:'js/image-handler.js'
+        resource url:'js/image-handler-1.1.js'
         resource url:'js/bookmarks.js'
         resource url:'js/location.js'
         resource url:'js/sightings.js'
