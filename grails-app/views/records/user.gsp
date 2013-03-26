@@ -114,7 +114,8 @@
 
         $('#loadMoreRecords').click(function(){
 
-            var url = serverUrl + "/records/ajax?pageSize=" + SIGHTINGS_PAGESIZE + "&start=" + SIGHTINGS_PAGING;
+            var context = isAdmin ? "/records/ajax/admin" : "/records/ajax";
+            var url = serverUrl + context + "?pageSize=" + SIGHTINGS_PAGESIZE + "&start=" + SIGHTINGS_PAGING;
 
             if(spotterId != ''){
                 url = url + "&spotterId=" + spotterId;

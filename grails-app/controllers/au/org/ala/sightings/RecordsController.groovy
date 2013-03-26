@@ -79,7 +79,8 @@ class RecordsController {
         records = records.records
 
         render( view:"recordRow", model: [records: records, showUser: showUser, spotterId: spotterId,
-                loggedInUser: loggedInUser, otherUsersSightings: spotterId != loggedInUser])
+                loggedInUser: loggedInUser, otherUsersSightings: spotterId != loggedInUser,
+                isAdmin:authService.userInRole("ROLE_ADMIN")])
     }
 
     def user() {

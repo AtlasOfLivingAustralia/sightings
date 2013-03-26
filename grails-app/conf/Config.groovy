@@ -28,7 +28,7 @@ println "(*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 
 appName = 'sightings'
-security.cas.uriFilterPattern = '/,/urn.*,/upload/edit/.*,/records/user,/mine,/mine.*,/mine/.*,/upload/index/.*,/upload/index.*,/proxy/submitLocationBookmark,/proxy/deleteAllLocationBookmarks,/proxy/deleteLocationBookmark,/proxy/deleteLocationBookmark/.*,/recent/admin,/spotter/admin/.*,/record/delete/.*'
+security.cas.uriFilterPattern = '/,/urn.*,/upload/edit/.*,/records/user,/mine,/mine.*,/mine/.*,/upload/index/.*,/upload/index.*,/proxy/submitLocationBookmark,/proxy/deleteAllLocationBookmarks,/proxy/deleteLocationBookmark,/proxy/deleteLocationBookmark/.*,/recent/admin,/spotter/admin/.*,/records/ajax/admin,/record/delete/.*'
 security.cas.authenticateOnlyIfLoggedInPattern = '/recent,/recent/,/recentImages,/recentImages/'
 headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 security.cas.casServerName = 'https://auth.ala.org.au'

@@ -4,6 +4,7 @@ class UrlMappings {
 
         //admin urls which force CAS
         name adminRecent: "/recent/admin"(controller: "records"){ action = [GET:"recent"] }
+        name adminAjax: "/records/ajax/admin"(controller: "records"){ action = [GET:"ajax"] }
         name adminSpotter: "/spotter/admin/$spotterId"(controller: "records"){ action = [GET:"userById"] }
 
         name recent: "/recent"(controller: "records"){ action = [GET:"recent"] }
