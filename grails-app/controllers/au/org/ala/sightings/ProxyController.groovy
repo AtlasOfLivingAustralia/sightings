@@ -86,6 +86,8 @@ class ProxyController {
         def userId = authService.userId()
         if (!userId) {
             log.error('missing userId: ' + params)
+            userId = params.userId
+            log.warn('using user id from body: ' + userId)
         }
         def serviceParams = [userId:userId]
 
