@@ -51,10 +51,12 @@ class ImageController {
                 //def lat = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LATITUDE)
                 //def lng = gpsDirectory.getRationalArray(GpsDirectory.TAG_GPS_LONGITUDE)
                 GeoLocation loc = gpsDirectory.getGeoLocation()
-                exif.latitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LATITUDE)
-                exif.longitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LONGITUDE)
-                exif.decLat = loc.latitude
-                exif.decLng = loc.longitude
+                if (loc) {
+                    exif.latitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LATITUDE)
+                    exif.longitude = gpsDirectory.getDescription(GpsDirectory.TAG_GPS_LONGITUDE)
+                    exif.decLat = loc.latitude
+                    exif.decLng = loc.longitude
+                }
             }
         } catch (Exception e){
             //this will be thrown if its a PNG....
