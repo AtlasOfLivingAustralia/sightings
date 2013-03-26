@@ -457,6 +457,13 @@ $(function() {
     $('#fileupload').bind('fileuploaddestroyed', function () {
         imageList.rowDeleted();
     });
+    $('#fileupload').bind('fileuploadstart', function (e) {
+        $('#submit').attr('disabled', 'disabled')
+            .attr('title','Cannot submit while images are still uploading.');
+    });
+    $('#fileupload').bind('fileuploadstop', function (e) {
+        $('#submit').removeAttr('disabled').removeAttr('title');
+    });
 });
 
 /*
