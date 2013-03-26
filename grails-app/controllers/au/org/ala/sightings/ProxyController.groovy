@@ -156,6 +156,7 @@ class ProxyController {
     def logMessage() {
         def level = params.level ?: 'info'
         log."$level"(params.message);
+        render 'logged'
     }
 
     def reloadConfig = {
