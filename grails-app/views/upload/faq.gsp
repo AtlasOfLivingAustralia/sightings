@@ -120,7 +120,7 @@
             location coordinates.</p>
         </div></section>
         <section>
-            <h2>What are the different licenses I can choose for my images?</h2><div>
+            <h2>What are the different licences I can choose for my images?</h2><div>
             <p>We encourage the use of Creative Commons licensing to protect the usage of your images. Some general
             information is available <a target="_blank" class="external" href="http://creativecommons.org/licenses/">here</a>. We offer the choice of
             four license types:</p>
@@ -130,7 +130,7 @@
                 <li><a target="_blank" class="external" href="http://creativecommons.org/licenses/by-sa/3.0/au/">Attribution-Share Alike</a></li>
                 <li><a target="_blank" class="external" href="http://creativecommons.org/licenses/by-nc-sa/3.0/au/">Attribution-Noncommercial-Share Alike</a></li>
             </ul>
-            <p>Non-commercial terms.<br>Although it's much more beneficial to release content
+            <p>Non-commercial terms:<br>Although it's much more beneficial to release content
             under a non-commercial term than not at all, please consider whether a non-commercial term is really
             necessary. The use of this condition can restrict re-use by non-commercial and community based entities,
             not because they are making a profit but because some of their activities can be legally considered
