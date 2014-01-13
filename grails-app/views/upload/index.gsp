@@ -386,7 +386,7 @@
         {% if (file.error) { %}
         <td></td>
         <td class="name"><b><span class="name">{%=file.name%}</span></b><br/><span>{%=o.formatFileSize(file.size)%}</span></td>
-        <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+        <td class="error" colspan="2"><input type="text" style="width:5px; visibility:hidden" value="error" data-validation-engine="validate[funcCall[imageHasError]]"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
         {% } else { %}
         <td class="preview">{% if (file.thumbnail_url) { %}
             <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>

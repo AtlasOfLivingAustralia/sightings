@@ -211,7 +211,7 @@ var submitHandler = {
         }*/
 
         // validation
-        var success = $('#forValidationOnly').validationEngine('validate');
+        var success = $('#forValidationOnly,#fileupload').validationEngine('validate');
         if (!success) {
             return;
         }

@@ -48,6 +48,7 @@
         |
         <g:link mapping="recent" class="showRecentSightings">Show recent sightings</g:link>
     </div>
+    <form id="forValidationOnly">
     <!-- WHAT -->
     <div class="heading ui-corner-left"><h2>What</h2><r:img uri="/images/what.png"/></div>
     <section class="sightings-block ui-corner-all">
@@ -77,13 +78,15 @@
     <div class="heading ui-corner-left"><h2>When</h2><r:img uri="/images/when.png"/></div>
     <section class="sightings-block ui-corner-all">
         <div class="left" style="margin-top: 10px;width:40%;">
-            <p><label for="date">Date</label> <input type="text" id="date"></p>
+            <p><label for="date">Date</label> <input type="text" id="date" class="datepicker"
+            data-validation-engine="validate[custom[ddMMyyyy]]"></p>
             <p>Click in the date field to pick from a calendar or just type in the date in
-            dd-mm-yyy format.</p>
+            dd-mm-yyyy format.</p>
         </div>
         <div class="left" style="margin-top: 10px;margin-left:30px;width:54%;">
             <p><label for="time">Time</label>
-            <input type="text" id="time" size="5"/></p>
+            <input type="text" id="time" size="5"
+                   data-validation-engine="validate[custom[time]]"/></p>
             <p>Type in the time (hh:mm 24hr clock) or leave blank if you wish.</p>
         </div>
     </section>
@@ -111,10 +114,14 @@
         <div class="left" id="coordinate-container">
             <span>Enter coordinates (decimal degrees) if you already have them.</span><br/>
             <label for="latitude">Latitude</label><g:textField name="latitude" size="17"
-                    value="${decimalLatitude != JSONObject.NULL ? decimalLatitude : ''}"/>
+                    value="${decimalLatitude != JSONObject.NULL ? decimalLatitude : ''}"
+                    data-validation-engine="validate[funcCall[validateLatLng],condRequired[longitude]]"
+                    data-errormessage-value-missing="Latitude is required if you enter a longitude."/>/>
             &nbsp;&nbsp;
             <label for="longitude">Longitude</label><g:textField name="longitude" size="17"
-                    value="${decimalLongitude != JSONObject.NULL ? decimalLongitude : ''}"/><br/>
+                    value="${decimalLongitude != JSONObject.NULL ? decimalLongitude : ''}"
+                    data-validation-engine="validate[funcCall[validateLatLng],condRequired[latitude]]"
+                    data-errormessage-value-missing="Longitude is required if you enter a latitude."/><br/>
             <label for="coordinateUncertaintyInMeters">Accuracy (metres)</label>
                 <g:textField name="coordinateUncertaintyInMeters" size="17" value="${coordinateUncertaintyInMeters != JSONObject.NULL ? coordinateUncertaintyInMeters : ''}"/><br/>
             <g:hiddenField name="verbatimLatitude" value="${verbatimLatitude}"/>
@@ -130,7 +137,7 @@
                 <span id="physicalMapScaleField" class="ui-helper-hidden"><label for="physicalMapScale">Enter the scale of the map</label>
                 <g:select name="physicalMapScale" from="${physicalMapScales}" value="${physicalMapScale}"/></span>
                 <span id="otherSourceField" class="ui-helper-hidden"><label for="otherSource">Enter the source</label>
-                <g:textField name="otherSource" value="${otherSource}"/></span>
+                <g:textField name="otherSource" value="${otherSource}" data-validation-engine="validate[funcCall[validateOtherSource]]"/></span>
 
             </div>
             <button id="main-map-link">Locate on a map</button>
@@ -158,6 +165,7 @@
             </div>
         </section>
     </section>
+    </form>
     <!-- MEDIA -->
     <div class="heading ui-corner-left"><h2>Media</h2><r:img uri="/images/media.png"/></div>
     <section class="sightings-block ui-corner-all">
@@ -349,7 +357,7 @@
         {% if (file.error) { %}
         <td></td>
         <td class="name"><b><span class="name">{%=file.name%}</span></b><br/><span>{%=o.formatFileSize(file.size)%}</span></td>
-        <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+        <td class="error" colspan="2"><input type="text" style="width:5px; visibility:hidden" value="error" data-validation-engine="validate[funcCall[imageHasError]]"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
         {% } else { %}
         <td class="preview">{% if (file.thumbnail_url) { %}
             <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>

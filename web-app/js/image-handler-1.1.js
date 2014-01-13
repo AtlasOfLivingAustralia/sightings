@@ -2,6 +2,18 @@
 
 var ExifLoader = {};
 
+/**
+ * Custom validation function for use by the jquery-validation-engine.
+ * It detects whether an image row encountered an error during upload or not.
+ */
+var imageHasError = function (field, rules, i, options) {
+
+    var row = $(field).parents('tr')[0];
+    if ($(row).find("td.error").length > 0) {
+        return "This file encountered an error during upload.  Please remove it and try again."
+    }
+};
+
 $(function() {
 
    /* // Initialize the jQuery File Upload widget:
@@ -458,12 +470,13 @@ $(function() {
         imageList.rowDeleted();
     });
     $('#fileupload').bind('fileuploadstart', function (e) {
-        $('#submit').attr('disabled', 'disabled')
+        $('#submit,#alt-submit').attr('disabled', 'disabled')
             .attr('title','Cannot submit while images are still uploading.');
     });
     $('#fileupload').bind('fileuploadstop', function (e) {
-        $('#submit').removeAttr('disabled').removeAttr('title');
+        $('#submit,#alt-submit').removeAttr('disabled').removeAttr('title');
     });
+
 });
 
 /*
