@@ -152,13 +152,15 @@
             document.location.href = $.param.querystring(document.location.href, params);
         });
         // handle deletes
-        $('.delete').click(function () {
-            var id = $(this).parents('section').attr('id');
-            document.location.href = "${grailsApplication.config.grails.serverURL}/records/delete/" + id;
+        $('#mySightings').on('click', '.delete', function (event) {
+            var id = $(event.target).parents('section').attr('id');
+            if (confirm('Are you sure you want to delete this record?')) {
+                document.location.href = "${grailsApplication.config.grails.serverURL}/records/delete/" + id;
+            }
         });
         // handle edits
-        $('.edit').click(function () {
-            var id = $(this).parents('section').attr('id');
+        $('#mySightings').on('click', '.edit', function (event) {
+            var id = $(event.target).parents('section').attr('id');
             document.location.href = "${grailsApplication.config.grails.serverURL}/upload/edit/" + id;
         });
 
