@@ -41,7 +41,7 @@ ala.baseURL = "http://www.ala.org.au/"
 bie.baseURL = "http://bie.ala.org.au/"
 biocache.baseURL = "http://biocache.ala.org.au/"
 bie.searchPath = "/search"
-grails.project.groupId = au.org.ala // change this to alter the default package name and Maven publishing destination
+grails.project.groupId = "au.org.ala" // change this to alter the default package name and Maven publishing destination
 userDetails.url ="http://auth.ala.org.au/userdetails/userDetails/getUserListWithIds"
 userDetails.emails.url = "http://auth.ala.org.au/userdetails/userDetails/getUserListFull"
 
@@ -59,7 +59,6 @@ if (!mock.records.service) {
 /******************************************************************************\
  *  GRAILS CONFIG
 \******************************************************************************/
-grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
 grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
